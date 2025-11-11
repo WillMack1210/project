@@ -1,0 +1,29 @@
+{
+  "annotations": {
+    "changelogDate": "20251110162606",
+    "dto": "mapstruct"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "suggestedStart",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "suggestedEnd",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "Suggestion",
+  "relationships": [
+    {
+      "otherEntityName": "findTime",
+      "relationshipName": "findTime",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "searchEngine": "no"
+}

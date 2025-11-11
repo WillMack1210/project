@@ -1,0 +1,30 @@
+{
+  "annotations": {
+    "changelogDate": "20251110162604",
+    "dto": "mapstruct"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "startDateTime",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "endDateTime",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "AvailiabilityBlock",
+  "relationships": [
+    {
+      "otherEntityName": "userProfile",
+      "otherEntityRelationshipName": "availiabilityBlock",
+      "relationshipName": "user",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no"
+}

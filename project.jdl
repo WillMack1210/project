@@ -1,0 +1,78 @@
+@dto(mapstruct)
+entity UserProfile {
+  username String required,
+  fullName String required,
+  profilePicture ImageBlob,
+  settings String // Stores user preferences and allows them to log out/ Dark mode...
+}
+
+@paginate(infinite-scroll)
+@dto(mapstruct)
+entity Event {
+	title String required,
+    description TextBlob,
+    startTime Instant required,
+    endTime Instant required,
+    location String,
+    privacy PrivacyStatus required //private/shared/public
+}
+enum PrivacyStatus{
+	PRIVATE, SHARED, PUBLIC
+}
+
+@dto(mapstruct)
+entity Friendship{
+	status FriendStatus required
+}
+enum FriendStatus{
+	PENDING, ACCEPTED, DECLINED
+}
+@dto(mapstruct)
+entity ScheduleRequest{
+	startDate Instant required,
+    endDate Instant required,
+    scheduleDescription TextBlob required,
+    intensity ScheduleIntensity required
+}
+enum ScheduleIntensity{
+	EASY, INTERMEDIATE, INTENSE
+}
+
+@dto(mapstruct)
+entity AvailiabilityBlock{
+	startDateTime Instant required,
+    endDateTime Instant required
+}
+
+@dto(mapstruct)
+entity FindTime {
+	requestStart Instant required,
+    requestEnd Instant required,
+    length Integer required
+}
+
+@dto(mapstruct)
+entity Suggestion{
+	suggestedStart Instant required,
+    suggestedEnd Instant required
+}
+
+relationship OneToOne{
+    UserProfile{user(login)} to @Id User with builtInEntity
+}
+
+relationship OneToMany{
+	UserProfile{events} to Event{owner}
+  UserProfile{availiabilityBlock} to AvailiabilityBlock{user}
+}
+relationship ManyToMany{
+	Event{participant} to UserProfile{sharedEvent}
+  FindTime{participant} to UserProfile
+  Suggestion{findTime} to FindTime
+}
+relationship ManyToOne{
+	Friendship{user} to UserProfile
+    Friendship{friend} to UserProfile
+    ScheduleRequest{user} to UserProfile
+    FindTime{requester} to UserProfile
+}

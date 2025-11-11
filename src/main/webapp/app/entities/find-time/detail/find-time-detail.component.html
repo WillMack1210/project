@@ -1,0 +1,68 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (findTime(); as findTimeRef) {
+      <div>
+        <h2 data-cy="findTimeDetailsHeading"><span>Find Time</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ findTimeRef.id }}</span>
+          </dd>
+          <dt><span>Request Start</span></dt>
+          <dd>
+            <span>{{ findTimeRef.requestStart | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Request End</span></dt>
+          <dd>
+            <span>{{ findTimeRef.requestEnd | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Length</span></dt>
+          <dd>
+            <span>{{ findTimeRef.length }}</span>
+          </dd>
+          <dt><span>Requester</span></dt>
+          <dd>
+            @if (findTime()!.requester) {
+              <div>
+                <a [routerLink]="['/user-profile', findTime()!.requester?.id, 'view']">{{ findTimeRef.requester?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Participant</span></dt>
+          <dd>
+            @for (participant of findTimeRef.participants; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/user-profile', participant.id, 'view']">{{ participant?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+          <dt><span>Suggestion</span></dt>
+          <dd>
+            @for (suggestion of findTimeRef.suggestions; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/suggestion', suggestion.id, 'view']">{{ suggestion?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/find-time', findTimeRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

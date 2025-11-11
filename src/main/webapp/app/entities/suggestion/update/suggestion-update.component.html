@@ -1,0 +1,103 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-suggestion-heading" data-cy="SuggestionCreateUpdateHeading">Create or edit a Suggestion</h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let suggestedStartRef = editForm.get('suggestedStart')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_suggestedStart">Suggested Start</label>
+          <div class="d-flex">
+            <input
+              id="field_suggestedStart"
+              data-cy="suggestedStart"
+              type="datetime-local"
+              class="form-control"
+              name="suggestedStart"
+              formControlName="suggestedStart"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (suggestedStartRef.invalid && (suggestedStartRef.dirty || suggestedStartRef.touched)) {
+            <div>
+              @if (editForm.get('suggestedStart')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('suggestedStart')?.errors?.datetimelocal"
+                >This field should be a date and time.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let suggestedEndRef = editForm.get('suggestedEnd')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_suggestedEnd">Suggested End</label>
+          <div class="d-flex">
+            <input
+              id="field_suggestedEnd"
+              data-cy="suggestedEnd"
+              type="datetime-local"
+              class="form-control"
+              name="suggestedEnd"
+              formControlName="suggestedEnd"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (suggestedEndRef.invalid && (suggestedEndRef.dirty || suggestedEndRef.touched)) {
+            <div>
+              @if (editForm.get('suggestedEnd')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('suggestedEnd')?.errors?.datetimelocal"
+                >This field should be a date and time.</small
+              >
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label for="field_findTimes">Find Time</label>
+          <select
+            class="form-control"
+            id="field_findTimes"
+            data-cy="findTime"
+            multiple
+            name="findTimes"
+            formControlName="findTimes"
+            [compareWith]="compareFindTime"
+          >
+            @for (findTimeOption of findTimesSharedCollection; track $index) {
+              <option [ngValue]="findTimeOption">{{ findTimeOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

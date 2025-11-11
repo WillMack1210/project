@@ -1,0 +1,79 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (userProfile(); as userProfileRef) {
+      <div>
+        <h2 data-cy="userProfileDetailsHeading"><span>User Profile</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ userProfileRef.id }}</span>
+          </dd>
+          <dt><span>Username</span></dt>
+          <dd>
+            <span>{{ userProfileRef.username }}</span>
+          </dd>
+          <dt><span>Full Name</span></dt>
+          <dd>
+            <span>{{ userProfileRef.fullName }}</span>
+          </dd>
+          <dt><span>Profile Picture</span></dt>
+          <dd>
+            @if (userProfileRef.profilePicture) {
+              <div>
+                <a (click)="openFile(userProfileRef.profilePicture ?? '', userProfileRef.profilePictureContentType)">
+                  <img
+                    [src]="'data:' + userProfileRef.profilePictureContentType + ';base64,' + userProfileRef.profilePicture"
+                    style="max-width: 100%"
+                    alt="userProfile"
+                  />
+                </a>
+                {{ userProfileRef.profilePictureContentType }}, {{ byteSize(userProfileRef.profilePicture ?? '') }}
+              </div>
+            }
+          </dd>
+          <dt><span>Settings</span></dt>
+          <dd>
+            <span>{{ userProfileRef.settings }}</span>
+          </dd>
+          <dt><span>User</span></dt>
+          <dd>
+            <span>{{ userProfileRef.user?.login }}</span>
+          </dd>
+          <dt><span>Shared Event</span></dt>
+          <dd>
+            @for (sharedEvent of userProfileRef.sharedEvents; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/event', sharedEvent.id, 'view']">{{ sharedEvent?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+          <dt><span>Find Time</span></dt>
+          <dd>
+            @for (findTime of userProfileRef.findTimes; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/find-time', findTime.id, 'view']">{{ findTime?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/user-profile', userProfileRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

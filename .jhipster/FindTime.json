@@ -1,0 +1,40 @@
+{
+  "annotations": {
+    "changelogDate": "20251110162605",
+    "dto": "mapstruct"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "requestStart",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "requestEnd",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "length",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "FindTime",
+  "relationships": [
+    {
+      "otherEntityName": "userProfile",
+      "relationshipName": "requester",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "userProfile",
+      "relationshipName": "participant",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "searchEngine": "no"
+}

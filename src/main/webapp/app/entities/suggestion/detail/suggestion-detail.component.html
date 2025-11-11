@@ -1,0 +1,47 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (suggestion(); as suggestionRef) {
+      <div>
+        <h2 data-cy="suggestionDetailsHeading"><span>Suggestion</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ suggestionRef.id }}</span>
+          </dd>
+          <dt><span>Suggested Start</span></dt>
+          <dd>
+            <span>{{ suggestionRef.suggestedStart | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Suggested End</span></dt>
+          <dd>
+            <span>{{ suggestionRef.suggestedEnd | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Find Time</span></dt>
+          <dd>
+            @for (findTime of suggestionRef.findTimes; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/find-time', findTime.id, 'view']">{{ findTime?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/suggestion', suggestionRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

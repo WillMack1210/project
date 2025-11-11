@@ -1,0 +1,40 @@
+{
+  "annotations": {
+    "changelogDate": "20251110162603",
+    "dto": "mapstruct"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "startDate",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "endDate",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "scheduleDescription",
+      "fieldType": "TextBlob",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "intensity",
+      "fieldType": "ScheduleIntensity",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "EASY,INTERMEDIATE,INTENSE"
+    }
+  ],
+  "name": "ScheduleRequest",
+  "relationships": [
+    {
+      "otherEntityName": "userProfile",
+      "relationshipName": "user",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no"
+}

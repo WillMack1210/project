@@ -1,0 +1,71 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (event(); as eventRef) {
+      <div>
+        <h2 data-cy="eventDetailsHeading"><span>Event</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ eventRef.id }}</span>
+          </dd>
+          <dt><span>Title</span></dt>
+          <dd>
+            <span>{{ eventRef.title }}</span>
+          </dd>
+          <dt><span>Description</span></dt>
+          <dd>
+            <span>{{ eventRef.description }}</span>
+          </dd>
+          <dt><span>Start Time</span></dt>
+          <dd>
+            <span>{{ eventRef.startTime | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>End Time</span></dt>
+          <dd>
+            <span>{{ eventRef.endTime | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Location</span></dt>
+          <dd>
+            <span>{{ eventRef.location }}</span>
+          </dd>
+          <dt><span>Privacy</span></dt>
+          <dd>
+            <span>{{ { null: '', PRIVATE: 'PRIVATE', SHARED: 'SHARED', PUBLIC: 'PUBLIC' }[eventRef.privacy ?? 'null'] }}</span>
+          </dd>
+          <dt><span>Participant</span></dt>
+          <dd>
+            @for (participant of eventRef.participants; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/user-profile', participant.id, 'view']">{{ participant?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+          <dt><span>Owner</span></dt>
+          <dd>
+            @if (event()!.owner) {
+              <div>
+                <a [routerLink]="['/user-profile', event()!.owner?.id, 'view']">{{ eventRef.owner?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/event', eventRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

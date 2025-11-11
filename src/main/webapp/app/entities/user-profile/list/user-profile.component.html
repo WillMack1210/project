@@ -1,0 +1,158 @@
+<div>
+  <h2 id="page-heading" data-cy="UserProfileHeading">
+    <span>User Profiles</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span>Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-user-profile"
+        [routerLink]="['/user-profile/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span>Create a new User Profile</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  @if (userProfiles?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span>No User Profiles found</span>
+    </div>
+  }
+
+  @if (userProfiles && userProfiles.length > 0) {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span>ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="username">
+              <div class="d-flex">
+                <span>Username</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="fullName">
+              <div class="d-flex">
+                <span>Full Name</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="profilePicture">
+              <div class="d-flex">
+                <span>Profile Picture</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="settings">
+              <div class="d-flex">
+                <span>Settings</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="user.login">
+              <div class="d-flex">
+                <span>User</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="sharedEvent.id">
+              <div class="d-flex">
+                <span>Shared Event</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="findTime.id">
+              <div class="d-flex">
+                <span>Find Time</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (userProfile of userProfiles; track trackId(userProfile)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/user-profile', userProfile.id, 'view']">{{ userProfile.id }}</a>
+              </td>
+              <td>{{ userProfile.username }}</td>
+              <td>{{ userProfile.fullName }}</td>
+              <td>
+                @if (userProfile.profilePicture) {
+                  <a (click)="openFile(userProfile.profilePicture, userProfile.profilePictureContentType)">
+                    <img
+                      [src]="'data:' + userProfile.profilePictureContentType + ';base64,' + userProfile.profilePicture"
+                      style="max-height: 30px"
+                      alt="userProfile"
+                    />
+                  </a>
+                  <span>{{ userProfile.profilePictureContentType }}, {{ byteSize(userProfile.profilePicture) }}</span>
+                }
+              </td>
+              <td>{{ userProfile.settings }}</td>
+              <td>
+                {{ userProfile.user?.login }}
+              </td>
+              <td>
+                @for (sharedEvent of userProfile.sharedEvents; track $index; let last = $last) {
+                  <span>
+                    <a class="form-control-static" [routerLink]="['/event', sharedEvent.id, 'view']">{{ sharedEvent.id }}</a
+                    >{{ last ? '' : ', ' }}
+                  </span>
+                }
+              </td>
+              <td>
+                @for (findTime of userProfile.findTimes; track $index; let last = $last) {
+                  <span>
+                    <a class="form-control-static" [routerLink]="['/find-time', findTime.id, 'view']">{{ findTime.id }}</a
+                    >{{ last ? '' : ', ' }}
+                  </span>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/user-profile', userProfile.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline">View</span>
+                  </a>
+
+                  <a [routerLink]="['/user-profile', userProfile.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(userProfile)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

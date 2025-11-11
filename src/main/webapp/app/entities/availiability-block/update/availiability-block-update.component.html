@@ -1,0 +1,96 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-availiability-block-heading" data-cy="AvailiabilityBlockCreateUpdateHeading">Create or edit a Availiability Block</h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let startDateTimeRef = editForm.get('startDateTime')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_startDateTime">Start Date Time</label>
+          <div class="d-flex">
+            <input
+              id="field_startDateTime"
+              data-cy="startDateTime"
+              type="datetime-local"
+              class="form-control"
+              name="startDateTime"
+              formControlName="startDateTime"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (startDateTimeRef.invalid && (startDateTimeRef.dirty || startDateTimeRef.touched)) {
+            <div>
+              @if (editForm.get('startDateTime')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('startDateTime')?.errors?.datetimelocal"
+                >This field should be a date and time.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let endDateTimeRef = editForm.get('endDateTime')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_endDateTime">End Date Time</label>
+          <div class="d-flex">
+            <input
+              id="field_endDateTime"
+              data-cy="endDateTime"
+              type="datetime-local"
+              class="form-control"
+              name="endDateTime"
+              formControlName="endDateTime"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (endDateTimeRef.invalid && (endDateTimeRef.dirty || endDateTimeRef.touched)) {
+            <div>
+              @if (editForm.get('endDateTime')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('endDateTime')?.errors?.datetimelocal"
+                >This field should be a date and time.</small
+              >
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_user">User</label>
+          <select class="form-control" id="field_user" data-cy="user" name="user" formControlName="user" [compareWith]="compareUserProfile">
+            <option [ngValue]="null"></option>
+            @for (userProfileOption of userProfilesSharedCollection; track $index) {
+              <option [ngValue]="userProfileOption">{{ userProfileOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

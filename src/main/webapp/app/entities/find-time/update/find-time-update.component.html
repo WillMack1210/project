@@ -1,0 +1,151 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-find-time-heading" data-cy="FindTimeCreateUpdateHeading">Create or edit a Find Time</h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let requestStartRef = editForm.get('requestStart')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_requestStart">Request Start</label>
+          <div class="d-flex">
+            <input
+              id="field_requestStart"
+              data-cy="requestStart"
+              type="datetime-local"
+              class="form-control"
+              name="requestStart"
+              formControlName="requestStart"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (requestStartRef.invalid && (requestStartRef.dirty || requestStartRef.touched)) {
+            <div>
+              @if (editForm.get('requestStart')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('requestStart')?.errors?.datetimelocal"
+                >This field should be a date and time.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let requestEndRef = editForm.get('requestEnd')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_requestEnd">Request End</label>
+          <div class="d-flex">
+            <input
+              id="field_requestEnd"
+              data-cy="requestEnd"
+              type="datetime-local"
+              class="form-control"
+              name="requestEnd"
+              formControlName="requestEnd"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (requestEndRef.invalid && (requestEndRef.dirty || requestEndRef.touched)) {
+            <div>
+              @if (editForm.get('requestEnd')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('requestEnd')?.errors?.datetimelocal"
+                >This field should be a date and time.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let lengthRef = editForm.get('length')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_length">Length</label>
+          <input type="number" class="form-control" name="length" id="field_length" data-cy="length" formControlName="length" />
+          @if (lengthRef.invalid && (lengthRef.dirty || lengthRef.touched)) {
+            <div>
+              @if (editForm.get('length')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('length')?.errors?.number">This field should be a number.</small>
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_requester">Requester</label>
+          <select
+            class="form-control"
+            id="field_requester"
+            data-cy="requester"
+            name="requester"
+            formControlName="requester"
+            [compareWith]="compareUserProfile"
+          >
+            <option [ngValue]="null"></option>
+            @for (userProfileOption of userProfilesSharedCollection; track $index) {
+              <option [ngValue]="userProfileOption">{{ userProfileOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="field_participants">Participant</label>
+          <select
+            class="form-control"
+            id="field_participants"
+            data-cy="participant"
+            multiple
+            name="participants"
+            formControlName="participants"
+            [compareWith]="compareUserProfile"
+          >
+            @for (userProfileOption of userProfilesSharedCollection; track $index) {
+              <option [ngValue]="userProfileOption">{{ userProfileOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="field_suggestions">Suggestion</label>
+          <select
+            class="form-control"
+            id="field_suggestions"
+            data-cy="suggestion"
+            multiple
+            name="suggestions"
+            formControlName="suggestions"
+            [compareWith]="compareSuggestion"
+          >
+            @for (suggestionOption of suggestionsSharedCollection; track $index) {
+              <option [ngValue]="suggestionOption">{{ suggestionOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

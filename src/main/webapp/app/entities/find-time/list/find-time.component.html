@@ -1,0 +1,143 @@
+<div>
+  <h2 id="page-heading" data-cy="FindTimeHeading">
+    <span>Find Times</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span>Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-find-time"
+        [routerLink]="['/find-time/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span>Create a new Find Time</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  @if (findTimes?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span>No Find Times found</span>
+    </div>
+  }
+
+  @if (findTimes && findTimes.length > 0) {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span>ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="requestStart">
+              <div class="d-flex">
+                <span>Request Start</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="requestEnd">
+              <div class="d-flex">
+                <span>Request End</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="length">
+              <div class="d-flex">
+                <span>Length</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="requester.id">
+              <div class="d-flex">
+                <span>Requester</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="participant.id">
+              <div class="d-flex">
+                <span>Participant</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="suggestion.id">
+              <div class="d-flex">
+                <span>Suggestion</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (findTime of findTimes; track trackId(findTime)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/find-time', findTime.id, 'view']">{{ findTime.id }}</a>
+              </td>
+              <td>{{ findTime.requestStart | formatMediumDatetime }}</td>
+              <td>{{ findTime.requestEnd | formatMediumDatetime }}</td>
+              <td>{{ findTime.length }}</td>
+              <td>
+                @if (findTime.requester) {
+                  <div>
+                    <a [routerLink]="['/user-profile', findTime.requester.id, 'view']">{{ findTime.requester.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @for (participant of findTime.participants; track $index; let last = $last) {
+                  <span>
+                    <a class="form-control-static" [routerLink]="['/user-profile', participant.id, 'view']">{{ participant.id }}</a
+                    >{{ last ? '' : ', ' }}
+                  </span>
+                }
+              </td>
+              <td>
+                @for (suggestion of findTime.suggestions; track $index; let last = $last) {
+                  <span>
+                    <a class="form-control-static" [routerLink]="['/suggestion', suggestion.id, 'view']">{{ suggestion.id }}</a
+                    >{{ last ? '' : ', ' }}
+                  </span>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/find-time', findTime.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline">View</span>
+                  </a>
+
+                  <a [routerLink]="['/find-time', findTime.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(findTime)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

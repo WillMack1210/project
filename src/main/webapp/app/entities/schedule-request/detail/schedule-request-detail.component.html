@@ -1,0 +1,56 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (scheduleRequest(); as scheduleRequestRef) {
+      <div>
+        <h2 data-cy="scheduleRequestDetailsHeading"><span>Schedule Request</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ scheduleRequestRef.id }}</span>
+          </dd>
+          <dt><span>Start Date</span></dt>
+          <dd>
+            <span>{{ scheduleRequestRef.startDate | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>End Date</span></dt>
+          <dd>
+            <span>{{ scheduleRequestRef.endDate | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Schedule Description</span></dt>
+          <dd>
+            <span>{{ scheduleRequestRef.scheduleDescription }}</span>
+          </dd>
+          <dt><span>Intensity</span></dt>
+          <dd>
+            <span>{{
+              { null: '', EASY: 'EASY', INTERMEDIATE: 'INTERMEDIATE', INTENSE: 'INTENSE' }[scheduleRequestRef.intensity ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span>User</span></dt>
+          <dd>
+            @if (scheduleRequest()!.user) {
+              <div>
+                <a [routerLink]="['/user-profile', scheduleRequest()!.user?.id, 'view']">{{ scheduleRequestRef.user?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/schedule-request', scheduleRequestRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,112 @@
+<div>
+  <h2 id="page-heading" data-cy="FriendshipHeading">
+    <span>Friendships</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span>Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-friendship"
+        [routerLink]="['/friendship/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span>Create a new Friendship</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  @if (friendships?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span>No Friendships found</span>
+    </div>
+  }
+
+  @if (friendships && friendships.length > 0) {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span>ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="status">
+              <div class="d-flex">
+                <span>Status</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="user.id">
+              <div class="d-flex">
+                <span>User</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="friend.id">
+              <div class="d-flex">
+                <span>Friend</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (friendship of friendships; track trackId(friendship)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/friendship', friendship.id, 'view']">{{ friendship.id }}</a>
+              </td>
+              <td>{{ { null: '', PENDING: 'PENDING', ACCEPTED: 'ACCEPTED', DECLINED: 'DECLINED' }[friendship.status ?? 'null'] }}</td>
+              <td>
+                @if (friendship.user) {
+                  <div>
+                    <a [routerLink]="['/user-profile', friendship.user.id, 'view']">{{ friendship.user.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (friendship.friend) {
+                  <div>
+                    <a [routerLink]="['/user-profile', friendship.friend.id, 'view']">{{ friendship.friend.id }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/friendship', friendship.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline">View</span>
+                  </a>
+
+                  <a [routerLink]="['/friendship', friendship.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(friendship)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

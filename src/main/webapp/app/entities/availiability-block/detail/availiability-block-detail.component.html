@@ -1,0 +1,46 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (availiabilityBlock(); as availiabilityBlockRef) {
+      <div>
+        <h2 data-cy="availiabilityBlockDetailsHeading"><span>Availiability Block</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ availiabilityBlockRef.id }}</span>
+          </dd>
+          <dt><span>Start Date Time</span></dt>
+          <dd>
+            <span>{{ availiabilityBlockRef.startDateTime | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>End Date Time</span></dt>
+          <dd>
+            <span>{{ availiabilityBlockRef.endDateTime | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>User</span></dt>
+          <dd>
+            @if (availiabilityBlock()!.user) {
+              <div>
+                <a [routerLink]="['/user-profile', availiabilityBlock()!.user?.id, 'view']">{{ availiabilityBlockRef.user?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/availiability-block', availiabilityBlockRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

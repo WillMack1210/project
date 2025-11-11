@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <!--
+        Added the constraints for entity Suggestion.
+    -->
+    <changeSet id="20251110162606-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="suggestion_id"
+                                 baseTableName="rel_suggestion__find_time"
+                                 constraintName="fk_rel_suggestion__find_time__suggestion_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="suggestion"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="find_time_id"
+                                 baseTableName="rel_suggestion__find_time"
+                                 constraintName="fk_rel_suggestion__find_time__find_time_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="find_time"
+                                 />
+    </changeSet>
+</databaseChangeLog>
