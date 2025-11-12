@@ -99,7 +99,7 @@ jobs:
       ACME_STAGING: 'https://acme-staging-v02.api.letsencrypt.org/directory'
       CI_REGISTRY_USER: ${{ github.actor }} # GitHub username for authentication
       CI_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }} # GitHub token to authenticate to GHCR
-      CI_REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/${{ github.repository }} # GHCR image URL
+      CI_REGISTRY_IMAGE: ghcr.io/${ OWNER_NAME_LOWER}}/${IMAGE_NAME_LOWER} # GHCR image URL
       CI_REGISTRY: ghcr.io # GHCR registry URL
 
     steps:
