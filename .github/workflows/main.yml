@@ -69,11 +69,12 @@ jobs:
 
       - name: Build and push Docker image to ghcr
         run: |
-          echo "pushing ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ github.sha }}"
+          IMAGE_NAME_LOWER=$(echo"${{github.repository}}" | tr '[:upper:]' '[:lower:]')
+          echo "pushing ghcr.io/${{ github.repository_owner }}/${{ IMAGE_NAME_LOWER}}:${{ github.sha }}"
           ./mvnw -ntp clean compile jib:build -DskipTests -Pprod \
             -Djib.to.auth.username=${{ github.actor }} \
             -Djib.to.auth.password=${{ secrets.GITHUB_TOKEN }} \
-            -Djib.to.image=ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ github.sha }} \
+            -Djib.to.image=ghcr.io/${{ github.repository_owner }}/${{ IMAGE_NAME_LOWER }}:${{ github.sha }} \
             -Djib.to.tags=latest \
             -Dmaven.repo.local=$MAVEN_USER_HOME
         env:
