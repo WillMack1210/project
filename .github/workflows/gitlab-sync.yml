@@ -13,17 +13,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # ✅ Get full history to avoid shallow push rejection
 
       - name: Configure Git and push to GitLab
         run: |
           git config --global user.name "GitHub Sync Bot"
           git config --global user.email "syncbot@example.com"
 
-          # Add GitLab remote using credentials stored in GitHub Secrets
           git remote add gitlab https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@git.cs.bham.ac.uk/projects-2025-26/wxm334.git
 
-          # Push all branches and tags to GitLab
-          git push --mirror gitlab
+          git push gitlab main
         env:
           GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
