@@ -14,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
+          fetch-depth: 0   # ✅ full history to avoid shallow push rejection
 
       - name: Configure Git and sync with GitLab
         run: |
@@ -23,13 +23,11 @@ jobs:
 
           # Add GitLab remote using credentials stored in GitHub Secrets
           git remote add gitlab https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@git.cs.bham.ac.uk/projects-2025-26/wxm334.git
-          
-          git fetch --unshallow || true
 
-          # Pull from GitLab to merge remote changes (avoids "fetch first" error)
-          git pull gitlab main --allow-unrelated-histories --no-edit --no-rebase
+          # Merge GitLab's main branch but always prefer GitHub's version
+          git pull gitlab main --allow-unrelated-histories --strategy-option=ours --no-edit || true
 
-          # Push merged result back to GitLab
+          # Push GitHub's main branch to GitLab
           git push gitlab main
         env:
           GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
