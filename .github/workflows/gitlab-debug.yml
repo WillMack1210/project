@@ -1,0 +1,26 @@
+name: GitLab Debug
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Attempt GitLab Auth (safe)
+        run: |
+          echo "Trying to fetch from GitLab..."
+
+          curl -I -L \
+            -H "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+            https://git.cs.bham.ac.uk/api/v4/projects \
+            || true
+
+          echo "---"
+
+          curl -I -L \
+            https://oauth2:${GITLAB_TOKEN}@git.cs.bham.ac.uk/projects-2025-26/***.git/info/refs?service=git-upload-pack \
+            || true
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
