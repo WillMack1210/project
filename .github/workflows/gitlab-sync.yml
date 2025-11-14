@@ -14,7 +14,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Sync GitHub → GitLab with rebase (protected branch safe)
+      - name: Sync GitHub → GitLab (protected-branch safe, prefer GitHub)
         run: |
           git config user.name "GitHub Sync Bot"
           git config user.email "syncbot@example.com"
@@ -22,10 +22,10 @@ jobs:
           git remote add gitlab https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@git.cs.bham.ac.uk/projects-2025-26/wxm334.git
           git fetch gitlab main
 
-          # Rebase GitHub's main *onto* GitLab's main (makes fast-forward possible)
-          git rebase gitlab/main
+          # Merge GitLab history into GitHub, but ALWAYS prefer GitHub's content
+          git merge -s ours gitlab/main -m "Sync GitHub → GitLab (prefer GitHub version)"
 
-          # Push normally — fast-forward only
+          # Now push this merge commit fast-forward (allowed by GitLab protected branch)
           git push gitlab HEAD:main
         env:
           GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
