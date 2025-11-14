@@ -19,13 +19,13 @@ jobs:
           git config user.name "GitHub Sync Bot"
           git config user.email "syncbot@example.com"
 
-          git remote add gitlab https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@git.cs.bham.ac.uk/projects-2025-26/wxm334.git
+          git remote add gitlab https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@git.cs.bham.ac.uk/projects-2025-26/***.git
           git fetch gitlab main
 
-          # Merge GitLab history into GitHub, but ALWAYS prefer GitHub's content
-          git merge -s ours gitlab/main -m "Sync GitHub → GitLab (prefer GitHub version)"
+          # Merge GitLab's history but ALWAYS take GitHub’s version of files
+          git merge -s ours gitlab/main --allow-unrelated-histories -m "Sync GitHub → GitLab (prefer GitHub version)"
 
-          # Now push this merge commit fast-forward (allowed by GitLab protected branch)
+          # Push as fast-forward (allowed by protected branch)
           git push gitlab HEAD:main
         env:
           GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
