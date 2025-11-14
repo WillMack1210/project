@@ -27,6 +27,8 @@ jobs:
         run: |
           git remote add gitlab git@git.cs.bham.ac.uk:projects-2025-26/wxm334.git
 
-      - name: Push to GitLab
+      - name: Sync GitHub → GitLab (GitHub always wins)
         run: |
+          git fetch gitlab main
+          git merge -s ours gitlab/main -m "Sync GitHub → GitLab (prefer GitHub version)"
           git push gitlab main
