@@ -7,28 +7,26 @@ on:
 
 jobs:
   sync:
-    name: Mirror GitHub to GitLab
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # ✅ full history to avoid shallow push rejection
+          fetch-depth: 0
 
-      - name: Configure Git and sync with GitLab
+      - name: Sync GitHub → GitLab with rebase (protected branch safe)
         run: |
-          git config --global user.name "GitHub Sync Bot"
-          git config --global user.email "syncbot@example.com"
+          git config user.name "GitHub Sync Bot"
+          git config user.email "syncbot@example.com"
 
-          # Add GitLab remote using credentials stored in GitHub Secrets
           git remote add gitlab https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@git.cs.bham.ac.uk/projects-2025-26/wxm334.git
+          git fetch gitlab main
 
-          # Merge GitLab's main branch but always prefer GitHub's version
-          git pull gitlab main --allow-unrelated-histories --strategy-option=ours --no-edit || true
+          # Rebase GitHub's main *onto* GitLab's main (makes fast-forward possible)
+          git rebase gitlab/main
 
-          # Push GitHub's main branch to GitLab
-          git push gitlab main
+          # Push normally — fast-forward only
+          git push gitlab HEAD:main
         env:
           GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
