@@ -26,6 +26,11 @@ jobs:
       - name: Add GitLab remote
         run: |
           git remote add gitlab git@git.cs.bham.ac.uk:projects-2025-26/wxm334.git
+          
+      - name: Set Git identity
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
 
       - name: Sync GitHub → GitLab (GitHub always wins)
         run: |
