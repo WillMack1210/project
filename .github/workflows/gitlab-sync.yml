@@ -30,5 +30,5 @@ jobs:
       - name: Sync GitHub → GitLab (GitHub always wins)
         run: |
           git fetch gitlab main
-          git merge -s ours gitlab/main -m "Sync GitHub → GitLab (prefer GitHub version)"
+          git merge -s ours gitlab/main --allow-unrelated-histories -m "Sync GitHub → GitLab (prefer GitHub version)"
           git push gitlab main
