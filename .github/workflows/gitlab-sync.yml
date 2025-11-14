@@ -2,31 +2,31 @@ name: Sync to GitLab
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   sync:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout full history
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Sync GitHub → GitLab (protected-branch safe, prefer GitHub)
+      - name: Configure SSH
         run: |
-          git config user.name "GitHub Sync Bot"
-          git config user.email "syncbot@example.com"
-
-          git remote add gitlab https://oauth2:${GITLAB_TOKEN}@git.cs.bham.ac.uk/projects-2025-26/***.git
-          git fetch gitlab main
-
-          # Merge GitLab's history but ALWAYS take GitHub’s version of files
-          git merge -s ours gitlab/main --allow-unrelated-histories -m "Sync GitHub → GitLab (prefer GitHub version)"
-
-          # Push as fast-forward (allowed by protected branch)
-          git push gitlab HEAD:main
+          mkdir -p ~/.ssh
+          echo "$GITLAB_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan git.cs.bham.ac.uk >> ~/.ssh/known_hosts
         env:
-          GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
-          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          GITLAB_SSH_PRIVATE_KEY: ${{ secrets.GITLAB_SSH_PRIVATE_KEY }}
+
+      - name: Add GitLab remote
+        run: |
+          git remote add gitlab git@git.cs.bham.ac.uk:projects-2025-26/wxm334.git
+
+      - name: Push to GitLab
+        run: |
+          git push gitlab main
