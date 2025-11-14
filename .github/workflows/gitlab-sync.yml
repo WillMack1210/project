@@ -19,7 +19,7 @@ jobs:
           git config user.name "GitHub Sync Bot"
           git config user.email "syncbot@example.com"
 
-          git remote add gitlab https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@git.cs.bham.ac.uk/projects-2025-26/***.git
+          git remote add gitlab https://oauth2:${GITLAB_TOKEN}@git.cs.bham.ac.uk/projects-2025-26/***.git
           git fetch gitlab main
 
           # Merge GitLab's history but ALWAYS take GitHub’s version of files
