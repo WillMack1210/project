@@ -24,9 +24,9 @@ export default class HomeComponent implements OnInit, OnDestroy {
     plugins: [dayGridPlugin],
     initialView: 'dayGridMonth',
     headerToolbar: {
-      left: 'prev, next today',
+      left: 'prev next today',
       center: 'title',
-      right: 'dayGridMonth, dayGridWeek, dayGridDay',
+      right: 'dayGridMonth dayGridWeek dayGridDay',
     },
     events: [],
   };
