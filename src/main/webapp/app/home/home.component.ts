@@ -7,15 +7,29 @@ import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 
+import { FullCalendarModule } from '@fullcalendar/angular';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import { CalendarOptions } from '@fullcalendar/core';
+
 @Component({
   standalone: true,
   selector: 'jhi-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports: [SharedModule, RouterModule],
+  imports: [SharedModule, RouterModule, FullCalendarModule],
 })
 export default class HomeComponent implements OnInit, OnDestroy {
   account = signal<Account | null>(null);
+  calendarOptions: CalendarOptions = {
+    plugins: [dayGridPlugin],
+    initialView: 'dayGridMonth',
+    headerToolbar: {
+      left: 'prev, next today',
+      center: 'title',
+      right: 'dayGridMonth, dayGridWeek, dayGridDay',
+    },
+    events: [],
+  };
 
   private readonly destroy$ = new Subject<void>();
 

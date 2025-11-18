@@ -4,7 +4,7 @@
   </div>
 
   <div class="col-md-9">
-    <h1 class="display-4"><span>Welcome, Java Hipster!</span> (Teamproject 24)</h1>
+    <h1 class="display-4"><span>Welcome, Java Hipster!</span></h1>
 
     <p class="lead">This is your homepage</p>
 
@@ -15,6 +15,7 @@
             <span id="home-logged-message">You are logged in as user &quot;{{ accountRef.login }}&quot;.</span>
           }
         </div>
+        <full-calendar [options]="calendarOptions"></full-calendar>
       } @else {
         <div class="alert alert-warning">
           <span>If you want to </span>
