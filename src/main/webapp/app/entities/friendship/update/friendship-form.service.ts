@@ -19,8 +19,8 @@ type FriendshipFormDefaults = Pick<NewFriendship, 'id'>;
 type FriendshipFormGroupContent = {
   id: FormControl<IFriendship['id'] | NewFriendship['id']>;
   status: FormControl<IFriendship['status']>;
-  user: FormControl<IFriendship['user']>;
-  friend: FormControl<IFriendship['friend']>;
+  requester: FormControl<IFriendship['requester']>;
+  addressee: FormControl<IFriendship['addressee']>;
 };
 
 export type FriendshipFormGroup = FormGroup<FriendshipFormGroupContent>;
@@ -43,8 +43,8 @@ export class FriendshipFormService {
       status: new FormControl(friendshipRawValue.status, {
         validators: [Validators.required],
       }),
-      user: new FormControl(friendshipRawValue.user),
-      friend: new FormControl(friendshipRawValue.friend),
+      requester: new FormControl(friendshipRawValue.requester),
+      addressee: new FormControl(friendshipRawValue.addressee),
     });
   }
 

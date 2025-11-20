@@ -15,14 +15,16 @@
   "name": "Friendship",
   "relationships": [
     {
+      "otherEntityField": "username",
       "otherEntityName": "userProfile",
-      "relationshipName": "user",
+      "relationshipName": "requester",
       "relationshipSide": "left",
       "relationshipType": "many-to-one"
     },
     {
+      "otherEntityField": "username",
       "otherEntityName": "userProfile",
-      "relationshipName": "friend",
+      "relationshipName": "addressee",
       "relationshipSide": "left",
       "relationshipType": "many-to-one"
     }

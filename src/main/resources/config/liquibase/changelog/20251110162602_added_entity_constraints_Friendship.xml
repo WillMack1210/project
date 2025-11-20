@@ -10,16 +10,16 @@
     -->
     <changeSet id="20251110162602-2" author="jhipster">
 
-        <addForeignKeyConstraint baseColumnNames="user_id"
+        <addForeignKeyConstraint baseColumnNames="requester_id"
                                  baseTableName="friendship"
-                                 constraintName="fk_friendship__user_id"
+                                 constraintName="fk_friendship__requester_id"
                                  referencedColumnNames="id"
                                  referencedTableName="user_profile"
                                  />
 
-        <addForeignKeyConstraint baseColumnNames="friend_id"
+        <addForeignKeyConstraint baseColumnNames="addressee_id"
                                  baseTableName="friendship"
-                                 constraintName="fk_friendship__friend_id"
+                                 constraintName="fk_friendship__addressee_id"
                                  referencedColumnNames="id"
                                  referencedTableName="user_profile"
                                  />

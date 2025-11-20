@@ -32,11 +32,11 @@ public class Friendship implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "user", "events", "availiabilityBlocks", "sharedEvents", "findTimes" }, allowSetters = true)
-    private UserProfile user;
+    private UserProfile requester;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "user", "events", "availiabilityBlocks", "sharedEvents", "findTimes" }, allowSetters = true)
-    private UserProfile friend;
+    private UserProfile addressee;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -66,29 +66,29 @@ public class Friendship implements Serializable {
         this.status = status;
     }
 
-    public UserProfile getUser() {
-        return this.user;
+    public UserProfile getRequester() {
+        return this.requester;
     }
 
-    public void setUser(UserProfile userProfile) {
-        this.user = userProfile;
+    public void setRequester(UserProfile userProfile) {
+        this.requester = userProfile;
     }
 
-    public Friendship user(UserProfile userProfile) {
-        this.setUser(userProfile);
+    public Friendship requester(UserProfile userProfile) {
+        this.setRequester(userProfile);
         return this;
     }
 
-    public UserProfile getFriend() {
-        return this.friend;
+    public UserProfile getAddressee() {
+        return this.addressee;
     }
 
-    public void setFriend(UserProfile userProfile) {
-        this.friend = userProfile;
+    public void setAddressee(UserProfile userProfile) {
+        this.addressee = userProfile;
     }
 
-    public Friendship friend(UserProfile userProfile) {
-        this.setFriend(userProfile);
+    public Friendship addressee(UserProfile userProfile) {
+        this.setAddressee(userProfile);
         return this;
     }
 

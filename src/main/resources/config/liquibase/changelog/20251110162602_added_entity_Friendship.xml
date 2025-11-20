@@ -17,10 +17,10 @@
             <column name="status" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
-            <column name="user_id" type="bigint">
+            <column name="requester_id" type="bigint">
                 <constraints nullable="true" />
             </column>
-            <column name="friend_id" type="bigint">
+            <column name="addressee_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->

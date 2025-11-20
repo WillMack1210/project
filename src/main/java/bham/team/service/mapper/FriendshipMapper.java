@@ -11,12 +11,13 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface FriendshipMapper extends EntityMapper<FriendshipDTO, Friendship> {
-    @Mapping(target = "user", source = "user", qualifiedByName = "userProfileId")
-    @Mapping(target = "friend", source = "friend", qualifiedByName = "userProfileId")
+    @Mapping(target = "requester", source = "requester", qualifiedByName = "userProfileUsername")
+    @Mapping(target = "addressee", source = "addressee", qualifiedByName = "userProfileUsername")
     FriendshipDTO toDto(Friendship s);
 
-    @Named("userProfileId")
+    @Named("userProfileUsername")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
-    UserProfileDTO toDtoUserProfileId(UserProfile userProfile);
+    @Mapping(target = "username", source = "username")
+    UserProfileDTO toDtoUserProfileUsername(UserProfile userProfile);
 }

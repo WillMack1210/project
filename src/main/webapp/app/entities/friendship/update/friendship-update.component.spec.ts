@@ -49,14 +49,14 @@ describe('Friendship Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call UserProfile query and add missing value', () => {
       const friendship: IFriendship = { id: 456 };
-      const user: IUserProfile = { id: 28641 };
-      friendship.user = user;
-      const friend: IUserProfile = { id: 2109 };
-      friendship.friend = friend;
+      const requester: IUserProfile = { id: 28641 };
+      friendship.requester = requester;
+      const addressee: IUserProfile = { id: 2109 };
+      friendship.addressee = addressee;
 
       const userProfileCollection: IUserProfile[] = [{ id: 9895 }];
       jest.spyOn(userProfileService, 'query').mockReturnValue(of(new HttpResponse({ body: userProfileCollection })));
-      const additionalUserProfiles = [user, friend];
+      const additionalUserProfiles = [requester, addressee];
       const expectedCollection: IUserProfile[] = [...additionalUserProfiles, ...userProfileCollection];
       jest.spyOn(userProfileService, 'addUserProfileToCollectionIfMissing').mockReturnValue(expectedCollection);
 
@@ -73,16 +73,16 @@ describe('Friendship Management Update Component', () => {
 
     it('Should update editForm', () => {
       const friendship: IFriendship = { id: 456 };
-      const user: IUserProfile = { id: 7599 };
-      friendship.user = user;
-      const friend: IUserProfile = { id: 24534 };
-      friendship.friend = friend;
+      const requester: IUserProfile = { id: 7599 };
+      friendship.requester = requester;
+      const addressee: IUserProfile = { id: 24534 };
+      friendship.addressee = addressee;
 
       activatedRoute.data = of({ friendship });
       comp.ngOnInit();
 
-      expect(comp.userProfilesSharedCollection).toContain(user);
-      expect(comp.userProfilesSharedCollection).toContain(friend);
+      expect(comp.userProfilesSharedCollection).toContain(requester);
+      expect(comp.userProfilesSharedCollection).toContain(addressee);
       expect(comp.friendship).toEqual(friendship);
     });
   });

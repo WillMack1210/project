@@ -59,7 +59,7 @@ public class FriendshipAsserts {
     public static void assertFriendshipUpdatableRelationshipsEquals(Friendship expected, Friendship actual) {
         assertThat(expected)
             .as("Verify Friendship relationships")
-            .satisfies(e -> assertThat(e.getUser()).as("check user").isEqualTo(actual.getUser()))
-            .satisfies(e -> assertThat(e.getFriend()).as("check friend").isEqualTo(actual.getFriend()));
+            .satisfies(e -> assertThat(e.getRequester()).as("check requester").isEqualTo(actual.getRequester()))
+            .satisfies(e -> assertThat(e.getAddressee()).as("check addressee").isEqualTo(actual.getAddressee()));
     }
 }

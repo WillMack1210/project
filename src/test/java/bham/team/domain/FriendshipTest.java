@@ -24,26 +24,26 @@ class FriendshipTest {
     }
 
     @Test
-    void userTest() {
+    void requesterTest() {
         Friendship friendship = getFriendshipRandomSampleGenerator();
         UserProfile userProfileBack = getUserProfileRandomSampleGenerator();
 
-        friendship.setUser(userProfileBack);
-        assertThat(friendship.getUser()).isEqualTo(userProfileBack);
+        friendship.setRequester(userProfileBack);
+        assertThat(friendship.getRequester()).isEqualTo(userProfileBack);
 
-        friendship.user(null);
-        assertThat(friendship.getUser()).isNull();
+        friendship.requester(null);
+        assertThat(friendship.getRequester()).isNull();
     }
 
     @Test
-    void friendTest() {
+    void addresseeTest() {
         Friendship friendship = getFriendshipRandomSampleGenerator();
         UserProfile userProfileBack = getUserProfileRandomSampleGenerator();
 
-        friendship.setFriend(userProfileBack);
-        assertThat(friendship.getFriend()).isEqualTo(userProfileBack);
+        friendship.setAddressee(userProfileBack);
+        assertThat(friendship.getAddressee()).isEqualTo(userProfileBack);
 
-        friendship.friend(null);
-        assertThat(friendship.getFriend()).isNull();
+        friendship.addressee(null);
+        assertThat(friendship.getAddressee()).isNull();
     }
 }

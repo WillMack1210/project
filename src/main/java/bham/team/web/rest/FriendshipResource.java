@@ -148,10 +148,13 @@ public class FriendshipResource {
     /**
      * {@code GET  /friendships} : get all the friendships.
      *
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of friendships in body.
      */
     @GetMapping("")
-    public List<FriendshipDTO> getAllFriendships() {
+    public List<FriendshipDTO> getAllFriendships(
+        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
+    ) {
         LOG.debug("REST request to get all Friendships");
         List<Friendship> friendships = friendshipRepository.findAll();
         return friendshipMapper.toDto(friendships);
@@ -166,7 +169,7 @@ public class FriendshipResource {
     @GetMapping("/{id}")
     public ResponseEntity<FriendshipDTO> getFriendship(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Friendship : {}", id);
-        Optional<FriendshipDTO> friendshipDTO = friendshipRepository.findById(id).map(friendshipMapper::toDto);
+        Optional<FriendshipDTO> friendshipDTO = friendshipRepository.findOneWithEagerRelationships(id).map(friendshipMapper::toDto);
         return ResponseUtil.wrapOrNotFound(friendshipDTO);
     }
 

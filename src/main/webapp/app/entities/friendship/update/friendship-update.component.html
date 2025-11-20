@@ -34,28 +34,35 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_user">User</label>
-          <select class="form-control" id="field_user" data-cy="user" name="user" formControlName="user" [compareWith]="compareUserProfile">
+          <label class="form-label" for="field_requester">Requester</label>
+          <select
+            class="form-control"
+            id="field_requester"
+            data-cy="requester"
+            name="requester"
+            formControlName="requester"
+            [compareWith]="compareUserProfile"
+          >
             <option [ngValue]="null"></option>
             @for (userProfileOption of userProfilesSharedCollection; track $index) {
-              <option [ngValue]="userProfileOption">{{ userProfileOption.id }}</option>
+              <option [ngValue]="userProfileOption">{{ userProfileOption.username }}</option>
             }
           </select>
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_friend">Friend</label>
+          <label class="form-label" for="field_addressee">Addressee</label>
           <select
             class="form-control"
-            id="field_friend"
-            data-cy="friend"
-            name="friend"
-            formControlName="friend"
+            id="field_addressee"
+            data-cy="addressee"
+            name="addressee"
+            formControlName="addressee"
             [compareWith]="compareUserProfile"
           >
             <option [ngValue]="null"></option>
             @for (userProfileOption of userProfilesSharedCollection; track $index) {
-              <option [ngValue]="userProfileOption">{{ userProfileOption.id }}</option>
+              <option [ngValue]="userProfileOption">{{ userProfileOption.username }}</option>
             }
           </select>
         </div>

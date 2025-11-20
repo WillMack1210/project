@@ -19,19 +19,19 @@
           <dd>
             <span>{{ { null: '', PENDING: 'PENDING', ACCEPTED: 'ACCEPTED', DECLINED: 'DECLINED' }[friendshipRef.status ?? 'null'] }}</span>
           </dd>
-          <dt><span>User</span></dt>
+          <dt><span>Requester</span></dt>
           <dd>
-            @if (friendship()!.user) {
+            @if (friendship()!.requester) {
               <div>
-                <a [routerLink]="['/user-profile', friendship()!.user?.id, 'view']">{{ friendshipRef.user?.id }}</a>
+                <a [routerLink]="['/user-profile', friendship()!.requester?.id, 'view']">{{ friendshipRef.requester?.username }}</a>
               </div>
             }
           </dd>
-          <dt><span>Friend</span></dt>
+          <dt><span>Addressee</span></dt>
           <dd>
-            @if (friendship()!.friend) {
+            @if (friendship()!.addressee) {
               <div>
-                <a [routerLink]="['/user-profile', friendship()!.friend?.id, 'view']">{{ friendshipRef.friend?.id }}</a>
+                <a [routerLink]="['/user-profile', friendship()!.addressee?.id, 'view']">{{ friendshipRef.addressee?.username }}</a>
               </div>
             }
           </dd>

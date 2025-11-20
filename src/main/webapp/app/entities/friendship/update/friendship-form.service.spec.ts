@@ -21,8 +21,8 @@ describe('Friendship Form Service', () => {
           expect.objectContaining({
             id: expect.any(Object),
             status: expect.any(Object),
-            user: expect.any(Object),
-            friend: expect.any(Object),
+            requester: expect.any(Object),
+            addressee: expect.any(Object),
           }),
         );
       });
@@ -34,8 +34,8 @@ describe('Friendship Form Service', () => {
           expect.objectContaining({
             id: expect.any(Object),
             status: expect.any(Object),
-            user: expect.any(Object),
-            friend: expect.any(Object),
+            requester: expect.any(Object),
+            addressee: expect.any(Object),
           }),
         );
       });

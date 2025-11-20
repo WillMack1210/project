@@ -71,8 +71,8 @@ relationship ManyToMany{
   Suggestion{findTime} to FindTime
 }
 relationship ManyToOne{
-	Friendship{user} to UserProfile
-    Friendship{friend} to UserProfile
-    ScheduleRequest{user} to UserProfile
-    FindTime{requester} to UserProfile
+	Friendship{requester(username)} to UserProfile
+  Friendship{addressee(username)} to UserProfile
+  ScheduleRequest{user} to UserProfile
+  FindTime{requester} to UserProfile
 }

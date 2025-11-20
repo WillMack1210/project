@@ -49,15 +49,15 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="user.id">
+            <th scope="col" jhiSortBy="requester.username">
               <div class="d-flex">
-                <span>User</span>
+                <span>Requester</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="friend.id">
+            <th scope="col" jhiSortBy="addressee.username">
               <div class="d-flex">
-                <span>Friend</span>
+                <span>Addressee</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
@@ -72,16 +72,16 @@
               </td>
               <td>{{ { null: '', PENDING: 'PENDING', ACCEPTED: 'ACCEPTED', DECLINED: 'DECLINED' }[friendship.status ?? 'null'] }}</td>
               <td>
-                @if (friendship.user) {
+                @if (friendship.requester) {
                   <div>
-                    <a [routerLink]="['/user-profile', friendship.user.id, 'view']">{{ friendship.user.id }}</a>
+                    <a [routerLink]="['/user-profile', friendship.requester.id, 'view']">{{ friendship.requester.username }}</a>
                   </div>
                 }
               </td>
               <td>
-                @if (friendship.friend) {
+                @if (friendship.addressee) {
                   <div>
-                    <a [routerLink]="['/user-profile', friendship.friend.id, 'view']">{{ friendship.friend.id }}</a>
+                    <a [routerLink]="['/user-profile', friendship.addressee.id, 'view']">{{ friendship.addressee.username }}</a>
                   </div>
                 }
               </td>

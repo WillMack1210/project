@@ -16,9 +16,9 @@ public class FriendshipDTO implements Serializable {
     @NotNull
     private FriendStatus status;
 
-    private UserProfileDTO user;
+    private UserProfileDTO requester;
 
-    private UserProfileDTO friend;
+    private UserProfileDTO addressee;
 
     public Long getId() {
         return id;
@@ -36,20 +36,20 @@ public class FriendshipDTO implements Serializable {
         this.status = status;
     }
 
-    public UserProfileDTO getUser() {
-        return user;
+    public UserProfileDTO getRequester() {
+        return requester;
     }
 
-    public void setUser(UserProfileDTO user) {
-        this.user = user;
+    public void setRequester(UserProfileDTO requester) {
+        this.requester = requester;
     }
 
-    public UserProfileDTO getFriend() {
-        return friend;
+    public UserProfileDTO getAddressee() {
+        return addressee;
     }
 
-    public void setFriend(UserProfileDTO friend) {
-        this.friend = friend;
+    public void setAddressee(UserProfileDTO addressee) {
+        this.addressee = addressee;
     }
 
     @Override
@@ -79,8 +79,8 @@ public class FriendshipDTO implements Serializable {
         return "FriendshipDTO{" +
             "id=" + getId() +
             ", status='" + getStatus() + "'" +
-            ", user=" + getUser() +
-            ", friend=" + getFriend() +
+            ", requester=" + getRequester() +
+            ", addressee=" + getAddressee() +
             "}";
     }
 }

@@ -87,8 +87,8 @@ export class FriendshipUpdateComponent implements OnInit {
 
     this.userProfilesSharedCollection = this.userProfileService.addUserProfileToCollectionIfMissing<IUserProfile>(
       this.userProfilesSharedCollection,
-      friendship.user,
-      friendship.friend,
+      friendship.requester,
+      friendship.addressee,
     );
   }
 
@@ -100,8 +100,8 @@ export class FriendshipUpdateComponent implements OnInit {
         map((userProfiles: IUserProfile[]) =>
           this.userProfileService.addUserProfileToCollectionIfMissing<IUserProfile>(
             userProfiles,
-            this.friendship?.user,
-            this.friendship?.friend,
+            this.friendship?.requester,
+            this.friendship?.addressee,
           ),
         ),
       )
