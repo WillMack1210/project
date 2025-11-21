@@ -4,7 +4,7 @@
       @if (account() !== null) {
         <div class="display-4">
           @if (account(); as accountRef) {
-            <span id="home-logged-message">Welcome back,{{ accountRef.login }}</span>
+            <span id="home-logged-message">Welcome back, {{ accountRef.login }}</span>
           }
         </div>
         <full-calendar [options]="calendarOptions"></full-calendar>
