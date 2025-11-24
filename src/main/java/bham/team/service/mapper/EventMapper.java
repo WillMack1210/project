@@ -18,6 +18,7 @@ public interface EventMapper extends EntityMapper<EventDTO, Event> {
     EventDTO toDto(Event s);
 
     @Mapping(target = "removeParticipant", ignore = true)
+    @Mapping(target = "owner", source = "owner", ignore = true)
     Event toEntity(EventDTO eventDTO);
 
     @Named("userProfileId")

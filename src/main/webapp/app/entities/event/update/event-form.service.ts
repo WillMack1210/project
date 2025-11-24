@@ -39,7 +39,6 @@ type EventFormGroupContent = {
   location: FormControl<EventFormRawValue['location']>;
   privacy: FormControl<EventFormRawValue['privacy']>;
   participants: FormControl<EventFormRawValue['participants']>;
-  owner: FormControl<EventFormRawValue['owner']>;
 };
 
 export type EventFormGroup = FormGroup<EventFormGroupContent>;
@@ -74,7 +73,6 @@ export class EventFormService {
         validators: [Validators.required],
       }),
       participants: new FormControl(eventRawValue.participants ?? []),
-      owner: new FormControl(eventRawValue.owner),
     });
   }
 

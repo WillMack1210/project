@@ -1,7 +1,12 @@
 package bham.team.web.rest;
 
 import bham.team.domain.Event;
+import bham.team.domain.User;
+import bham.team.domain.UserProfile;
 import bham.team.repository.EventRepository;
+import bham.team.repository.UserProfileRepository;
+import bham.team.repository.UserRepository;
+import bham.team.security.SecurityUtils;
 import bham.team.service.dto.EventDTO;
 import bham.team.service.mapper.EventMapper;
 import bham.team.web.rest.errors.BadRequestAlertException;
@@ -38,11 +43,22 @@ public class EventResource {
 
     private final EventRepository eventRepository;
 
+    private final UserRepository userRepository;
+
+    private final UserProfileRepository userProfileRepository;
+
     private final EventMapper eventMapper;
 
-    public EventResource(EventRepository eventRepository, EventMapper eventMapper) {
+    public EventResource(
+        EventRepository eventRepository,
+        EventMapper eventMapper,
+        UserRepository userRepository,
+        UserProfileRepository userProfileRepository
+    ) {
         this.eventRepository = eventRepository;
         this.eventMapper = eventMapper;
+        this.userRepository = userRepository;
+        this.userProfileRepository = userProfileRepository;
     }
 
     /**
@@ -58,12 +74,29 @@ public class EventResource {
         if (eventDTO.getId() != null) {
             throw new BadRequestAlertException("A new event cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        // Get current user login
+        String login = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        User user = userRepository.findOneByLogin(login).orElseThrow();
+
+        // Find the UserProfile linked to this User
+        UserProfile userProfile = userProfileRepository
+            .findOneByUserId(user.getId())
+            .orElseThrow(() -> new BadRequestAlertException("No UserProfile found for current user", ENTITY_NAME, "nouserprofile"));
+
+        // Map DTO to entity
         Event event = eventMapper.toEntity(eventDTO);
+
+        // Assign the owner before saving
+        event.setOwner(userProfile);
+
+        // Save and return
         event = eventRepository.save(event);
-        eventDTO = eventMapper.toDto(event);
-        return ResponseEntity.created(new URI("/api/events/" + eventDTO.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, eventDTO.getId().toString()))
-            .body(eventDTO);
+        EventDTO result = eventMapper.toDto(event);
+
+        return ResponseEntity.created(new URI("/api/events/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
+            .body(result);
     }
 
     /**

@@ -108,7 +108,6 @@ export class EventUpdateComponent implements OnInit {
     this.userProfilesSharedCollection = this.userProfileService.addUserProfileToCollectionIfMissing<IUserProfile>(
       this.userProfilesSharedCollection,
       ...(event.participants ?? []),
-      event.owner,
     );
   }
 
@@ -118,11 +117,7 @@ export class EventUpdateComponent implements OnInit {
       .pipe(map((res: HttpResponse<IUserProfile[]>) => res.body ?? []))
       .pipe(
         map((userProfiles: IUserProfile[]) =>
-          this.userProfileService.addUserProfileToCollectionIfMissing<IUserProfile>(
-            userProfiles,
-            ...(this.event?.participants ?? []),
-            this.event?.owner,
-          ),
+          this.userProfileService.addUserProfileToCollectionIfMissing<IUserProfile>(userProfiles, ...(this.event?.participants ?? [])),
         ),
       )
       .subscribe((userProfiles: IUserProfile[]) => (this.userProfilesSharedCollection = userProfiles));
