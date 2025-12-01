@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
@@ -32,15 +33,20 @@ export default class HomeComponent implements OnInit, OnDestroy {
   };
 
   private readonly destroy$ = new Subject<void>();
-
   private readonly accountService = inject(AccountService);
   private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
 
   ngOnInit(): void {
     this.accountService
       .getAuthenticationState()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(account => this.account.set(account));
+      .subscribe(account => {
+        this.account.set(account);
+        if (account) {
+          this.loadEvents();
+        }
+      });
   }
 
   login(): void {
@@ -50,5 +56,15 @@ export default class HomeComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  loadEvents(): void {
+    this.http.get<any[]>('/api/events').subscribe(events => {
+      this.calendarOptions.events = events.map(e => ({
+        title: e.title,
+        start: e.startTime,
+        end: e.endTime,
+      }));
+    });
   }
 }
