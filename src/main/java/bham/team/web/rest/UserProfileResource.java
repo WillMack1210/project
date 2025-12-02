@@ -188,6 +188,16 @@ public class UserProfileResource {
         return ResponseUtil.wrapOrNotFound(userProfileDTO);
     }
 
+    @GetMapping("/by-user/{login}")
+    @Transactional(readOnly = true)
+    public ResponseEntity<UserProfileDTO> getProfileByUserLogin(@PathVariable String login) {
+        return userProfileRepository
+            .findByUserLogin(login)
+            .map(userProfileMapper::toDto)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
     /**
      * {@code DELETE  /user-profiles/:id} : delete the "id" userProfile.
      *

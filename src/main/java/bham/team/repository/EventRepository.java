@@ -27,4 +27,8 @@ public interface EventRepository extends EventRepositoryWithBagRelationships, Jp
     default Page<Event> findAllWithEagerRelationships(Pageable pageable) {
         return this.fetchBagRelationships(this.findAll(pageable));
     }
+
+    default List<Event> findByOwnerID(Long ownerId) {
+        return this.fetchBagRelationships(this.findByOwnerID(ownerId));
+    }
 }

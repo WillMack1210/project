@@ -39,4 +39,6 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
     Optional<UserProfile> findOneWithToOneRelationships(@Param("id") Long id);
 
     Optional<UserProfile> findOneByUserId(Long userId);
+
+    Optional<UserProfile> findByUserLogin(String login);
 }

@@ -127,6 +127,10 @@ public class EventResource {
         }
 
         Event event = eventMapper.toEntity(eventDTO);
+        String login = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        User user = userRepository.findOneByLogin(login).orElseThrow();
+        UserProfile userProfile = userProfileRepository.findOneByUserId(user.getId()).orElseThrow();
+        event.setOwner(userProfile);
         event = eventRepository.save(event);
         eventDTO = eventMapper.toDto(event);
         return ResponseEntity.ok()
@@ -166,7 +170,10 @@ public class EventResource {
             .findById(eventDTO.getId())
             .map(existingEvent -> {
                 eventMapper.partialUpdate(existingEvent, eventDTO);
-
+                String login = SecurityUtils.getCurrentUserLogin().orElseThrow();
+                User user = userRepository.findOneByLogin(login).orElseThrow();
+                UserProfile userProfile = userProfileRepository.findOneByUserId(user.getId()).orElseThrow();
+                existingEvent.setOwner(userProfile);
                 return existingEvent;
             })
             .map(eventRepository::save)

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal, NgZone } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -36,16 +36,19 @@ export default class HomeComponent implements OnInit, OnDestroy {
   private readonly accountService = inject(AccountService);
   private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
+  private readonly zone = inject(NgZone);
 
   ngOnInit(): void {
     this.accountService
       .getAuthenticationState()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(account => {
-        this.account.set(account);
-        if (account) {
-          this.loadEvents();
-        }
+      .subscribe({
+        next: account => {
+          this.account.set(account);
+          if (account) {
+            this.loadEvents();
+          }
+        },
       });
   }
 
@@ -59,12 +62,36 @@ export default class HomeComponent implements OnInit, OnDestroy {
   }
 
   loadEvents(): void {
-    this.http.get<any[]>('/api/events').subscribe(events => {
-      this.calendarOptions.events = events.map(e => ({
-        title: e.title,
-        start: e.startTime,
-        end: e.endTime,
-      }));
+    this.accountService.identity().subscribe({
+      next: account => {
+        if (!account) {
+          return;
+        }
+        this.http.get<any>(`/api/user-profiles/by-user/${account.login}`).subscribe({
+          next: userProfile => {
+            const profileId = userProfile.id;
+            this.http.get<any[]>('/api/events').subscribe({
+              next: events => {
+                const filteredEvents = events
+                  .filter(e => Number(e.owner?.id) === Number(profileId))
+                  .map(e => ({
+                    title: e.title,
+                    start: e.startTime,
+                    end: e.endTime,
+                  }));
+                this.zone.run(() => {
+                  this.calendarOptions = {
+                    ...this.calendarOptions,
+                    events: filteredEvents,
+                  };
+                });
+              },
+              error: error => console.error('Error loading events:', error),
+            });
+          },
+          error: error => console.error('Error loading user profile:', error),
+        });
+      },
     });
   }
 }
