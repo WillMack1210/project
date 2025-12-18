@@ -1,6 +1,8 @@
 package bham.team.repository;
 
 import bham.team.domain.Event;
+import bham.team.domain.UserProfile;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -31,4 +33,7 @@ public interface EventRepository extends EventRepositoryWithBagRelationships, Jp
     default List<Event> findByOwnerID(Long ownerId) {
         return this.fetchBagRelationships(this.findByOwnerID(ownerId));
     }
+
+    @Query("select e from Event where e.owner = :user and e.startTime < :endTime and e.endTime > :startTime")
+    List<Event> findAllByOwnerAndBetween(UserProfile user, Instant startTime, Instant endTime);
 }

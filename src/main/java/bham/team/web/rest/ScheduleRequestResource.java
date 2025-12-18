@@ -1,8 +1,12 @@
 package bham.team.web.rest;
 
+import bham.team.domain.Event;
 import bham.team.domain.ScheduleRequest;
 import bham.team.repository.ScheduleRequestRepository;
+import bham.team.service.ScheduleGenerationService;
+import bham.team.service.dto.EventDTO;
 import bham.team.service.dto.ScheduleRequestDTO;
+import bham.team.service.mapper.EventMapper;
 import bham.team.service.mapper.ScheduleRequestMapper;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -40,9 +44,20 @@ public class ScheduleRequestResource {
 
     private final ScheduleRequestMapper scheduleRequestMapper;
 
-    public ScheduleRequestResource(ScheduleRequestRepository scheduleRequestRepository, ScheduleRequestMapper scheduleRequestMapper) {
+    private final ScheduleGenerationService scheduleGenerationService;
+
+    private final EventMapper eventMapper;
+
+    public ScheduleRequestResource(
+        ScheduleRequestRepository scheduleRequestRepository,
+        ScheduleRequestMapper scheduleRequestMapper,
+        ScheduleGenerationService scheduleGenerationService,
+        EventMapper eventMapper
+    ) {
         this.scheduleRequestRepository = scheduleRequestRepository;
         this.scheduleRequestMapper = scheduleRequestMapper;
+        this.scheduleGenerationService = scheduleGenerationService;
+        this.eventMapper = eventMapper;
     }
 
     /**
@@ -100,6 +115,12 @@ public class ScheduleRequestResource {
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, scheduleRequestDTO.getId().toString()))
             .body(scheduleRequestDTO);
+    }
+
+    @PostMapping("/{id}/generate")
+    public ResponseEntity<List<EventDTO>> generate(@PathVariable("id") Long id) {
+        List<Event> events = scheduleGenerationService.generate(id);
+        return ResponseEntity.ok(eventMapper.toDto(events));
     }
 
     /**
