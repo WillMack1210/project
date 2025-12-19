@@ -5,6 +5,7 @@ import static bham.team.domain.FriendshipTestSamples.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 class FriendshipMapperTest {
 
@@ -12,7 +13,7 @@ class FriendshipMapperTest {
 
     @BeforeEach
     void setUp() {
-        friendshipMapper = new FriendshipMapperImpl();
+        friendshipMapper = Mappers.getMapper(FriendshipMapper.class);
     }
 
     @Test

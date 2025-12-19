@@ -5,6 +5,7 @@ import static bham.team.domain.EventTestSamples.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 class EventMapperTest {
 
@@ -12,7 +13,7 @@ class EventMapperTest {
 
     @BeforeEach
     void setUp() {
-        eventMapper = new EventMapperImpl();
+        eventMapper = Mappers.getMapper(EventMapper.class);
     }
 
     @Test

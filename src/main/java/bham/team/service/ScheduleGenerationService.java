@@ -44,7 +44,11 @@ public class ScheduleGenerationService {
         List<ActivityTemplate> templates = parseDesciription(request.getScheduleDescription());
         List<PlannedEvent> plannedEvents = flatten(templates);
 
-        List<Event> busyEvents = eventRepository.findAllByOwnerAndBetween(user, request.getStartDate(), request.getEndDate());
+        List<Event> busyEvents = eventRepository.findAllByOwnerAndStartTimeLessThanAndEndTimeGreaterThan(
+            user,
+            request.getEndDate(),
+            request.getStartDate()
+        );
 
         List<TimeSlot> freeSlots = computeFreeSlots(request.getStartDate(), request.getEndDate(), busyEvents);
 

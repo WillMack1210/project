@@ -34,6 +34,5 @@ public interface EventRepository extends EventRepositoryWithBagRelationships, Jp
         return this.fetchBagRelationships(this.findByOwnerID(ownerId));
     }
 
-    @Query("select e from Event where e.owner = :user and e.startTime < :endTime and e.endTime > :startTime")
-    List<Event> findAllByOwnerAndBetween(UserProfile user, Instant startTime, Instant endTime);
+    List<Event> findAllByOwnerAndStartTimeLessThanAndEndTimeGreaterThan(UserProfile owner, Instant windowEnd, Instant windowStart);
 }

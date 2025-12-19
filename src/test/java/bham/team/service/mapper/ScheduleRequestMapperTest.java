@@ -5,6 +5,7 @@ import static bham.team.domain.ScheduleRequestTestSamples.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 class ScheduleRequestMapperTest {
 
@@ -12,7 +13,7 @@ class ScheduleRequestMapperTest {
 
     @BeforeEach
     void setUp() {
-        scheduleRequestMapper = new ScheduleRequestMapperImpl();
+        scheduleRequestMapper = Mappers.getMapper(ScheduleRequestMapper.class);
     }
 
     @Test

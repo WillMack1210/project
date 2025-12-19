@@ -5,6 +5,7 @@ import static bham.team.domain.SuggestionTestSamples.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 class SuggestionMapperTest {
 
@@ -12,7 +13,7 @@ class SuggestionMapperTest {
 
     @BeforeEach
     void setUp() {
-        suggestionMapper = new SuggestionMapperImpl();
+        suggestionMapper = Mappers.getMapper(SuggestionMapper.class);
     }
 
     @Test

@@ -5,6 +5,7 @@ import static bham.team.domain.FindTimeTestSamples.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 class FindTimeMapperTest {
 
@@ -12,7 +13,7 @@ class FindTimeMapperTest {
 
     @BeforeEach
     void setUp() {
-        findTimeMapper = new FindTimeMapperImpl();
+        findTimeMapper = Mappers.getMapper(FindTimeMapper.class);
     }
 
     @Test

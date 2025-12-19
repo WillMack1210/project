@@ -5,6 +5,7 @@ import static bham.team.domain.UserProfileTestSamples.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 class UserProfileMapperTest {
 
@@ -12,7 +13,7 @@ class UserProfileMapperTest {
 
     @BeforeEach
     void setUp() {
-        userProfileMapper = new UserProfileMapperImpl();
+        userProfileMapper = Mappers.getMapper(UserProfileMapper.class);
     }
 
     @Test

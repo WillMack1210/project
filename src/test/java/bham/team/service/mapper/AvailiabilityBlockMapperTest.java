@@ -5,6 +5,7 @@ import static bham.team.domain.AvailiabilityBlockTestSamples.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 class AvailiabilityBlockMapperTest {
 
@@ -12,7 +13,7 @@ class AvailiabilityBlockMapperTest {
 
     @BeforeEach
     void setUp() {
-        availiabilityBlockMapper = new AvailiabilityBlockMapperImpl();
+        availiabilityBlockMapper = Mappers.getMapper(AvailiabilityBlockMapper.class);
     }
 
     @Test
