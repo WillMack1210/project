@@ -12,6 +12,8 @@ import { DataUtils } from 'app/core/util/data-util.service';
 import { IEvent } from '../event.model';
 import { EntityArrayResponseType, EventService } from '../service/event.service';
 import { EventDeleteDialogComponent } from '../delete/event-delete-dialog.component';
+import { AccountService } from 'app/core/auth/account.service';
+import { UserProfileService } from 'app/entities/user-profile/service/user-profile.service';
 
 @Component({
   standalone: true,
@@ -32,11 +34,14 @@ export class EventComponent implements OnInit {
   subscription: Subscription | null = null;
   events?: IEvent[];
   isLoading = false;
+  currentUserProfileId?: number | null = null;
 
   sortState = sortStateSignal({});
 
   public readonly router = inject(Router);
   protected readonly eventService = inject(EventService);
+  protected readonly accountService = inject(AccountService);
+  protected readonly userProfileService = inject(UserProfileService);
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly sortService = inject(SortService);
   protected dataUtils = inject(DataUtils);
@@ -46,16 +51,26 @@ export class EventComponent implements OnInit {
   trackId = (item: IEvent): number => this.eventService.getEventIdentifier(item);
 
   ngOnInit(): void {
+    // first resolve route params/sort, then load current account -> user profile -> events
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
-      .pipe(
-        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-        tap(() => {
-          if (!this.events || this.events.length === 0) {
+      .pipe(tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)))
+      .subscribe(() => {
+        this.accountService.identity().subscribe(account => {
+          // find user profile for current account
+          if (account?.login) {
+            const queryObj: any = { eagerload: true };
+            this.userProfileService.query(queryObj).subscribe(resp => {
+              const profiles = resp.body ?? [];
+              const myProfile = profiles.find(p => p.user?.login === account.login);
+              this.currentUserProfileId = myProfile?.id ?? null;
+              this.load();
+            });
+          } else {
+            this.currentUserProfileId = null;
             this.load();
           }
-        }),
-      )
-      .subscribe();
+        });
+      });
   }
 
   byteSize(base64String: string): string {
@@ -100,8 +115,10 @@ export class EventComponent implements OnInit {
   }
 
   protected refineData(data: IEvent[]): IEvent[] {
+    // filter events to only those owned by the current user's profile (if known)
+    const filtered = this.currentUserProfileId != null ? data.filter(e => e.owner?.id === this.currentUserProfileId) : data;
     const { predicate, order } = this.sortState();
-    return predicate && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
+    return predicate && order ? filtered.sort(this.sortService.startSort({ predicate, order })) : filtered;
   }
 
   protected fillComponentAttributesFromResponseBody(data: IEvent[] | null): IEvent[] {
