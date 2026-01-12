@@ -3,12 +3,15 @@ package bham.team.service;
 import bham.team.config.Constants;
 import bham.team.domain.Authority;
 import bham.team.domain.User;
+import bham.team.domain.UserProfile;
 import bham.team.repository.AuthorityRepository;
+import bham.team.repository.UserProfileRepository;
 import bham.team.repository.UserRepository;
 import bham.team.security.AuthoritiesConstants;
 import bham.team.security.SecurityUtils;
 import bham.team.service.dto.AdminUserDTO;
 import bham.team.service.dto.UserDTO;
+import bham.team.web.rest.vm.ManagedUserVM;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -41,16 +44,20 @@ public class UserService {
 
     private final CacheManager cacheManager;
 
+    private final UserProfileRepository userProfileRepository;
+
     public UserService(
         UserRepository userRepository,
         PasswordEncoder passwordEncoder,
         AuthorityRepository authorityRepository,
-        CacheManager cacheManager
+        CacheManager cacheManager,
+        UserProfileRepository userProfileRepository
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
+        this.userProfileRepository = userProfileRepository;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -93,9 +100,9 @@ public class UserService {
             });
     }
 
-    public User registerUser(AdminUserDTO userDTO, String password) {
+    public User registerUser(ManagedUserVM userVM, String password) {
         userRepository
-            .findOneByLogin(userDTO.getLogin().toLowerCase())
+            .findOneByLogin(userVM.getLogin().toLowerCase())
             .ifPresent(existingUser -> {
                 boolean removed = removeNonActivatedUser(existingUser);
                 if (!removed) {
@@ -103,7 +110,7 @@ public class UserService {
                 }
             });
         userRepository
-            .findOneByEmailIgnoreCase(userDTO.getEmail())
+            .findOneByEmailIgnoreCase(userVM.getEmail())
             .ifPresent(existingUser -> {
                 boolean removed = removeNonActivatedUser(existingUser);
                 if (!removed) {
@@ -112,16 +119,16 @@ public class UserService {
             });
         User newUser = new User();
         String encryptedPassword = passwordEncoder.encode(password);
-        newUser.setLogin(userDTO.getLogin().toLowerCase());
+        newUser.setLogin(userVM.getLogin().toLowerCase());
         // new user gets initially a generated password
         newUser.setPassword(encryptedPassword);
-        newUser.setFirstName(userDTO.getFirstName());
-        newUser.setLastName(userDTO.getLastName());
-        if (userDTO.getEmail() != null) {
-            newUser.setEmail(userDTO.getEmail().toLowerCase());
+        newUser.setFirstName(userVM.getFirstName());
+        newUser.setLastName(userVM.getLastName());
+        if (userVM.getEmail() != null) {
+            newUser.setEmail(userVM.getEmail().toLowerCase());
         }
-        newUser.setImageUrl(userDTO.getImageUrl());
-        newUser.setLangKey(userDTO.getLangKey());
+        newUser.setImageUrl(userVM.getImageUrl());
+        newUser.setLangKey(userVM.getLangKey());
         // new user is not active
         newUser.setActivated(false);
         // new user gets registration key
@@ -130,6 +137,12 @@ public class UserService {
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
         userRepository.save(newUser);
+
+        UserProfile userProfile = new UserProfile();
+        userProfile.setUser(newUser);
+        userProfile.setUsername(newUser.getLogin());
+        userProfile.setFullName(userVM.getFullName());
+        userProfileRepository.save(userProfile);
         this.clearUserCaches(newUser);
         LOG.debug("Created Information for User: {}", newUser);
         return newUser;

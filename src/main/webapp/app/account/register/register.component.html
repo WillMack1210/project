@@ -65,16 +65,29 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label" for="email">Email</label>
+            <label class="form-label" for="fullName">Full Name</label>
             <input
-              type="email"
+              type="text"
               class="form-control"
-              id="email"
-              name="email"
-              placeholder="Your email"
-              formControlName="email"
-              data-cy="email"
+              id="fullName"
+              name="fullName"
+              placeholder="Your full name"
+              formControlName="fullName"
+              data-cy="fullName"
             />
+
+            <div class="mb-3">
+              <label class="form-label" for="email">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                placeholder="Your email"
+                formControlName="email"
+                data-cy="email"
+              />
+            </div>
 
             @let emailRef = registerForm.get('email')!;
             @if (emailRef.invalid && (emailRef.dirty || emailRef.touched)) {

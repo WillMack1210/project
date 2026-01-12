@@ -1,6 +1,7 @@
 package bham.team.web.rest.vm;
 
 import bham.team.service.dto.AdminUserDTO;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 /**
@@ -15,6 +16,10 @@ public class ManagedUserVM extends AdminUserDTO {
     @Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH)
     private String password;
 
+    @NotNull
+    @Size(min = 1, max = 100)
+    private String fullName;
+
     public ManagedUserVM() {
         // Empty constructor needed for Jackson.
     }
@@ -25,6 +30,14 @@ public class ManagedUserVM extends AdminUserDTO {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     // prettier-ignore
