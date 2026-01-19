@@ -65,9 +65,7 @@ export class ScheduleRequestFormService {
       scheduleDescription: new FormControl(scheduleRequestRawValue.scheduleDescription, {
         validators: [Validators.required],
       }),
-      intensity: new FormControl(scheduleRequestRawValue.intensity, {
-        validators: [Validators.required],
-      }),
+      intensity: new FormControl('INTERMEDIATE'),
       user: new FormControl(scheduleRequestRawValue.user),
     });
   }

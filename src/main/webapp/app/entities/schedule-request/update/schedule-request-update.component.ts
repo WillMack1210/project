@@ -82,6 +82,32 @@ export class ScheduleRequestUpdateComponent implements OnInit {
     }
   }
 
+  saveAndGenerate(): void {
+    this.isSaving = true;
+
+    const scheduleRequest = this.scheduleRequestFormService.getScheduleRequest(this.editForm);
+
+    const save$ =
+      scheduleRequest.id != null
+        ? this.scheduleRequestService.update(scheduleRequest)
+        : this.scheduleRequestService.create(scheduleRequest);
+
+    save$.subscribe({
+      next: res => {
+        const requestId = res.body?.id;
+
+        if (requestId != null) {
+          this.scheduleRequestService.generate(requestId).subscribe({
+            next: () => this.previousState(),
+          });
+        }
+
+        this.isSaving = false;
+      },
+      error: () => (this.isSaving = false),
+    });
+  }
+
   protected subscribeToSaveResponse(result: Observable<HttpResponse<IScheduleRequest>>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),

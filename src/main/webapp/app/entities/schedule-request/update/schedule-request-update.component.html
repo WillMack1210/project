@@ -84,26 +84,6 @@
           }
         </div>
 
-        @let intensityRef = editForm.get('intensity')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_intensity">Intensity</label>
-          <select class="form-control" name="intensity" formControlName="intensity" id="field_intensity" data-cy="intensity">
-            <option [ngValue]="null"></option>
-            @for (scheduleIntensity of scheduleIntensityValues; track $index) {
-              <option [value]="scheduleIntensity">
-                {{ { null: '', EASY: 'EASY', INTERMEDIATE: 'INTERMEDIATE', INTENSE: 'INTENSE' }[scheduleIntensity] }}
-              </option>
-            }
-          </select>
-          @if (intensityRef.invalid && (intensityRef.dirty || intensityRef.touched)) {
-            <div>
-              @if (editForm.get('intensity')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-            </div>
-          }
-        </div>
-
         <div class="mb-3">
           <label class="form-label" for="field_user">User</label>
           <select class="form-control" id="field_user" data-cy="user" name="user" formControlName="user" [compareWith]="compareUserProfile">
@@ -121,13 +101,13 @@
         </button>
 
         <button
-          type="submit"
-          id="save-entity"
+          type="button"
           data-cy="entityCreateSaveButton"
           [disabled]="editForm.invalid || isSaving"
-          class="btn btn-primary"
+          (click)="saveAndGenerate()"
+          class="btn btn-success"
         >
-          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save & Generate</span>
         </button>
       </div>
     </form>

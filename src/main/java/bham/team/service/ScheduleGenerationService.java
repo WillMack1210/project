@@ -3,6 +3,7 @@ package bham.team.service;
 import bham.team.domain.Event;
 import bham.team.domain.ScheduleRequest;
 import bham.team.domain.UserProfile;
+import bham.team.domain.enumeration.PrivacyStatus;
 import bham.team.repository.EventRepository;
 import bham.team.repository.ScheduleRequestRepository;
 import bham.team.repository.UserProfileRepository;
@@ -57,7 +58,7 @@ public class ScheduleGenerationService {
 
     private List<ActivityTemplate> parseDesciription(String description) {
         List<ActivityTemplate> results = new ArrayList<>();
-        String[] lines = description.split("\\R");
+        String[] lines = description.split("\\R|_");
         for (String line : lines) {
             Pattern p = Pattern.compile("(.+)\\s+(\\d+)h\\s+x(\\d+)");
             Matcher m = p.matcher(line.trim());
@@ -93,6 +94,8 @@ public class ScheduleGenerationService {
                     e.setOwner(user);
                     e.setStartTime(slot.getStart());
                     e.setEndTime(slot.getStart().plus(p.duration()));
+                    e.setPrivacy(PrivacyStatus.PRIVATE);
+                    e.setDescription("Generated from webpage");
                     created.add(eventRepository.save(e));
                     slot.consume(p.duration());
                     break;

@@ -102,6 +102,10 @@ export class ScheduleRequestService {
     return scheduleRequestCollection;
   }
 
+  generate(id: number): Observable<any> {
+    return this.http.post(`${this.resourceUrl}/${id}/generate`, {});
+  }
+
   protected convertDateFromClient<T extends IScheduleRequest | NewScheduleRequest | PartialUpdateScheduleRequest>(
     scheduleRequest: T,
   ): RestOf<T> {
