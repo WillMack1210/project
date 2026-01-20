@@ -1,9 +1,11 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import dayjs from 'dayjs/esm';
 import { DATE_TIME_FORMAT } from 'app/config/input.constants';
 import { IScheduleRequest, NewScheduleRequest } from '../schedule-request.model';
+import { AccountService } from 'app/core/auth/account.service';
+import { UserProfileService } from 'app/entities/user-profile/service/user-profile.service';
 
 /**
  * A partial Type with required key is used as form input.
@@ -43,6 +45,7 @@ export type ScheduleRequestFormGroup = FormGroup<ScheduleRequestFormGroupContent
 
 @Injectable({ providedIn: 'root' })
 export class ScheduleRequestFormService {
+  currentUserProfileId?: number | null = null;
   createScheduleRequestFormGroup(scheduleRequest: ScheduleRequestFormGroupInput = { id: null }): ScheduleRequestFormGroup {
     const scheduleRequestRawValue = this.convertScheduleRequestToScheduleRequestRawValue({
       ...this.getFormDefaults(),

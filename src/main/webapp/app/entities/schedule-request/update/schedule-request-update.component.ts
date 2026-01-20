@@ -16,6 +16,7 @@ import { ScheduleIntensity } from 'app/entities/enumerations/schedule-intensity.
 import { ScheduleRequestService } from '../service/schedule-request.service';
 import { IScheduleRequest } from '../schedule-request.model';
 import { ScheduleRequestFormGroup, ScheduleRequestFormService } from './schedule-request-form.service';
+import { AccountService } from 'app/core/auth/account.service';
 
 @Component({
   standalone: true,
@@ -27,6 +28,7 @@ export class ScheduleRequestUpdateComponent implements OnInit {
   isSaving = false;
   scheduleRequest: IScheduleRequest | null = null;
   scheduleIntensityValues = Object.keys(ScheduleIntensity);
+  currentUserProfileId?: number | null = null;
 
   userProfilesSharedCollection: IUserProfile[] = [];
 
@@ -36,19 +38,21 @@ export class ScheduleRequestUpdateComponent implements OnInit {
   protected scheduleRequestFormService = inject(ScheduleRequestFormService);
   protected userProfileService = inject(UserProfileService);
   protected activatedRoute = inject(ActivatedRoute);
+  protected accountService = inject(AccountService);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: ScheduleRequestFormGroup = this.scheduleRequestFormService.createScheduleRequestFormGroup();
 
   compareUserProfile = (o1: IUserProfile | null, o2: IUserProfile | null): boolean => this.userProfileService.compareUserProfile(o1, o2);
-
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ scheduleRequest }) => {
       this.scheduleRequest = scheduleRequest;
+
       if (scheduleRequest) {
         this.updateForm(scheduleRequest);
       }
 
+      this.assignCurrentUser();
       this.loadRelationshipsOptions();
     });
   }
@@ -147,5 +151,26 @@ export class ScheduleRequestUpdateComponent implements OnInit {
         ),
       )
       .subscribe((userProfiles: IUserProfile[]) => (this.userProfilesSharedCollection = userProfiles));
+  }
+
+  private assignCurrentUser(): void {
+    this.accountService.identity().subscribe(account => {
+      // find user profile for current account
+      if (account?.login) {
+        const queryObj: any = { eagerload: true };
+        this.userProfileService.query(queryObj).subscribe(resp => {
+          const profiles = resp.body ?? [];
+          const myProfile = profiles.find(p => p.user?.login === account.login);
+          this.currentUserProfileId = myProfile?.id;
+          if (this.currentUserProfileId != null) {
+            this.editForm.patchValue({
+              user: { id: this.currentUserProfileId },
+            });
+          }
+        });
+      } else {
+        this.currentUserProfileId = null;
+      }
+    });
   }
 }

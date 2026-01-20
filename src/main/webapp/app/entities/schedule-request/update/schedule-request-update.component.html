@@ -72,6 +72,7 @@
             class="form-control"
             name="scheduleDescription"
             id="field_scheduleDescription"
+            placeholder="Enter your desired schedule as follows: Study 2h x3"
             data-cy="scheduleDescription"
             formControlName="scheduleDescription"
           ></textarea>
@@ -82,16 +83,6 @@
               }
             </div>
           }
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_user">User</label>
-          <select class="form-control" id="field_user" data-cy="user" name="user" formControlName="user" [compareWith]="compareUserProfile">
-            <option [ngValue]="null"></option>
-            @for (userProfileOption of userProfilesSharedCollection; track $index) {
-              <option [ngValue]="userProfileOption">{{ userProfileOption.id }}</option>
-            }
-          </select>
         </div>
       </div>
 
