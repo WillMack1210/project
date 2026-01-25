@@ -6,7 +6,6 @@ import bham.team.domain.UserProfile;
 import bham.team.domain.enumeration.PrivacyStatus;
 import bham.team.repository.EventRepository;
 import bham.team.repository.ScheduleRequestRepository;
-import bham.team.repository.UserProfileRepository;
 import bham.team.service.schedule.ActivityTemplate;
 import bham.team.service.schedule.PlannedEvent;
 import bham.team.service.schedule.TimeSlot;
@@ -14,7 +13,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,16 +25,10 @@ public class ScheduleGenerationService {
 
     private final EventRepository eventRepository;
     private final ScheduleRequestRepository scheduleRequestRepository;
-    private final UserProfileRepository userProfileRepository;
 
-    public ScheduleGenerationService(
-        EventRepository eventRepository,
-        ScheduleRequestRepository scheduleRequestRepository,
-        UserProfileRepository userProfileRepository
-    ) {
+    public ScheduleGenerationService(EventRepository eventRepository, ScheduleRequestRepository scheduleRequestRepository) {
         this.eventRepository = eventRepository;
         this.scheduleRequestRepository = scheduleRequestRepository;
-        this.userProfileRepository = userProfileRepository;
     }
 
     public List<Event> generate(Long requestId) {
@@ -59,15 +51,18 @@ public class ScheduleGenerationService {
     private List<ActivityTemplate> parseDesciription(String description) {
         List<ActivityTemplate> results = new ArrayList<>();
         String[] lines = description.split("\\R|_");
+        Pattern p = Pattern.compile("(.+?)\\s+(?:(\\d+)\\s*h\\s*)?(?:(\\d+)\\s*m\\s*)?x\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
         for (String line : lines) {
-            Pattern p = Pattern.compile("(.+)\\s+(\\d+)h\\s+x(\\d+)");
             Matcher m = p.matcher(line.trim());
-            if (m.matches()) {
-                String title = m.group(1).trim();
-                Duration duration = Duration.ofHours(Long.parseLong(m.group(2)));
-                int count = Integer.parseInt(m.group(3));
-                results.add(new ActivityTemplate(title, duration, count));
+            if (!m.matches()) {
+                continue; // or throw validation error
             }
+            String title = m.group(1).trim();
+            int hours = m.group(2) != null ? Integer.parseInt(m.group(2)) : 0;
+            long minutes = m.group(3) != null ? Long.parseLong(m.group(3)) : 0;
+            int count = Integer.parseInt(m.group(4));
+            Duration duration = Duration.ofHours(hours).plusMinutes(minutes);
+            results.add(new ActivityTemplate(title, duration, count));
         }
         return results;
     }
@@ -84,10 +79,8 @@ public class ScheduleGenerationService {
 
     private List<Event> placeEvents(List<PlannedEvent> planned, List<TimeSlot> freeSlots, UserProfile user) {
         List<Event> created = new ArrayList<>();
-        Iterator<TimeSlot> slotIter = freeSlots.iterator();
         for (PlannedEvent p : planned) {
-            while (slotIter.hasNext()) {
-                TimeSlot slot = slotIter.next();
+            for (TimeSlot slot : freeSlots) {
                 if (slot.length().compareTo(p.duration()) >= 0) {
                     Event e = new Event();
                     e.setTitle(p.title());
