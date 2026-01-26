@@ -12,6 +12,8 @@ import { DataUtils } from 'app/core/util/data-util.service';
 import { IScheduleRequest } from '../schedule-request.model';
 import { EntityArrayResponseType, ScheduleRequestService } from '../service/schedule-request.service';
 import { ScheduleRequestDeleteDialogComponent } from '../delete/schedule-request-delete-dialog.component';
+import { AccountService } from 'app/core/auth/account.service';
+import { UserProfileService } from 'app/entities/user-profile/service/user-profile.service';
 
 @Component({
   standalone: true,
@@ -32,11 +34,14 @@ export class ScheduleRequestComponent implements OnInit {
   subscription: Subscription | null = null;
   scheduleRequests?: IScheduleRequest[];
   isLoading = false;
+  currentUserProfileId?: number | null = null;
 
   sortState = sortStateSignal({});
 
   public readonly router = inject(Router);
   protected readonly scheduleRequestService = inject(ScheduleRequestService);
+  protected readonly accountService = inject(AccountService);
+  protected readonly userProfileService = inject(UserProfileService);
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly sortService = inject(SortService);
   protected dataUtils = inject(DataUtils);
@@ -47,15 +52,24 @@ export class ScheduleRequestComponent implements OnInit {
 
   ngOnInit(): void {
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
-      .pipe(
-        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-        tap(() => {
-          if (!this.scheduleRequests || this.scheduleRequests.length === 0) {
+      .pipe(tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)))
+      .subscribe(() => {
+        this.accountService.identity().subscribe(account => {
+          // find user profile for current account
+          if (account?.login) {
+            const queryObj: any = { eagerload: true };
+            this.userProfileService.query(queryObj).subscribe(resp => {
+              const profiles = resp.body ?? [];
+              const myProfile = profiles.find(p => p.user?.login === account.login);
+              this.currentUserProfileId = myProfile?.id ?? null;
+              this.load();
+            });
+          } else {
+            this.currentUserProfileId = null;
             this.load();
           }
-        }),
-      )
-      .subscribe();
+        });
+      });
   }
 
   byteSize(base64String: string): string {
@@ -100,8 +114,10 @@ export class ScheduleRequestComponent implements OnInit {
   }
 
   protected refineData(data: IScheduleRequest[]): IScheduleRequest[] {
+    // filter events to only those owned by the current user's profile (if known)
+    const filtered = this.currentUserProfileId != null ? data.filter(e => e.user?.id === this.currentUserProfileId) : data;
     const { predicate, order } = this.sortState();
-    return predicate && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
+    return predicate && order ? filtered.sort(this.sortService.startSort({ predicate, order })) : filtered;
   }
 
   protected fillComponentAttributesFromResponseBody(data: IScheduleRequest[] | null): IScheduleRequest[] {
