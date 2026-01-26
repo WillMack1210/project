@@ -11,9 +11,16 @@ import bham.team.service.schedule.PlannedEvent;
 import bham.team.service.schedule.TimeSlot;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Service;
@@ -25,6 +32,8 @@ public class ScheduleGenerationService {
 
     private final EventRepository eventRepository;
     private final ScheduleRequestRepository scheduleRequestRepository;
+    private static final LocalTime LATEST_END_TIME = LocalTime.of(20, 30);
+    private static final LocalTime EARLIEST_START_TIME = LocalTime.of(8, 30);
 
     public ScheduleGenerationService(EventRepository eventRepository, ScheduleRequestRepository scheduleRequestRepository) {
         this.eventRepository = eventRepository;
@@ -43,8 +52,12 @@ public class ScheduleGenerationService {
             request.getStartDate()
         );
 
-        List<TimeSlot> freeSlots = computeFreeSlots(request.getStartDate(), request.getEndDate(), busyEvents);
-
+        ZoneId zone = ZoneId.systemDefault();
+        List<TimeSlot> rawSlots = computeFreeSlots(request.getStartDate(), request.getEndDate(), busyEvents);
+        List<TimeSlot> freeSlots = new ArrayList<>();
+        for (TimeSlot slot : rawSlots) {
+            freeSlots.addAll(splitSlotByDay(slot, zone));
+        }
         return placeEvents(plannedEvents, freeSlots, user);
     }
 
@@ -79,20 +92,39 @@ public class ScheduleGenerationService {
 
     private List<Event> placeEvents(List<PlannedEvent> planned, List<TimeSlot> freeSlots, UserProfile user) {
         List<Event> created = new ArrayList<>();
+        ZoneId zone = ZoneId.systemDefault();
+        Map<LocalDate, Set<String>> eventsPerDay = new HashMap<>();
         for (PlannedEvent p : planned) {
             for (TimeSlot slot : freeSlots) {
-                if (slot.length().compareTo(p.duration()) >= 0) {
-                    Event e = new Event();
-                    e.setTitle(p.title());
-                    e.setOwner(user);
-                    e.setStartTime(slot.getStart());
-                    e.setEndTime(slot.getStart().plus(p.duration()));
-                    e.setPrivacy(PrivacyStatus.PRIVATE);
-                    e.setDescription("Generated from webpage");
-                    created.add(eventRepository.save(e));
-                    slot.consume(p.duration());
-                    break;
+                if (slot.length().isZero() || slot.length().isNegative()) {
+                    continue;
                 }
+                if (slot.length().compareTo(p.duration()) < 0) {
+                    continue;
+                }
+                Instant potentialStart = slot.getStart();
+                if (tooEarly(potentialStart, zone)) {
+                    continue;
+                }
+                if (tooLate(potentialStart, p.duration(), zone)) {
+                    continue;
+                }
+                LocalDate day = potentialStart.atZone(zone).toLocalDate();
+                eventsPerDay.computeIfAbsent(day, d -> new HashSet<>());
+                if (eventsPerDay.get(day).contains(p.title())) {
+                    continue;
+                }
+                Event e = new Event();
+                e.setTitle(p.title());
+                e.setOwner(user);
+                e.setStartTime(potentialStart);
+                e.setEndTime(potentialStart.plus(p.duration()));
+                e.setPrivacy(PrivacyStatus.PRIVATE);
+                e.setDescription("Generated from webpage");
+                created.add(eventRepository.save(e));
+                slot.consume(p.duration());
+                eventsPerDay.get(day).add(p.title());
+                break;
             }
         }
         return created;
@@ -114,5 +146,35 @@ public class ScheduleGenerationService {
             freeSlots.add(new TimeSlot(cursor, rangeEnd));
         }
         return freeSlots;
+    }
+
+    private List<TimeSlot> splitSlotByDay(TimeSlot slot, ZoneId zone) {
+        List<TimeSlot> result = new ArrayList<>();
+        Instant start = slot.getStart();
+        Instant end = slot.getEnd();
+        while (start.isBefore(end)) {
+            LocalDate day = start.atZone(zone).toLocalDate();
+            Instant dayStart = day.atTime(EARLIEST_START_TIME).atZone(zone).toInstant();
+            Instant dayEnd = day.atTime(LATEST_END_TIME).atZone(zone).toInstant();
+            Instant slotStart = start.isBefore(dayStart) ? dayStart : start;
+            Instant slotEnd = end.isBefore(dayEnd) ? end : dayEnd;
+            if (slotStart.isBefore(slotEnd)) {
+                result.add(new TimeSlot(slotStart, slotEnd));
+            }
+            start = day.plusDays(1).atStartOfDay(zone).toInstant();
+        }
+        return result;
+    }
+
+    private boolean tooEarly(Instant start, ZoneId zone) {
+        LocalTime startTime = start.atZone(zone).toLocalTime();
+        boolean early = startTime.isBefore(EARLIEST_START_TIME);
+        return early;
+    }
+
+    private boolean tooLate(Instant start, Duration length, ZoneId zone) {
+        LocalTime endTime = start.plus(length).atZone(zone).toLocalTime();
+        boolean late = endTime.isAfter(LATEST_END_TIME);
+        return late;
     }
 }
