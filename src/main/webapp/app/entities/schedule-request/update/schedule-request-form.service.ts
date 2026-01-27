@@ -4,8 +4,6 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import dayjs from 'dayjs/esm';
 import { DATE_TIME_FORMAT } from 'app/config/input.constants';
 import { IScheduleRequest, NewScheduleRequest } from '../schedule-request.model';
-import { AccountService } from 'app/core/auth/account.service';
-import { UserProfileService } from 'app/entities/user-profile/service/user-profile.service';
 
 /**
  * A partial Type with required key is used as form input.
@@ -68,7 +66,9 @@ export class ScheduleRequestFormService {
       scheduleDescription: new FormControl(scheduleRequestRawValue.scheduleDescription, {
         validators: [Validators.required],
       }),
-      intensity: new FormControl('INTERMEDIATE'),
+      intensity: new FormControl(scheduleRequestRawValue.intensity, {
+        validators: [Validators.required],
+      }),
       user: new FormControl(scheduleRequestRawValue.user),
     });
   }

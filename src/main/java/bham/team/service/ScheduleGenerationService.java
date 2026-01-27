@@ -4,6 +4,7 @@ import bham.team.domain.Event;
 import bham.team.domain.ScheduleRequest;
 import bham.team.domain.UserProfile;
 import bham.team.domain.enumeration.PrivacyStatus;
+import bham.team.domain.enumeration.ScheduleIntensity;
 import bham.team.repository.EventRepository;
 import bham.team.repository.ScheduleRequestRepository;
 import bham.team.service.schedule.ActivityTemplate;
@@ -58,7 +59,7 @@ public class ScheduleGenerationService {
         for (TimeSlot slot : rawSlots) {
             freeSlots.addAll(splitSlotByDay(slot, zone));
         }
-        return placeEvents(plannedEvents, freeSlots, user);
+        return placeEvents(plannedEvents, freeSlots, user, request.getIntensity());
     }
 
     private List<ActivityTemplate> parseDesciription(String description) {
@@ -90,26 +91,37 @@ public class ScheduleGenerationService {
         return planned;
     }
 
-    private List<Event> placeEvents(List<PlannedEvent> planned, List<TimeSlot> freeSlots, UserProfile user) {
+    private List<Event> placeEvents(List<PlannedEvent> planned, List<TimeSlot> freeSlots, UserProfile user, ScheduleIntensity intensity) {
         List<Event> created = new ArrayList<>();
         ZoneId zone = ZoneId.systemDefault();
         Map<LocalDate, Set<String>> eventsPerDay = new HashMap<>();
+        Duration gap =
+            switch (intensity) {
+                case EASY -> Duration.ofHours(2);
+                case INTERMEDIATE -> Duration.ofHours(1);
+                case INTENSE -> Duration.ofMinutes(30);
+            };
+        Map<LocalDate, Instant> lastEndPerDay = new HashMap<>();
         for (PlannedEvent p : planned) {
             for (TimeSlot slot : freeSlots) {
-                if (slot.length().isZero() || slot.length().isNegative()) {
-                    continue;
-                }
-                if (slot.length().compareTo(p.duration()) < 0) {
-                    continue;
-                }
                 Instant potentialStart = slot.getStart();
+                LocalDate day = potentialStart.atZone(zone).toLocalDate();
+                Instant lastEnd = lastEndPerDay.get(day);
+                if (lastEnd != null) {
+                    Instant earliestStart = lastEnd.plus(gap);
+                    if (potentialStart.isBefore(earliestStart)) {
+                        potentialStart = earliestStart;
+                    }
+                }
+                if (slot.getEnd().isBefore(potentialStart.plus(p.duration()))) {
+                    continue;
+                }
                 if (tooEarly(potentialStart, zone)) {
                     continue;
                 }
                 if (tooLate(potentialStart, p.duration(), zone)) {
                     continue;
                 }
-                LocalDate day = potentialStart.atZone(zone).toLocalDate();
                 eventsPerDay.computeIfAbsent(day, d -> new HashSet<>());
                 if (eventsPerDay.get(day).contains(p.title())) {
                     continue;
@@ -124,6 +136,7 @@ public class ScheduleGenerationService {
                 created.add(eventRepository.save(e));
                 slot.consume(p.duration());
                 eventsPerDay.get(day).add(p.title());
+                lastEndPerDay.put(day, e.getEndTime());
                 break;
             }
         }
