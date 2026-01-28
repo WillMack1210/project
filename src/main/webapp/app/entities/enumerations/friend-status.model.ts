@@ -4,4 +4,6 @@ export enum FriendStatus {
   ACCEPTED = 'ACCEPTED',
 
   DECLINED = 'DECLINED',
+
+  NONE = 'NONE',
 }

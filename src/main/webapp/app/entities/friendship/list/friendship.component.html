@@ -2,6 +2,10 @@
   <h2 id="page-heading" data-cy="FriendshipHeading">
     <span>Friendships</span>
 
+    <!-- <label for="site-search">Search the site:</label>
+    <input type="search" id="site-search" name="q" />
+    <button>Search</button> -->
+
     <div class="d-flex justify-content-end">
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
@@ -15,7 +19,7 @@
         [routerLink]="['/friendship/new']"
       >
         <fa-icon icon="plus"></fa-icon>
-        <span>Create a new Friendship</span>
+        <span>Add Friend</span>
       </button>
     </div>
   </h2>
@@ -70,7 +74,11 @@
               <td>
                 <a [routerLink]="['/friendship', friendship.id, 'view']">{{ friendship.id }}</a>
               </td>
-              <td>{{ { null: '', PENDING: 'PENDING', ACCEPTED: 'ACCEPTED', DECLINED: 'DECLINED' }[friendship.status ?? 'null'] }}</td>
+              <td>
+                {{
+                  { null: '', PENDING: 'PENDING', ACCEPTED: 'ACCEPTED', DECLINED: 'DECLINED', NONE: 'NONE' }[friendship.status ?? 'null']
+                }}
+              </td>
               <td>
                 @if (friendship.requester) {
                   <div>

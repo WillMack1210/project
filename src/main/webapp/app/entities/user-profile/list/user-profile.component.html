@@ -17,6 +17,10 @@
         <fa-icon icon="plus"></fa-icon>
         <span>Create a new User Profile</span>
       </button>
+
+      <label for="site-search">Search for Users:</label>
+      <input type="search" [(ngModel)]="searchQuery" placeholder="Search Users" />
+      <button class="btn btn-info me-2" (click)="search()">Search</button>
     </div>
   </h2>
 

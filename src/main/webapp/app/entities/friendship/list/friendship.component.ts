@@ -11,6 +11,7 @@ import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigati
 import { IFriendship } from '../friendship.model';
 import { EntityArrayResponseType, FriendshipService } from '../service/friendship.service';
 import { FriendshipDeleteDialogComponent } from '../delete/friendship-delete-dialog.component';
+import { FriendStatus } from 'app/entities/enumerations/friend-status.model';
 
 @Component({
   standalone: true,
@@ -90,8 +91,9 @@ export class FriendshipComponent implements OnInit {
   }
 
   protected refineData(data: IFriendship[]): IFriendship[] {
+    const filtered = data.filter(e => e.status === FriendStatus.ACCEPTED);
     const { predicate, order } = this.sortState();
-    return predicate && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
+    return predicate && order ? filtered.sort(this.sortService.startSort({ predicate, order })) : filtered;
   }
 
   protected fillComponentAttributesFromResponseBody(data: IFriendship[] | null): IFriendship[] {

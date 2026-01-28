@@ -17,7 +17,9 @@
           </dd>
           <dt><span>Status</span></dt>
           <dd>
-            <span>{{ { null: '', PENDING: 'PENDING', ACCEPTED: 'ACCEPTED', DECLINED: 'DECLINED' }[friendshipRef.status ?? 'null'] }}</span>
+            <span>{{
+              { null: '', PENDING: 'PENDING', ACCEPTED: 'ACCEPTED', DECLINED: 'DECLINED', NONE: 'NONE' }[friendshipRef.status ?? 'null']
+            }}</span>
           </dd>
           <dt><span>Requester</span></dt>
           <dd>

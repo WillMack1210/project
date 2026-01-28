@@ -56,6 +56,13 @@ export class UserProfileService {
     return o1 && o2 ? this.getUserProfileIdentifier(o1) === this.getUserProfileIdentifier(o2) : o1 === o2;
   }
 
+  search(query: string): Observable<EntityArrayResponseType> {
+    return this.http.get<IUserProfile[]>('api/user-profiles/search', {
+      params: { q: query },
+      observe: 'response',
+    });
+  }
+
   addUserProfileToCollectionIfMissing<Type extends Pick<IUserProfile, 'id'>>(
     userProfileCollection: Type[],
     ...userProfilesToCheck: (Type | null | undefined)[]

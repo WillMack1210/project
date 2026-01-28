@@ -33,6 +33,9 @@ export class UserProfileComponent implements OnInit {
   userProfiles?: IUserProfile[];
   isLoading = false;
 
+  searchQuery = '';
+  isSearching = false;
+
   sortState = sortStateSignal({});
 
   public readonly router = inject(Router);
@@ -86,6 +89,27 @@ export class UserProfileComponent implements OnInit {
     });
   }
 
+  search(): void {
+    if (!this.searchQuery.trim()) {
+      this.isSearching = false;
+      this.load();
+      return;
+    }
+
+    this.isSearching = true;
+    this.isLoading = true;
+
+    this.userProfileService.search(this.searchQuery.trim()).subscribe({
+      next: res => {
+        this.userProfiles = res.body ?? [];
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      },
+    });
+  }
+
   navigateToWithComponentValues(event: SortState): void {
     this.handleNavigation(event);
   }
@@ -109,6 +133,9 @@ export class UserProfileComponent implements OnInit {
   }
 
   protected queryBackend(): Observable<EntityArrayResponseType> {
+    if (this.isSearching) {
+      return new Observable<EntityArrayResponseType>();
+    }
     this.isLoading = true;
     const queryObject: any = {
       eagerload: true,
