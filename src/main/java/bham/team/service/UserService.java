@@ -121,9 +121,10 @@ public class UserService {
         String encryptedPassword = passwordEncoder.encode(password);
         newUser.setLogin(userVM.getLogin().toLowerCase());
         // new user gets initially a generated password
+        String[] name = userVM.getFullName().split("\\s+");
         newUser.setPassword(encryptedPassword);
-        newUser.setFirstName(userVM.getFirstName());
-        newUser.setLastName(userVM.getLastName());
+        newUser.setFirstName(name[0]);
+        newUser.setLastName(name[1]);
         if (userVM.getEmail() != null) {
             newUser.setEmail(userVM.getEmail().toLowerCase());
         }
