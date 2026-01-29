@@ -30,6 +30,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
       right: 'dayGridMonth dayGridWeek dayGridDay',
     },
     events: [],
+    eventClick: this.handleEventClick.bind(this),
   };
 
   private readonly destroy$ = new Subject<void>();
@@ -61,6 +62,13 @@ export default class HomeComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  handleEventClick(arg: any): void {
+    const eventId = arg.event.id;
+    if (eventId) {
+      this.router.navigate(['/event', eventId, 'view']);
+    }
+  }
+
   loadEvents(): void {
     this.accountService.identity().subscribe({
       next: account => {
@@ -75,6 +83,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
                 const filteredEvents = events
                   .filter(e => Number(e.owner?.id) === Number(profileId))
                   .map(e => ({
+                    id: e.id.toString(),
                     title: e.title,
                     start: e.startTime,
                     end: e.endTime,
