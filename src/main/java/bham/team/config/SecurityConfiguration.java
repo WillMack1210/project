@@ -5,6 +5,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 
 import bham.team.security.*;
 import bham.team.web.filter.SpaWebFilter;
+import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -14,6 +15,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
@@ -102,4 +104,10 @@ public class SecurityConfiguration {
     MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
         return new MvcRequestMatcher.Builder(introspector);
     }
+    // @PostConstruct
+    // public void printHash() {
+    //     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    //     System.out.println("BCrypt hash = " + encoder.encode("****"));
+    // }
+
 }

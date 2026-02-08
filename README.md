@@ -11,7 +11,7 @@ To do List:
 * Add list of upcoming events to homepage
 * Settings
 * SCSS page styling
-* Change Admin Password
+* Change Admin Password - done 8/02/2026
 * Set up URL and deployment
 * User sign-up/ feedback
 ```
