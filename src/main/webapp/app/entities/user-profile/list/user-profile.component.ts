@@ -133,9 +133,6 @@ export class UserProfileComponent implements OnInit {
   }
 
   protected queryBackend(): Observable<EntityArrayResponseType> {
-    if (this.isSearching) {
-      return new Observable<EntityArrayResponseType>();
-    }
     this.isLoading = true;
     const queryObject: any = {
       eagerload: true,

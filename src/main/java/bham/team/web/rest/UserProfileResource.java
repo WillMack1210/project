@@ -198,6 +198,15 @@ public class UserProfileResource {
             .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/_search")
+    public List<UserProfileDTO> searchUserProfiles(@RequestParam String query) {
+        return userProfileRepository
+            .findByUserLoginContainingIgnoreCaseOrFullNameContainingIgnoreCase(query, query)
+            .stream()
+            .map(userProfileMapper::toDto)
+            .toList();
+    }
+
     /**
      * {@code DELETE  /user-profiles/:id} : delete the "id" userProfile.
      *

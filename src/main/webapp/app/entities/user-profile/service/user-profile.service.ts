@@ -57,8 +57,8 @@ export class UserProfileService {
   }
 
   search(query: string): Observable<EntityArrayResponseType> {
-    return this.http.get<IUserProfile[]>('api/user-profiles/search', {
-      params: { q: query },
+    return this.http.get<IUserProfile[]>(`${this.resourceUrl}/_search`, {
+      params: { query },
       observe: 'response',
     });
   }

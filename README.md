@@ -5,7 +5,7 @@ The main complex part of the project comes from the schedule generation, as each
 To do List:
 
 ```
-* User Profile Search Bar
+* User Profile Search Bar - done 9/02/2026
 * Friendship Page
 * Find time page and algorithm
 * Add list of upcoming events to homepage
