@@ -39,4 +39,30 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
         "select friendship from Friendship friendship left join fetch friendship.requester left join fetch friendship.addressee where friendship.id =:id"
     )
     Optional<Friendship> findOneWithToOneRelationships(@Param("id") Long id);
+
+    @Query(
+        """
+        SELECT f FROM Friendship f WHERE
+        (f.requester.id = :userId1 AND f.addressee.id = :userId2)
+        OR (f.requester.id = :userId2 AND f.addressee.id = :userId1) """
+    )
+    Optional<Friendship> findBetweenUsers(@Param("userId1") Long userId1, @Param("userId2") Long userId2);
+
+    @Query(
+        """
+         SELECT f FROM Friendship f WHERE
+        (f.requester.id = :userId OR f.addressee.id = :userId)
+        AND f.status = bham.team.domain.enumeration.FriendStatus.ACCEPTED
+         """
+    )
+    List<Friendship> findAcceptedForUser(Long userId);
+
+    @Query(
+        """
+         SELECT f FROM Friendship f WHERE
+        (f.requester.id = :userId OR f.addressee.id = :userId)
+        AND f.status = bham.team.domain.enumeration.FriendStatus.PENDING
+         """
+    )
+    List<Friendship> findRequestedForUser(Long userId);
 }
