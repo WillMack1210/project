@@ -137,20 +137,40 @@
               </td>
               <td class="text-end">
                 <div class="btn-group">
-                  <a [routerLink]="['/user-profile', userProfile.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                  <a [routerLink]="['/user-profile', userProfile.id, 'view']" class="btn btn-info btn-sm">
                     <fa-icon icon="eye"></fa-icon>
                     <span class="d-none d-md-inline">View</span>
                   </a>
 
-                  <a [routerLink]="['/user-profile', userProfile.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                  <a [routerLink]="['/user-profile', userProfile.id, 'edit']" class="btn btn-primary btn-sm">
                     <fa-icon icon="pencil-alt"></fa-icon>
                     <span class="d-none d-md-inline">Edit</span>
                   </a>
+                  @let fs = getFriendship(userProfile.id);
 
-                  <button type="submit" (click)="delete(userProfile)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                    <fa-icon icon="times"></fa-icon>
-                    <span class="d-none d-md-inline">Delete</span>
-                  </button>
+                  @if (!fs || fs.status === 'NONE') {
+                    <button class="btn btn-success btn-sm" (click)="sendFriendRequest(userProfile.id)">
+                      <fa-icon icon="user-plus"></fa-icon>
+                      <span class="d-none d-md-inline">Add</span>
+                    </button>
+                  }
+
+                  <!-- Pending AND current user is recipient → Accept / Decline -->
+                  @if (fs?.status === 'PENDING' && !fs?.isRequester) {
+                    <button class="btn btn-success btn-sm" (click)="acceptFriendRequest(fs.friendshipId)">Accept</button>
+
+                    <button class="btn btn-danger btn-sm" (click)="declineFriendRequest(fs.friendshipId)">Decline</button>
+                  }
+
+                  <!-- Pending AND current user sent request → Pending label -->
+                  @if (fs?.status === 'PENDING' && fs?.isRequester) {
+                    <button class="btn btn-secondary btn-sm" disabled>Pending</button>
+                  }
+
+                  <!-- Already friends → Remove -->
+                  @if (fs?.status === 'ACCEPTED') {
+                    <button class="btn btn-danger btn-sm" (click)="removeFriend(fs.friendshipId)">Remove</button>
+                  }
                 </div>
               </td>
             </tr>

@@ -12,6 +12,8 @@ import { DataUtils } from 'app/core/util/data-util.service';
 import { IUserProfile } from '../user-profile.model';
 import { EntityArrayResponseType, UserProfileService } from '../service/user-profile.service';
 import { UserProfileDeleteDialogComponent } from '../delete/user-profile-delete-dialog.component';
+import { FriendshipExtendedService } from 'app/entities/friendship/service/friendship-extended.service';
+import { IFriendshipStatus } from 'app/entities/friendship/friendship-status.model';
 
 @Component({
   standalone: true,
@@ -30,6 +32,7 @@ import { UserProfileDeleteDialogComponent } from '../delete/user-profile-delete-
 })
 export class UserProfileComponent implements OnInit {
   subscription: Subscription | null = null;
+  friendshipStatusMap: Record<number, IFriendshipStatus> = {};
   userProfiles?: IUserProfile[];
   isLoading = false;
 
@@ -45,6 +48,7 @@ export class UserProfileComponent implements OnInit {
   protected dataUtils = inject(DataUtils);
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
+  protected friendshipService = inject(FriendshipExtendedService);
 
   trackId = (item: IUserProfile): number => this.userProfileService.getUserProfileIdentifier(item);
 
@@ -55,6 +59,7 @@ export class UserProfileComponent implements OnInit {
         tap(() => {
           if (!this.userProfiles || this.userProfiles.length === 0) {
             this.load();
+            this.loadFriendshipStatuses();
           }
         }),
       )
@@ -89,6 +94,17 @@ export class UserProfileComponent implements OnInit {
     });
   }
 
+  loadFriendshipStatuses(): void {
+    this.friendshipService.getFriendshipStatusesForCurrentUser().subscribe({
+      next: statuses => {
+        this.friendshipStatusMap = {};
+        statuses.forEach(s => {
+          this.friendshipStatusMap[s.userProfileId] = s;
+        });
+      },
+    });
+  }
+
   search(): void {
     if (!this.searchQuery.trim()) {
       this.isSearching = false;
@@ -112,6 +128,45 @@ export class UserProfileComponent implements OnInit {
 
   navigateToWithComponentValues(event: SortState): void {
     this.handleNavigation(event);
+  }
+
+  sendFriendRequest(userProfileId: number): void {
+    this.friendshipService.sendFriendRequest(userProfileId);
+  }
+
+  acceptFriendRequest(friendshipId: number): void {
+    this.friendshipService.acceptRequest(friendshipId);
+  }
+
+  declineFriendRequest(friendshipId: number): void {
+    this.friendshipService.declineRequest(friendshipId);
+  }
+
+  removeFriend(friendshipId: number): void {
+    this.friendshipService.removeFriend(friendshipId);
+  }
+
+  getFriendship(profileId: number): IFriendshipStatus {
+    return (
+      this.friendshipStatusMap[profileId] ?? {
+        userProfileId: profileId,
+        friendshipId: 0,
+        status: 'NONE',
+        isRequester: false,
+      }
+    );
+  }
+
+  isFriend(profileId: number): boolean {
+    return this.getFriendship(profileId).status === 'ACCEPTED';
+  }
+
+  isPending(profileId: number): boolean {
+    return this.getFriendship(profileId).status === 'PENDING';
+  }
+
+  isRequester(profileId: number): boolean {
+    return this.getFriendship(profileId).isRequester;
   }
 
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {

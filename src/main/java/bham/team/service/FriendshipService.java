@@ -7,6 +7,7 @@ import bham.team.repository.FriendshipRepository;
 import bham.team.repository.UserProfileRepository;
 import bham.team.repository.UserRepository;
 import bham.team.security.SecurityUtils;
+import bham.team.service.dto.FriendshipStatusDTO;
 import bham.team.service.dto.UserProfileDTO;
 import bham.team.service.mapper.FriendshipMapper;
 import bham.team.service.mapper.UserProfileMapper;
@@ -34,6 +35,17 @@ public class FriendshipService {
         this.friendshipRepository = friendshipRepository;
         this.userProfileRepository = userProfileRepository;
         this.userProfileMapper = userProfileMapper;
+    }
+
+    public FriendshipStatusDTO buildStatus(Friendship friendship, Long currentUserId) {
+        FriendshipStatusDTO dto = new FriendshipStatusDTO();
+        dto.setFriendshipId(friendship.getId());
+        dto.setUserProfileId(
+            friendship.getRequester().getId().equals(currentUserId) ? friendship.getAddressee().getId() : friendship.getRequester().getId()
+        );
+        dto.setStatus(friendship.getStatus());
+        dto.setIsRequester(friendship.getRequester().getId().equals(currentUserId));
+        return dto;
     }
 
     public void sendFriendRequest(Long recipientId) {
@@ -75,6 +87,41 @@ public class FriendshipService {
         }
         friendship.setStatus(FriendStatus.DECLINED);
         friendshipRepository.save(friendship);
+    }
+
+    public void removeFriend(Long friendshipId) {
+        Friendship friendship = friendshipRepository
+            .findOneWithToOneRelationships(friendshipId)
+            .orElseThrow(() -> new RuntimeException("Friendship not found"));
+        UserProfile currentUser = getCurrentUserProfile();
+        if (
+            !friendship.getRequester().getId().equals(currentUser.getId()) && !friendship.getAddressee().getId().equals(currentUser.getId())
+        ) {
+            throw new RuntimeException("Not authorized to remove this friend");
+        }
+        friendshipRepository.delete(friendship);
+    }
+
+    @Transactional(readOnly = true)
+    public List<FriendshipStatusDTO> getFriendshipStatusesForCurrentUser() {
+        UserProfile currentUser = getCurrentUserProfile();
+        List<Friendship> friendships = friendshipRepository.findAllWithToOneRelationships();
+        List<FriendshipStatusDTO> statuses = new ArrayList<>();
+        for (Friendship f : friendships) {
+            boolean isRequester = f.getRequester().getId().equals(currentUser.getId());
+            boolean isAddressee = f.getAddressee().getId().equals(currentUser.getId());
+            if (!isRequester && !isAddressee) {
+                continue; // skip friendships not involving current user
+            }
+            UserProfile otherUser = isRequester ? f.getAddressee() : f.getRequester();
+            FriendshipStatusDTO dto = new FriendshipStatusDTO();
+            dto.setUserProfileId(otherUser.getId());
+            dto.setFriendshipId(f.getId());
+            dto.setStatus(f.getStatus());
+            dto.setIsRequester(isRequester);
+            statuses.add(dto);
+        }
+        return statuses;
     }
 
     @Transactional(readOnly = true)

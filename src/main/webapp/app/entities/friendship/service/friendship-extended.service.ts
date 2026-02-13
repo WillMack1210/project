@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { IFriendship } from '../friendship.model';
+import { IFriendshipStatus } from '../friendship-status.model';
 
 @Injectable({
   providedIn: 'root',
@@ -28,7 +28,7 @@ export class FriendshipExtendedService {
   removeFriend(friendshipId: number): Observable<unknown> {
     return this.http.delete<unknown>(`${this.resourceUrl}/${friendshipId}`);
   }
-  getFriends(): Observable<IFriendship[]> {
-    return this.http.get<IFriendship[]>(`${this.resourceUrl}/friends`);
+  getFriendshipStatusesForCurrentUser(): Observable<IFriendshipStatus[]> {
+    return this.http.get<IFriendshipStatus[]>(`${this.resourceUrl}/status`);
   }
 }

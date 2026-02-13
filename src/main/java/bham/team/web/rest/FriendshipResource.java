@@ -2,7 +2,9 @@ package bham.team.web.rest;
 
 import bham.team.domain.Friendship;
 import bham.team.repository.FriendshipRepository;
+import bham.team.service.FriendshipService;
 import bham.team.service.dto.FriendshipDTO;
+import bham.team.service.dto.FriendshipStatusDTO;
 import bham.team.service.mapper.FriendshipMapper;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -40,9 +42,16 @@ public class FriendshipResource {
 
     private final FriendshipMapper friendshipMapper;
 
-    public FriendshipResource(FriendshipRepository friendshipRepository, FriendshipMapper friendshipMapper) {
+    private final FriendshipService friendshipService;
+
+    public FriendshipResource(
+        FriendshipRepository friendshipRepository,
+        FriendshipMapper friendshipMapper,
+        FriendshipService friendshipService
+    ) {
         this.friendshipRepository = friendshipRepository;
         this.friendshipMapper = friendshipMapper;
+        this.friendshipService = friendshipService;
     }
 
     /**
@@ -64,6 +73,12 @@ public class FriendshipResource {
         return ResponseEntity.created(new URI("/api/friendships/" + friendshipDTO.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, friendshipDTO.getId().toString()))
             .body(friendshipDTO);
+    }
+
+    @PostMapping("/request/{recipientId}")
+    public ResponseEntity<Void> sendFriendRequest(@PathVariable Long recipientId) {
+        friendshipService.sendFriendRequest(recipientId);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -99,6 +114,18 @@ public class FriendshipResource {
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, friendshipDTO.getId().toString()))
             .body(friendshipDTO);
+    }
+
+    @PutMapping("/accept/{friendshipId}")
+    public ResponseEntity<Void> acceptRequest(@PathVariable Long friendshipId) {
+        friendshipService.acceptRequest(friendshipId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/decline/{friendshipId}")
+    public ResponseEntity<Void> declineRequest(@PathVariable Long friendshipId) {
+        friendshipService.declineRequest(friendshipId);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -173,6 +200,11 @@ public class FriendshipResource {
         return ResponseUtil.wrapOrNotFound(friendshipDTO);
     }
 
+    @GetMapping("/status")
+    public ResponseEntity<List<FriendshipStatusDTO>> getFriendshipStatusesForCurrentUser() {
+        return ResponseEntity.ok(friendshipService.getFriendshipStatusesForCurrentUser());
+    }
+
     /**
      * {@code DELETE  /friendships/:id} : delete the "id" friendship.
      *
@@ -182,7 +214,7 @@ public class FriendshipResource {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFriendship(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete Friendship : {}", id);
-        friendshipRepository.deleteById(id);
+        friendshipService.removeFriend(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
