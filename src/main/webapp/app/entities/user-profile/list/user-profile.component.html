@@ -9,6 +9,7 @@
       </button>
 
       <button
+        *ngIf="isAdmin"
         id="jh-create-entity"
         data-cy="entityCreateButton"
         class="btn btn-primary jh-create-entity create-user-profile"
@@ -141,11 +142,13 @@
                     <fa-icon icon="eye"></fa-icon>
                     <span class="d-none d-md-inline">View</span>
                   </a>
-
-                  <a [routerLink]="['/user-profile', userProfile.id, 'edit']" class="btn btn-primary btn-sm">
-                    <fa-icon icon="pencil-alt"></fa-icon>
-                    <span class="d-none d-md-inline">Edit</span>
-                  </a>
+                  @let currentUser = this.currentUserProfileId;
+                  @if (currentUser === userProfile.id || isAdmin) {
+                    <a [routerLink]="['/user-profile', userProfile.id, 'edit']" class="btn btn-primary btn-sm">
+                      <fa-icon icon="pencil-alt"></fa-icon>
+                      <span class="d-none d-md-inline">Edit</span>
+                    </a>
+                  }
                   @let fs = getFriendship(userProfile.id);
 
                   @if (!fs || fs.status === 'NONE') {

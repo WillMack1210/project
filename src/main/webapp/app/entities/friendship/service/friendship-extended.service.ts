@@ -16,17 +16,17 @@ export class FriendshipExtendedService {
     protected applicationConfigService: ApplicationConfigService,
   ) {}
 
-  sendFriendRequest(addresseeId: number): Observable<unknown> {
-    return this.http.post<unknown>(`${this.resourceUrl}/request/${addresseeId}`, {});
+  sendFriendRequest(addresseeId: number): Observable<any> {
+    return this.http.post<any>(`${this.resourceUrl}/request/${addresseeId}`, {});
   }
-  acceptRequest(friendshipId: number): Observable<unknown> {
-    return this.http.put<unknown>(`${this.resourceUrl}/accept/${friendshipId}`, {});
+  acceptRequest(friendshipId: number): Observable<any> {
+    return this.http.put<any>(`${this.resourceUrl}/accept/${friendshipId}`, {});
   }
-  declineRequest(friendshipId: number): Observable<unknown> {
-    return this.http.put<unknown>(`${this.resourceUrl}/decline/${friendshipId}`, {});
+  declineRequest(friendshipId: number): Observable<any> {
+    return this.http.put<any>(`${this.resourceUrl}/decline/${friendshipId}`, {});
   }
-  removeFriend(friendshipId: number): Observable<unknown> {
-    return this.http.delete<unknown>(`${this.resourceUrl}/${friendshipId}`);
+  removeFriend(friendshipId: number): Observable<any> {
+    return this.http.delete<any>(`${this.resourceUrl}/${friendshipId}`);
   }
   getFriendshipStatusesForCurrentUser(): Observable<IFriendshipStatus[]> {
     return this.http.get<IFriendshipStatus[]>(`${this.resourceUrl}/status`);

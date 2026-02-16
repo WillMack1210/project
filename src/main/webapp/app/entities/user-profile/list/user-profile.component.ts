@@ -2,7 +2,7 @@ import { Component, NgZone, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
 import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
+import { AccountService } from '../../../core/auth/account.service';
 import SharedModule from 'app/shared/shared.module';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
 import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
@@ -34,14 +34,14 @@ export class UserProfileComponent implements OnInit {
   subscription: Subscription | null = null;
   friendshipStatusMap: Record<number, IFriendshipStatus> = {};
   userProfiles?: IUserProfile[];
+  isAdmin: boolean;
+  currentUserProfileId?: number | null = null;
   isLoading = false;
 
   searchQuery = '';
   isSearching = false;
 
   sortState = sortStateSignal({});
-
-  public readonly router = inject(Router);
   protected readonly userProfileService = inject(UserProfileService);
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly sortService = inject(SortService);
@@ -50,9 +50,18 @@ export class UserProfileComponent implements OnInit {
   protected ngZone = inject(NgZone);
   protected friendshipService = inject(FriendshipExtendedService);
 
+  constructor(
+    private accountService: AccountService,
+    private router: Router,
+  ) {
+    this.isAdmin = this.accountService.hasAnyAuthority('ROLE_ADMIN');
+    this.router = router;
+  }
+
   trackId = (item: IUserProfile): number => this.userProfileService.getUserProfileIdentifier(item);
 
   ngOnInit(): void {
+    this.getCurrentUser();
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
       .pipe(
         tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
@@ -167,6 +176,19 @@ export class UserProfileComponent implements OnInit {
 
   isRequester(profileId: number): boolean {
     return this.getFriendship(profileId).isRequester;
+  }
+
+  getCurrentUser(): void {
+    this.accountService.identity().subscribe(account => {
+      if (account?.login) {
+        const queryObj: any = { eagerload: true };
+        this.userProfileService.query(queryObj).subscribe(resp => {
+          const profiles = resp.body ?? [];
+          const myProfile = profiles.find(p => p.user?.login === account.login);
+          this.currentUserProfileId = myProfile?.id ?? null;
+        });
+      }
+    });
   }
 
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
