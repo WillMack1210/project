@@ -151,7 +151,7 @@
                   }
                   @let fs = getFriendship(userProfile.id);
 
-                  @if (!fs || fs.status === 'NONE') {
+                  @if ((!fs || fs.status === 'NONE') && currentUser !== userProfile.id) {
                     <button class="btn btn-success btn-sm" (click)="sendFriendRequest(userProfile.id)">
                       <fa-icon icon="user-plus"></fa-icon>
                       <span class="d-none d-md-inline">Add</span>

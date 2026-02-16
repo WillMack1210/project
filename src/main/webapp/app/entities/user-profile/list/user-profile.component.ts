@@ -14,6 +14,7 @@ import { EntityArrayResponseType, UserProfileService } from '../service/user-pro
 import { UserProfileDeleteDialogComponent } from '../delete/user-profile-delete-dialog.component';
 import { FriendshipExtendedService } from 'app/entities/friendship/service/friendship-extended.service';
 import { IFriendshipStatus } from 'app/entities/friendship/friendship-status.model';
+import { FriendStatus } from 'app/entities/enumerations/friend-status.model';
 
 @Component({
   standalone: true,
@@ -140,19 +141,19 @@ export class UserProfileComponent implements OnInit {
   }
 
   sendFriendRequest(userProfileId: number): void {
-    this.friendshipService.sendFriendRequest(userProfileId);
+    this.friendshipService.sendFriendRequest(userProfileId).subscribe(() => this.loadFriendshipStatuses());
   }
 
   acceptFriendRequest(friendshipId: number): void {
-    this.friendshipService.acceptRequest(friendshipId);
+    this.friendshipService.acceptRequest(friendshipId).subscribe(() => this.loadFriendshipStatuses());
   }
 
   declineFriendRequest(friendshipId: number): void {
-    this.friendshipService.declineRequest(friendshipId);
+    this.friendshipService.declineRequest(friendshipId).subscribe(() => this.loadFriendshipStatuses());
   }
 
   removeFriend(friendshipId: number): void {
-    this.friendshipService.removeFriend(friendshipId);
+    this.friendshipService.removeFriend(friendshipId).subscribe(() => this.loadFriendshipStatuses());
   }
 
   getFriendship(profileId: number): IFriendshipStatus {
@@ -160,7 +161,7 @@ export class UserProfileComponent implements OnInit {
       this.friendshipStatusMap[profileId] ?? {
         userProfileId: profileId,
         friendshipId: 0,
-        status: 'NONE',
+        status: FriendStatus.NONE,
         isRequester: false,
       }
     );
