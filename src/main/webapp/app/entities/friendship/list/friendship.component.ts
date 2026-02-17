@@ -2,7 +2,7 @@ import { Component, NgZone, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
 import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
+import { AccountService } from '../../../core/auth/account.service';
 import SharedModule from 'app/shared/shared.module';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
 import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
@@ -11,7 +11,12 @@ import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigati
 import { IFriendship } from '../friendship.model';
 import { EntityArrayResponseType, FriendshipService } from '../service/friendship.service';
 import { FriendshipDeleteDialogComponent } from '../delete/friendship-delete-dialog.component';
+import { FriendshipExtendedService } from 'app/entities/friendship/service/friendship-extended.service';
+import { IFriendshipStatus } from 'app/entities/friendship/friendship-status.model';
 import { FriendStatus } from 'app/entities/enumerations/friend-status.model';
+import { IUserProfile } from 'app/entities/user-profile/user-profile.model';
+import { UserProfileService } from 'app/entities/user-profile/service/user-profile.service';
+import { parseClassNames } from '@fullcalendar/core/internal';
 
 @Component({
   standalone: true,
@@ -29,31 +34,37 @@ import { FriendStatus } from 'app/entities/enumerations/friend-status.model';
   ],
 })
 export class FriendshipComponent implements OnInit {
+  friendshipStatusMap: Record<number, IFriendshipStatus> = {};
   subscription: Subscription | null = null;
   friendships?: IFriendship[];
   isLoading = false;
+  friends: IUserProfile[] = [];
+  isAdmin: boolean;
+  currentUserProfileId?: number | null = null;
 
   sortState = sortStateSignal({});
 
-  public readonly router = inject(Router);
   protected readonly friendshipService = inject(FriendshipService);
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly sortService = inject(SortService);
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
+  protected userProfileService = inject(UserProfileService);
+  protected friendshipExtendedService = inject(FriendshipExtendedService);
 
+  constructor(
+    private accountService: AccountService,
+    private router: Router,
+  ) {
+    this.isAdmin = this.accountService.hasAnyAuthority('ROLE_ADMIN');
+    this.router = router;
+  }
   trackId = (item: IFriendship): number => this.friendshipService.getFriendshipIdentifier(item);
 
   ngOnInit(): void {
+    this.getCurrentUser();
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
-      .pipe(
-        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-        tap(() => {
-          if (!this.friendships || this.friendships.length === 0) {
-            this.load();
-          }
-        }),
-      )
+      .pipe(tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)))
       .subscribe();
   }
 
@@ -77,10 +88,31 @@ export class FriendshipComponent implements OnInit {
     });
   }
 
+  loadFriends(profileId: number): void {
+    this.friendshipExtendedService.getFriends(profileId).subscribe(friends => {
+      this.friends = friends;
+    });
+  }
+
   navigateToWithComponentValues(event: SortState): void {
     this.handleNavigation(event);
   }
 
+  getCurrentUser(): void {
+    this.accountService.identity().subscribe(account => {
+      if (account?.login) {
+        const queryObj: any = { eagerload: true };
+        this.userProfileService.query(queryObj).subscribe(resp => {
+          const profiles = resp.body ?? [];
+          const myProfile = profiles.find(p => p.user?.login === account.login);
+          this.currentUserProfileId = myProfile?.id ?? null;
+          if (this.currentUserProfileId != null) {
+            this.loadFriends(this.currentUserProfileId);
+          }
+        });
+      }
+    });
+  }
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
     this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
   }

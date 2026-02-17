@@ -5,6 +5,7 @@ import bham.team.repository.FriendshipRepository;
 import bham.team.service.FriendshipService;
 import bham.team.service.dto.FriendshipDTO;
 import bham.team.service.dto.FriendshipStatusDTO;
+import bham.team.service.dto.UserProfileDTO;
 import bham.team.service.mapper.FriendshipMapper;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -203,6 +204,11 @@ public class FriendshipResource {
     @GetMapping("/status")
     public ResponseEntity<List<FriendshipStatusDTO>> getFriendshipStatusesForCurrentUser() {
         return ResponseEntity.ok(friendshipService.getFriendshipStatusesForCurrentUser());
+    }
+
+    @GetMapping("/friends/{profileId}")
+    public ResponseEntity<List<UserProfileDTO>> getFriends() {
+        return ResponseEntity.ok(friendshipService.getFriends());
     }
 
     /**

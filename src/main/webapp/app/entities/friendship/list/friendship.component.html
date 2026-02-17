@@ -5,22 +5,22 @@
     <!-- <label for="site-search">Search the site:</label>
     <input type="search" id="site-search" name="q" />
     <button>Search</button> -->
-
+    @let currentUser = this.currentUserProfileId;
     <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+      <button class="btn btn-info me-2" (click)="loadFriends(currentUser!)" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
         <span>Refresh list</span>
       </button>
 
-      <button
+      <!-- <button
         id="jh-create-entity"
         data-cy="entityCreateButton"
         class="btn btn-primary jh-create-entity create-friendship"
-        [routerLink]="['/friendship/new']"
+        [routerLink]="['/userprofile']"
       >
         <fa-icon icon="plus"></fa-icon>
         <span>Add Friend</span>
-      </button>
+      </button> -->
     </div>
   </h2>
 
@@ -28,13 +28,13 @@
 
   <jhi-alert></jhi-alert>
 
-  @if (friendships?.length === 0) {
+  @if (friends.length === 0) {
     <div class="alert alert-warning" id="no-result">
       <span>No Friendships found</span>
     </div>
   }
 
-  @if (friendships && friendships.length > 0) {
+  @if (friends && friends.length > 0) {
     <div class="table-responsive table-entities" id="entities">
       <table class="table table-striped" aria-describedby="page-heading">
         <thead>
@@ -46,22 +46,15 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="status">
+            <th scope="col" jhiSortBy="username">
               <div class="d-flex">
-                <span>Status</span>
-
+                <span>UserName</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="requester.username">
+            <th scope="col" jhiSortBy="fullName">
               <div class="d-flex">
-                <span>Requester</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="addressee.username">
-              <div class="d-flex">
-                <span>Addressee</span>
+                <span>Full Name</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
@@ -69,43 +62,30 @@
           </tr>
         </thead>
         <tbody>
-          @for (friendship of friendships; track trackId(friendship)) {
+          @for (friend of friends; track friend.id) {
             <tr data-cy="entityTable">
+              <td>{{ friend.id }}</td>
               <td>
-                <a [routerLink]="['/friendship', friendship.id, 'view']">{{ friendship.id }}</a>
+                <a [routerLink]="['/user-profile', friend.id, 'view']">
+                  {{ friend.username }}
+                </a>
               </td>
               <td>
-                {{
-                  { null: '', PENDING: 'PENDING', ACCEPTED: 'ACCEPTED', DECLINED: 'DECLINED', NONE: 'NONE' }[friendship.status ?? 'null']
-                }}
-              </td>
-              <td>
-                @if (friendship.requester) {
-                  <div>
-                    <a [routerLink]="['/user-profile', friendship.requester.id, 'view']">{{ friendship.requester.username }}</a>
-                  </div>
-                }
-              </td>
-              <td>
-                @if (friendship.addressee) {
-                  <div>
-                    <a [routerLink]="['/user-profile', friendship.addressee.id, 'view']">{{ friendship.addressee.username }}</a>
-                  </div>
-                }
+                {{ friend.fullName }}
               </td>
               <td class="text-end">
                 <div class="btn-group">
-                  <a [routerLink]="['/friendship', friendship.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                  <a [routerLink]="['/friendship', friend.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
                     <fa-icon icon="eye"></fa-icon>
                     <span class="d-none d-md-inline">View</span>
                   </a>
 
-                  <a [routerLink]="['/friendship', friendship.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                  <a [routerLink]="['/friendship', friend.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
                     <fa-icon icon="pencil-alt"></fa-icon>
                     <span class="d-none d-md-inline">Edit</span>
                   </a>
 
-                  <button type="submit" (click)="delete(friendship)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                  <button type="submit" (click)="delete(friend)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
                     <fa-icon icon="times"></fa-icon>
                     <span class="d-none d-md-inline">Delete</span>
                   </button>
