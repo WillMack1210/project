@@ -3,6 +3,7 @@ package bham.team.web.rest;
 import bham.team.domain.Event;
 import bham.team.domain.User;
 import bham.team.domain.UserProfile;
+import bham.team.domain.enumeration.PrivacyStatus;
 import bham.team.repository.EventRepository;
 import bham.team.repository.UserProfileRepository;
 import bham.team.repository.UserRepository;
@@ -205,10 +206,21 @@ public class EventResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the eventDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<EventDTO> getEvent(@PathVariable("id") Long id) {
+    public ResponseEntity<EventDTO> getEvent(@PathVariable Long id) {
         LOG.debug("REST request to get Event : {}", id);
-        Optional<EventDTO> eventDTO = eventRepository.findOneWithEagerRelationships(id).map(eventMapper::toDto);
-        return ResponseUtil.wrapOrNotFound(eventDTO);
+        Optional<EventDTO> eventDTO = eventRepository.findById(id).map(eventMapper::toDto);
+        return ResponseEntity.of(eventDTO);
+    }
+
+    @GetMapping("/profile/{profileId}")
+    public ResponseEntity<List<EventDTO>> getEventsForProfile(@PathVariable Long profileId) {
+        List<EventDTO> events = eventRepository
+            .findByUserProfileId(profileId)
+            .stream()
+            .filter(e -> e.getPrivacy() == PrivacyStatus.PUBLIC)
+            .map(eventMapper::toDto)
+            .toList();
+        return ResponseEntity.ok(events);
     }
 
     /**

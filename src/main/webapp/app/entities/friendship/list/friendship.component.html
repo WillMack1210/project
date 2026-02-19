@@ -58,6 +58,12 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
+            <th scope="col" jhiSortBy="events">
+              <div class="d-flex">
+                <span>Events</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
             <th scope="col"></th>
           </tr>
         </thead>
@@ -72,6 +78,18 @@
               </td>
               <td>
                 {{ friend.fullName }}
+              </td>
+              <td>
+                @if (friendEventsMap[friend.id]?.length) {
+                  @for (event of friendEventsMap[friend.id]; track event.id) {
+                    <div>
+                      {{ event.title }} -
+                      {{ event.startTime?.format('YYYY-MM-DD HH:mm') }}
+                    </div>
+                  }
+                } @else {
+                  No public events
+                }
               </td>
               <td class="text-end">
                 <div class="btn-group">

@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import dayjs from 'dayjs/esm';
 
@@ -94,6 +95,10 @@ export class EventService {
       return [...eventsToAdd, ...eventCollection];
     }
     return eventCollection;
+  }
+
+  getEvents(profileId: number): Observable<IEvent[]> {
+    return this.http.get<IEvent[]>(`${this.resourceUrl}/profile/${profileId}`);
   }
 
   protected convertDateFromClient<T extends IEvent | NewEvent | PartialUpdateEvent>(event: T): RestOf<T> {

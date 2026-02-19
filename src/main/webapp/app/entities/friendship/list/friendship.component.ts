@@ -16,8 +16,9 @@ import { IFriendshipStatus } from 'app/entities/friendship/friendship-status.mod
 import { FriendStatus } from 'app/entities/enumerations/friend-status.model';
 import { IUserProfile } from 'app/entities/user-profile/user-profile.model';
 import { UserProfileService } from 'app/entities/user-profile/service/user-profile.service';
-import { parseClassNames } from '@fullcalendar/core/internal';
-
+import { EventService } from 'app/entities/event/service/event.service';
+import { IEvent } from 'app/entities/event/event.model';
+import { PrivacyStatus } from 'app/entities/enumerations/privacy-status.model';
 @Component({
   standalone: true,
   selector: 'jhi-friendship',
@@ -41,10 +42,12 @@ export class FriendshipComponent implements OnInit {
   friends: IUserProfile[] = [];
   isAdmin: boolean;
   currentUserProfileId?: number | null = null;
+  friendEventsMap: Record<number, IEvent[]> = {};
 
   sortState = sortStateSignal({});
 
   protected readonly friendshipService = inject(FriendshipService);
+  protected readonly eventService = inject(EventService);
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly sortService = inject(SortService);
   protected modalService = inject(NgbModal);
@@ -91,6 +94,15 @@ export class FriendshipComponent implements OnInit {
   loadFriends(profileId: number): void {
     this.friendshipExtendedService.getFriends(profileId).subscribe(friends => {
       this.friends = friends;
+      friends.forEach(friend => {
+        this.loadFriendEvents(friend.id);
+      });
+    });
+  }
+
+  loadFriendEvents(profileId: number): void {
+    this.eventService.getEvents(profileId).subscribe(events => {
+      this.friendEventsMap[profileId] = events.filter(e => e.privacy === PrivacyStatus.PUBLIC);
     });
   }
 
