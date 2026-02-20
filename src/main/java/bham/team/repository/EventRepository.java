@@ -39,4 +39,11 @@ public interface EventRepository extends EventRepositoryWithBagRelationships, Jp
 
     @Query("select e from Event e where e.owner.id = :profileId")
     List<Event> findByUserProfileId(@Param("profileId") Long profileId);
+
+    @Query("select e from Event e where e.owner.id = :profileId and e.startTime >= :start and e.endTime <= :end")
+    List<Event> findByUserProfileIdAndTimeRange(
+        @Param("profileId") Long profileId,
+        @Param("start") Instant start,
+        @Param("end") Instant end
+    );
 }
