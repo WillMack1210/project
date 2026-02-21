@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, endWith, map } from 'rxjs';
 
 import dayjs from 'dayjs/esm';
 
@@ -24,6 +24,11 @@ export type PartialUpdateRestFindTime = RestOf<PartialUpdateFindTime>;
 
 export type EntityResponseType = HttpResponse<IFindTime>;
 export type EntityArrayResponseType = HttpResponse<IFindTime[]>;
+
+export interface ITimeSlot {
+  start?: string;
+  end?: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class FindTimeService {
@@ -96,6 +101,10 @@ export class FindTimeService {
       return [...findTimesToAdd, ...findTimeCollection];
     }
     return findTimeCollection;
+  }
+
+  findCommonFreeSlots(userId: number, friendId: number, start: string, end: string): Observable<ITimeSlot[]> {
+    return this.http.get<ITimeSlot[]>(`{this.resourceUrl}/common-free-slots`, { params: { userId, friendId, start, end } });
   }
 
   protected convertDateFromClient<T extends IFindTime | NewFindTime | PartialUpdateFindTime>(findTime: T): RestOf<T> {

@@ -2,13 +2,16 @@ package bham.team.web.rest;
 
 import bham.team.domain.FindTime;
 import bham.team.repository.FindTimeRepository;
+import bham.team.service.FindTimeService;
 import bham.team.service.dto.FindTimeDTO;
 import bham.team.service.mapper.FindTimeMapper;
+import bham.team.service.schedule.TimeSlot;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,7 +43,10 @@ public class FindTimeResource {
 
     private final FindTimeMapper findTimeMapper;
 
-    public FindTimeResource(FindTimeRepository findTimeRepository, FindTimeMapper findTimeMapper) {
+    private final FindTimeService findTimeService;
+
+    public FindTimeResource(FindTimeRepository findTimeRepository, FindTimeMapper findTimeMapper, FindTimeService findTimeService) {
+        this.findTimeService = findTimeService;
         this.findTimeRepository = findTimeRepository;
         this.findTimeMapper = findTimeMapper;
     }
@@ -169,6 +175,18 @@ public class FindTimeResource {
         LOG.debug("REST request to get FindTime : {}", id);
         Optional<FindTimeDTO> findTimeDTO = findTimeRepository.findOneWithEagerRelationships(id).map(findTimeMapper::toDto);
         return ResponseUtil.wrapOrNotFound(findTimeDTO);
+    }
+
+    @GetMapping("/common-free-slots")
+    public ResponseEntity<List<TimeSlot>> findCommonFreeSlots(
+        @RequestParam Long userId,
+        @RequestParam Long friendId,
+        @RequestParam Instant start,
+        @RequestParam Instant end
+    ) {
+        LOG.debug("REST request to find common free slots between {} and {}", userId, friendId);
+        List<TimeSlot> result = findTimeService.computeFreeSlots(userId, friendId, start, end);
+        return ResponseEntity.ok(result);
     }
 
     /**
