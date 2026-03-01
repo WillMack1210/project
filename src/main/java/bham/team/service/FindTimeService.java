@@ -1,24 +1,13 @@
 package bham.team.service;
 
 import bham.team.domain.Event;
-import bham.team.domain.UserProfile;
 import bham.team.repository.EventRepository;
-import bham.team.repository.FriendshipRepository;
 import bham.team.service.schedule.TimeSlot;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,13 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class FindTimeService {
 
-    private final FriendshipRepository friendshipRepository;
     private final EventRepository eventRepository;
-    private static ZoneId zone = ZoneId.systemDefault();
     private static final Duration minSlot = Duration.ofMinutes(60);
 
-    public FindTimeService(FriendshipRepository friendshipRepository, EventRepository eventRepository) {
-        this.friendshipRepository = friendshipRepository;
+    public FindTimeService(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
     }
 

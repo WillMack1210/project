@@ -104,7 +104,7 @@ export class FindTimeService {
   }
 
   findCommonFreeSlots(userId: number, friendId: number, start: string, end: string): Observable<ITimeSlot[]> {
-    return this.http.get<ITimeSlot[]>(`{this.resourceUrl}/common-free-slots`, { params: { userId, friendId, start, end } });
+    return this.http.get<ITimeSlot[]>(`${this.resourceUrl}/common-free-slots`, { params: { userId, friendId, start, end } });
   }
 
   protected convertDateFromClient<T extends IFindTime | NewFindTime | PartialUpdateFindTime>(findTime: T): RestOf<T> {

@@ -1,16 +1,15 @@
 import { Component, NgZone, OnInit, inject } from '@angular/core';
-import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
-import { Observable, Subscription, combineLatest, filter, map, switchMap, tap } from 'rxjs';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Observable, Subscription, map, switchMap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import SharedModule from 'app/shared/shared.module';
-import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
+import { SortByDirective, SortDirective, SortService, sortStateSignal } from 'app/shared/sort';
 import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
 import { FormsModule } from '@angular/forms';
-import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
 import { IFindTime } from '../find-time.model';
-import { EntityArrayResponseType, FindTimeService } from '../service/find-time.service';
-import { FindTimeDeleteDialogComponent } from '../delete/find-time-delete-dialog.component';
+import { FindTimeService } from '../service/find-time.service';
 import { ITimeSlot } from '../service/find-time.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { IUserProfile } from 'app/entities/user-profile/user-profile.model';
@@ -21,6 +20,7 @@ import { FriendshipExtendedService } from 'app/entities/friendship/service/frien
   selector: 'jhi-find-time',
   templateUrl: './find-time.component.html',
   imports: [
+    CommonModule,
     RouterModule,
     FormsModule,
     SharedModule,
@@ -38,9 +38,10 @@ export class FindTimeComponent implements OnInit {
   freeSlots: ITimeSlot[] = [];
   currentUserProfileId?: number;
   selectedFriendId?: number;
-  requestStart?: Date;
-  requestEnd?: Date;
+  requestStart?: string;
+  requestEnd?: string;
   friends: IUserProfile[] = [];
+  hasSearched = false;
 
   sortState = sortStateSignal({});
 
@@ -57,42 +58,11 @@ export class FindTimeComponent implements OnInit {
   trackId = (item: IFindTime): number => this.findTimeService.getFindTimeIdentifier(item);
 
   ngOnInit(): void {
-    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
-      .pipe(
-        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-        tap(() => {
-          if (!this.findTimes || this.findTimes.length === 0) {
-            this.load();
-          }
-        }),
-      )
-      .subscribe();
     this.getCurrentUser().subscribe(profileId => {
       this.currentUserProfileId = profileId;
       this.loadFriends(profileId);
     });
   }
-
-  delete(findTime: IFindTime): void {
-    const modalRef = this.modalService.open(FindTimeDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
-    modalRef.componentInstance.findTime = findTime;
-    // unsubscribe not needed because closed completes on modal close
-    modalRef.closed
-      .pipe(
-        filter(reason => reason === ITEM_DELETED_EVENT),
-        tap(() => this.load()),
-      )
-      .subscribe();
-  }
-
-  load(): void {
-    this.queryBackend().subscribe({
-      next: (res: EntityArrayResponseType) => {
-        this.onResponseSuccess(res);
-      },
-    });
-  }
-
   loadFriends(profileId: number): void {
     this.friendshipExtendedService.getFriends(profileId).subscribe(friends => {
       this.friends = friends;
@@ -124,56 +94,21 @@ export class FindTimeComponent implements OnInit {
 
   findCommonSlots(): void {
     if (!this.selectedFriendId || !this.requestStart || !this.requestEnd) {
-      return;
+      throw new Error('Something hasnt veen filled in');
     }
-    const startISO = this.requestStart.toISOString();
-    const endISO = this.requestEnd.toISOString();
+    this.freeSlots = [];
+    this.hasSearched = false;
+    const startISO = new Date(this.requestStart).toISOString();
+    const endISO = new Date(this.requestEnd).toISOString();
     this.findTimeService.findCommonFreeSlots(this.currentUserProfileId!, this.selectedFriendId, startISO, endISO).subscribe({
-      next: slots => (this.freeSlots = slots),
-      error: err => console.error('Error fetching common free slots', err),
-    });
-  }
-  navigateToWithComponentValues(event: SortState): void {
-    this.handleNavigation(event);
-  }
-
-  protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
-    this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
-  }
-
-  protected onResponseSuccess(response: EntityArrayResponseType): void {
-    const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
-    this.findTimes = this.refineData(dataFromBody);
-  }
-
-  protected refineData(data: IFindTime[]): IFindTime[] {
-    const { predicate, order } = this.sortState();
-    return predicate && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
-  }
-
-  protected fillComponentAttributesFromResponseBody(data: IFindTime[] | null): IFindTime[] {
-    return data ?? [];
-  }
-
-  protected queryBackend(): Observable<EntityArrayResponseType> {
-    this.isLoading = true;
-    const queryObject: any = {
-      eagerload: true,
-      sort: this.sortService.buildSortParam(this.sortState()),
-    };
-    return this.findTimeService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
-  }
-
-  protected handleNavigation(sortState: SortState): void {
-    const queryParamsObj = {
-      sort: this.sortService.buildSortParam(sortState),
-    };
-
-    this.ngZone.run(() => {
-      this.router.navigate(['./'], {
-        relativeTo: this.activatedRoute,
-        queryParams: queryParamsObj,
-      });
+      next: slots => {
+        this.freeSlots = slots;
+        this.hasSearched = true;
+      },
+      error: err => {
+        console.error('Error fetching common free slots', err);
+        this.hasSearched = true;
+      },
     });
   }
 }
