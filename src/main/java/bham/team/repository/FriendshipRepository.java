@@ -65,4 +65,13 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
          """
     )
     List<Friendship> findRequestedForUser(Long userId);
+
+    @Query(
+        """
+        SELECT f FROM Friendship f WHERE
+        (f.addressee.id = :userId)
+        AND f.status = bham.team.domain.enumeration.FriendStatus.PENDING
+        """
+    )
+    List<Friendship> findRequestsForUser(Long userId);
 }

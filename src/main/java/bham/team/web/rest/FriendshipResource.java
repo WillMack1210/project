@@ -211,6 +211,13 @@ public class FriendshipResource {
         return ResponseEntity.ok(friendshipService.getFriends());
     }
 
+    @GetMapping("/friends/requests/{profileId}")
+    public ResponseEntity<List<Friendship>> getRequests(@PathVariable("profileId") Long profileId) {
+        List<Friendship> requests = friendshipRepository.findRequestsForUser(profileId);
+        LOG.debug("REST request to get FriendshipRequests : {}", requests);
+        return ResponseEntity.ok(requests);
+    }
+
     /**
      * {@code DELETE  /friendships/:id} : delete the "id" friendship.
      *

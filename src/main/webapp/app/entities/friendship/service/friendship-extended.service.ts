@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { IFriendshipStatus } from '../friendship-status.model';
 import { IUserProfile } from 'app/entities/user-profile/user-profile.model';
+import { IFriendship } from '../friendship.model';
 
 @Injectable({
   providedIn: 'root',
@@ -34,5 +35,8 @@ export class FriendshipExtendedService {
   }
   getFriends(userProfileId: number): Observable<IUserProfile[]> {
     return this.http.get<IUserProfile[]>(`${this.resourceUrl}/friends/${userProfileId}`);
+  }
+  getRequests(userProfileId: number): Observable<IFriendship[]> {
+    return this.http.get<IFriendship[]>(`${this.resourceUrl}/friends/requests/${userProfileId}`);
   }
 }

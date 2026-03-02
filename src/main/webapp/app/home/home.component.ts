@@ -11,6 +11,8 @@ import { Account } from 'app/core/auth/account.model';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { CalendarOptions } from '@fullcalendar/core';
+import { FriendshipExtendedService } from 'app/entities/friendship/service/friendship-extended.service';
+import { IFriendship } from 'app/entities/friendship/friendship.model';
 
 @Component({
   standalone: true,
@@ -21,6 +23,8 @@ import { CalendarOptions } from '@fullcalendar/core';
 })
 export default class HomeComponent implements OnInit, OnDestroy {
   account = signal<Account | null>(null);
+  requests = false;
+  currentRequests?: IFriendship[];
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin],
     initialView: 'dayGridMonth',
@@ -33,6 +37,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
     eventClick: this.handleEventClick.bind(this),
   };
 
+  protected friendshipService = inject(FriendshipExtendedService);
   private readonly destroy$ = new Subject<void>();
   private readonly accountService = inject(AccountService);
   private readonly router = inject(Router);
@@ -47,6 +52,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
         next: account => {
           this.account.set(account);
           if (account) {
+            this.seeRequests();
             this.loadEvents();
           }
         },
@@ -67,6 +73,29 @@ export default class HomeComponent implements OnInit, OnDestroy {
     if (eventId) {
       this.router.navigate(['/event', eventId, 'view']);
     }
+  }
+
+  seeRequests(): void {
+    this.accountService.identity().subscribe({
+      next: account => {
+        if (!account) {
+          return;
+        }
+        this.http.get<any>(`/api/user-profiles/by-user/${account.login}`).subscribe({
+          next: userProfile => {
+            const profileId = userProfile.id;
+            this.friendshipService.getRequests(profileId).subscribe({
+              next: requestsNow => {
+                this.currentRequests = requestsNow;
+                if (this.currentRequests.length > 0) {
+                  this.requests = true;
+                }
+              },
+            });
+          },
+        });
+      },
+    });
   }
 
   loadEvents(): void {

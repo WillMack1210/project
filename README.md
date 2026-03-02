@@ -6,12 +6,12 @@ To do List:
 
 ```
 * User Profile Search Bar - done 9/02/2026
-* Friendship Page
-* Find time page and algorithm
+* Friendship Page - done 19/02/2026
+* Find time page and algorithm - done 01/03/2026
 * Add list of upcoming events to homepage
 * Settings
 * SCSS page styling
 * Change Admin Password - done 8/02/2026
-* Set up URL and deployment
+* Set up URL and deployment - partially done, deploymenty via IP works - 01/03/2026
 * User sign-up/ feedback
 ```

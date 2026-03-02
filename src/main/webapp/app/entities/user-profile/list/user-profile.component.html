@@ -40,13 +40,6 @@
       <table class="table table-striped" aria-describedby="page-heading">
         <thead>
           <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span>ID</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
             <th scope="col" jhiSortBy="username">
               <div class="d-flex">
                 <span>Username</span>
@@ -68,115 +61,75 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="settings">
+            <th scope="col" jhiSortBy="FriendStatus">
               <div class="d-flex">
-                <span>Settings</span>
+                <span>Friendship</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="user.login">
-              <div class="d-flex">
-                <span>User</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="sharedEvent.id">
-              <div class="d-flex">
-                <span>Shared Event</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="findTime.id">
-              <div class="d-flex">
-                <span>Find Time</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
           @for (userProfile of userProfiles; track trackId(userProfile)) {
-            <tr data-cy="entityTable">
-              <td>
-                <a [routerLink]="['/user-profile', userProfile.id, 'view']">{{ userProfile.id }}</a>
-              </td>
-              <td>{{ userProfile.username }}</td>
-              <td>{{ userProfile.fullName }}</td>
-              <td>
-                @if (userProfile.profilePicture) {
-                  <a (click)="openFile(userProfile.profilePicture, userProfile.profilePictureContentType)">
-                    <img
-                      [src]="'data:' + userProfile.profilePictureContentType + ';base64,' + userProfile.profilePicture"
-                      style="max-height: 30px"
-                      alt="userProfile"
-                    />
-                  </a>
-                  <span>{{ userProfile.profilePictureContentType }}, {{ byteSize(userProfile.profilePicture) }}</span>
-                }
-              </td>
-              <td>{{ userProfile.settings }}</td>
-              <td>
-                {{ userProfile.user?.login }}
-              </td>
-              <td>
-                @for (sharedEvent of userProfile.sharedEvents; track $index; let last = $last) {
-                  <span>
-                    <a class="form-control-static" [routerLink]="['/event', sharedEvent.id, 'view']">{{ sharedEvent.id }}</a
-                    >{{ last ? '' : ', ' }}
-                  </span>
-                }
-              </td>
-              <td>
-                @for (findTime of userProfile.findTimes; track $index; let last = $last) {
-                  <span>
-                    <a class="form-control-static" [routerLink]="['/find-time', findTime.id, 'view']">{{ findTime.id }}</a
-                    >{{ last ? '' : ', ' }}
-                  </span>
-                }
-              </td>
-              <td class="text-end">
-                <div class="btn-group">
-                  <a [routerLink]="['/user-profile', userProfile.id, 'view']" class="btn btn-info btn-sm">
-                    <fa-icon icon="eye"></fa-icon>
-                    <span class="d-none d-md-inline">View</span>
-                  </a>
-                  @let currentUser = this.currentUserProfileId;
-                  @if (currentUser === userProfile.id || isAdmin) {
-                    <a [routerLink]="['/user-profile', userProfile.id, 'edit']" class="btn btn-primary btn-sm">
-                      <fa-icon icon="pencil-alt"></fa-icon>
-                      <span class="d-none d-md-inline">Edit</span>
+            @if (userProfile.id != currentUserProfileId) {
+              @let fs = getFriendship(userProfile.id);
+              <tr data-cy="entityTable">
+                <td>{{ userProfile.username }}</td>
+                <td>{{ userProfile.fullName }}</td>
+                <td>
+                  @if (userProfile.profilePicture) {
+                    <a (click)="openFile(userProfile.profilePicture, userProfile.profilePictureContentType)">
+                      <img
+                        [src]="'data:' + userProfile.profilePictureContentType + ';base64,' + userProfile.profilePicture"
+                        style="max-height: 30px"
+                        alt="userProfile"
+                      />
                     </a>
+                    <span>{{ userProfile.profilePictureContentType }}, {{ byteSize(userProfile.profilePicture) }}</span>
                   }
-                  @let fs = getFriendship(userProfile.id);
+                </td>
+                <td>{{ fs?.status?.toString() }}</td>
+                <td class="text-end">
+                  <div class="btn-group">
+                    <a [routerLink]="['/user-profile', userProfile.id, 'view']" class="btn btn-info btn-sm">
+                      <fa-icon icon="eye"></fa-icon>
+                      <span class="d-none d-md-inline">View</span>
+                    </a>
+                    @let currentUser = this.currentUserProfileId;
+                    @if (currentUser === userProfile.id || isAdmin) {
+                      <a [routerLink]="['/user-profile', userProfile.id, 'edit']" class="btn btn-primary btn-sm">
+                        <fa-icon icon="pencil-alt"></fa-icon>
+                        <span class="d-none d-md-inline">Edit</span>
+                      </a>
+                    }
+                    @if ((!fs || fs.status === 'NONE') && currentUser !== userProfile.id) {
+                      <button class="btn btn-success btn-sm" (click)="sendFriendRequest(userProfile.id)">
+                        <fa-icon icon="user-plus"></fa-icon>
+                        <span class="d-none d-md-inline">Add</span>
+                      </button>
+                    }
 
-                  @if ((!fs || fs.status === 'NONE') && currentUser !== userProfile.id) {
-                    <button class="btn btn-success btn-sm" (click)="sendFriendRequest(userProfile.id)">
-                      <fa-icon icon="user-plus"></fa-icon>
-                      <span class="d-none d-md-inline">Add</span>
-                    </button>
-                  }
+                    <!-- Pending AND current user is recipient → Accept / Decline -->
+                    @if (fs?.status === 'PENDING' && !fs?.isRequester) {
+                      <button class="btn btn-success btn-sm" (click)="acceptFriendRequest(fs.friendshipId)">Accept</button>
 
-                  <!-- Pending AND current user is recipient → Accept / Decline -->
-                  @if (fs?.status === 'PENDING' && !fs?.isRequester) {
-                    <button class="btn btn-success btn-sm" (click)="acceptFriendRequest(fs.friendshipId)">Accept</button>
+                      <button class="btn btn-danger btn-sm" (click)="declineFriendRequest(fs.friendshipId)">Decline</button>
+                    }
 
-                    <button class="btn btn-danger btn-sm" (click)="declineFriendRequest(fs.friendshipId)">Decline</button>
-                  }
+                    <!-- Pending AND current user sent request → Pending label -->
+                    @if (fs?.status === 'PENDING' && fs?.isRequester) {
+                      <button class="btn btn-secondary btn-sm" disabled>Pending</button>
+                    }
 
-                  <!-- Pending AND current user sent request → Pending label -->
-                  @if (fs?.status === 'PENDING' && fs?.isRequester) {
-                    <button class="btn btn-secondary btn-sm" disabled>Pending</button>
-                  }
-
-                  <!-- Already friends → Remove -->
-                  @if (fs?.status === 'ACCEPTED') {
-                    <button class="btn btn-danger btn-sm" (click)="removeFriend(fs.friendshipId)">Remove</button>
-                  }
-                </div>
-              </td>
-            </tr>
+                    <!-- Already friends → Remove -->
+                    @if (fs?.status === 'ACCEPTED') {
+                      <button class="btn btn-danger btn-sm" (click)="removeFriend(fs.friendshipId)">Remove</button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
           }
         </tbody>
       </table>

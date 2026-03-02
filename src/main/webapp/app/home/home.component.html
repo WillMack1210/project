@@ -7,6 +7,9 @@
             <span id="home-logged-message">Welcome back, {{ accountRef.login }}</span>
           }
         </div>
+        @if (requests) {
+          <div class="alert alert-warning mt-4">You have a new friend request, go to the User Profile page to take a look!</div>
+        }
         <full-calendar [options]="calendarOptions"></full-calendar>
       } @else {
         <div class="alert alert-warning">
