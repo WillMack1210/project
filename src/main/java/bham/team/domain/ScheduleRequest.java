@@ -1,5 +1,6 @@
 package bham.team.domain;
 
+import bham.team.domain.enumeration.PrivacyStatus;
 import bham.team.domain.enumeration.ScheduleIntensity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -42,6 +43,11 @@ public class ScheduleRequest implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "intensity", nullable = false)
     private ScheduleIntensity intensity;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "privacy", nullable = false)
+    private PrivacyStatus privacy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "user", "events", "availiabilityBlocks", "sharedEvents", "findTimes" }, allowSetters = true)
@@ -125,6 +131,19 @@ public class ScheduleRequest implements Serializable {
     public ScheduleRequest user(UserProfile userProfile) {
         this.setUser(userProfile);
         return this;
+    }
+
+    public ScheduleRequest privacy(PrivacyStatus privacy) {
+        this.setPrivacy(privacy);
+        return this;
+    }
+
+    public void setPrivacy(PrivacyStatus privacy) {
+        this.privacy = privacy;
+    }
+
+    public PrivacyStatus getPrivacy() {
+        return this.privacy;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here

@@ -36,6 +36,7 @@ type ScheduleRequestFormGroupContent = {
   endDate: FormControl<ScheduleRequestFormRawValue['endDate']>;
   scheduleDescription: FormControl<ScheduleRequestFormRawValue['scheduleDescription']>;
   intensity: FormControl<ScheduleRequestFormRawValue['intensity']>;
+  privacy: FormControl<ScheduleRequestFormRawValue['privacy']>;
   user: FormControl<ScheduleRequestFormRawValue['user']>;
 };
 
@@ -67,6 +68,9 @@ export class ScheduleRequestFormService {
         validators: [Validators.required],
       }),
       intensity: new FormControl(scheduleRequestRawValue.intensity, {
+        validators: [Validators.required],
+      }),
+      privacy: new FormControl(scheduleRequestRawValue.privacy, {
         validators: [Validators.required],
       }),
       user: new FormControl(scheduleRequestRawValue.user),

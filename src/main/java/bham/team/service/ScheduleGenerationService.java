@@ -59,7 +59,7 @@ public class ScheduleGenerationService {
         for (TimeSlot slot : rawSlots) {
             freeSlots.addAll(splitSlotByDay(slot, zone));
         }
-        return placeEvents(plannedEvents, freeSlots, user, request.getIntensity());
+        return placeEvents(plannedEvents, freeSlots, user, request.getIntensity(), request.getPrivacy());
     }
 
     private List<ActivityTemplate> parseDesciription(String description) {
@@ -91,7 +91,13 @@ public class ScheduleGenerationService {
         return planned;
     }
 
-    private List<Event> placeEvents(List<PlannedEvent> planned, List<TimeSlot> freeSlots, UserProfile user, ScheduleIntensity intensity) {
+    private List<Event> placeEvents(
+        List<PlannedEvent> planned,
+        List<TimeSlot> freeSlots,
+        UserProfile user,
+        ScheduleIntensity intensity,
+        PrivacyStatus privacy
+    ) {
         List<Event> created = new ArrayList<>();
         ZoneId zone = ZoneId.systemDefault();
         Map<LocalDate, Set<String>> eventsPerDay = new HashMap<>();
@@ -131,7 +137,7 @@ public class ScheduleGenerationService {
                 e.setOwner(user);
                 e.setStartTime(potentialStart);
                 e.setEndTime(potentialStart.plus(p.duration()));
-                e.setPrivacy(PrivacyStatus.PRIVATE);
+                e.setPrivacy(privacy);
                 e.setDescription("Generated from webpage");
                 created.add(eventRepository.save(e));
                 slot.consume(p.duration());

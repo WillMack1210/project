@@ -26,6 +26,9 @@
             <column name="intensity" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
+            <column name="privacy" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
             <column name="user_id" type="bigint">
                 <constraints nullable="true" />
             </column>

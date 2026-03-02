@@ -104,6 +104,26 @@
             </div>
           }
         </div>
+
+        @let privacyRef = editForm.get('privacy')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_privacy">Privacy</label>
+          <select class="form-control" name="privacy" formControlName="privacy" id="field_privacy" data-cy="privacy">
+            <option [ngValue]="null"></option>
+            @for (privacyStatus of privacyStatusValues; track $index) {
+              <option [value]="privacyStatus">
+                {{ { null: '', PRIVATE: 'PRIVATE', PUBLIC: 'PUBLIC', SHARED: 'SHARED' }[privacyStatus] }}
+              </option>
+            }
+          </select>
+          @if (privacyRef.invalid && (privacyRef.dirty || privacyRef.touched)) {
+            <div>
+              @if (editForm.get('privacy')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
       </div>
       <div>
         <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">

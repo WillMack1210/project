@@ -13,6 +13,7 @@ import { DataUtils, FileLoadError } from 'app/core/util/data-util.service';
 import { IUserProfile } from 'app/entities/user-profile/user-profile.model';
 import { UserProfileService } from 'app/entities/user-profile/service/user-profile.service';
 import { ScheduleIntensity } from 'app/entities/enumerations/schedule-intensity.model';
+import { PrivacyStatus } from 'app/entities/enumerations/privacy-status.model';
 import { ScheduleRequestService } from '../service/schedule-request.service';
 import { IScheduleRequest } from '../schedule-request.model';
 import { ScheduleRequestFormGroup, ScheduleRequestFormService } from './schedule-request-form.service';
@@ -28,6 +29,7 @@ export class ScheduleRequestUpdateComponent implements OnInit {
   isSaving = false;
   scheduleRequest: IScheduleRequest | null = null;
   scheduleIntensityValues = Object.keys(ScheduleIntensity);
+  privacyStatusValues = Object.keys(PrivacyStatus);
   currentUserProfileId?: number | null = null;
 
   userProfilesSharedCollection: IUserProfile[] = [];

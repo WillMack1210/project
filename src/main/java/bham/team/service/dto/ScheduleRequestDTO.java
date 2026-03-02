@@ -1,5 +1,6 @@
 package bham.team.service.dto;
 
+import bham.team.domain.enumeration.PrivacyStatus;
 import bham.team.domain.enumeration.ScheduleIntensity;
 import jakarta.persistence.Lob;
 import jakarta.validation.constraints.*;
@@ -26,6 +27,9 @@ public class ScheduleRequestDTO implements Serializable {
 
     @NotNull
     private ScheduleIntensity intensity;
+
+    @NotNull
+    private PrivacyStatus privacy;
 
     private UserProfileDTO user;
 
@@ -69,6 +73,14 @@ public class ScheduleRequestDTO implements Serializable {
         this.intensity = intensity;
     }
 
+    public PrivacyStatus getPrivacy() {
+        return privacy;
+    }
+
+    public void setPrivacy(PrivacyStatus privacy) {
+        this.privacy = privacy;
+    }
+
     public UserProfileDTO getUser() {
         return user;
     }
@@ -107,6 +119,7 @@ public class ScheduleRequestDTO implements Serializable {
             ", endDate='" + getEndDate() + "'" +
             ", scheduleDescription='" + getScheduleDescription() + "'" +
             ", intensity='" + getIntensity() + "'" +
+            ", privacy='" + getPrivacy() + "'" +
             ", user=" + getUser() +
             "}";
     }

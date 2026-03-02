@@ -1,6 +1,7 @@
 import dayjs from 'dayjs/esm';
 import { IUserProfile } from 'app/entities/user-profile/user-profile.model';
 import { ScheduleIntensity } from 'app/entities/enumerations/schedule-intensity.model';
+import { PrivacyStatus } from '../enumerations/privacy-status.model';
 
 export interface IScheduleRequest {
   id: number;
@@ -8,6 +9,7 @@ export interface IScheduleRequest {
   endDate?: dayjs.Dayjs | null;
   scheduleDescription?: string | null;
   intensity?: keyof typeof ScheduleIntensity | null;
+  privacy?: keyof typeof PrivacyStatus | null;
   user?: Pick<IUserProfile, 'id'> | null;
 }
 
