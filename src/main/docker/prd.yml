@@ -1,8 +1,6 @@
 services:
   teamproject-prd:
-    build:
-      context: .
-      dockerfile: src/main/docker/Dockerfile
+    image: ghcr.io/willmack1210/willmack1210/project:latest
     restart: always
     environment:
       - _JAVA_OPTIONS=-Xmx512m -Xms256m
