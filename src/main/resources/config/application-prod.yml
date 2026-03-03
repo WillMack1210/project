@@ -43,10 +43,10 @@ spring:
   liquibase:
     contexts: prod
   mail:
-    host: smtp.office365.com
+    host: smtp-mail.outlook.com
     port: 587
     username: no.reply.planly26@outlook.com
-    password: heGquv-kigzy9-tuzdiv
+    password: iqfjrnslouybidcd
     protocol: smtp
     properties:
       mail.smtp.auth: true
