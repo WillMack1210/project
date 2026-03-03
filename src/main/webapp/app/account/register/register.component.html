@@ -4,7 +4,10 @@
       <h1 data-cy="registerTitle">Registration</h1>
 
       @if (success()) {
-        <div class="alert alert-success"><strong>Registration saved!</strong> Please check your email for confirmation.</div>
+        <div class="alert alert-success">
+          <strong>Registration saved!</strong> Please check for an email from no.reply.planly26 for your activation link. Make sure to check
+          your spam if you dont see it
+        </div>
       }
 
       @if (error()) {
