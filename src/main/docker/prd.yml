@@ -1,6 +1,8 @@
 services:
   teamproject-prd:
-    image: teamproject:latest
+    build:
+      context: .
+      dockerfile: src/main/docker/Dockerfile
     restart: always
     environment:
       - _JAVA_OPTIONS=-Xmx512m -Xms256m
