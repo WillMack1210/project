@@ -1,18 +1,32 @@
 services:
+  caddy:
+    image: caddy:2-alpine
+    restart: always
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ~/team-project/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - app-network
+    depends_on:
+      - teamproject-prd
+
   teamproject-prd:
     image: ghcr.io/willmack1210/willmack1210/project:latest
     restart: always
     environment:
       - _JAVA_OPTIONS=-Xmx512m -Xms256m
-      - SPRING_PROFILES_ACTIVE=prod,api-docs
-      - MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED=true
+      - SPRING_PROFILES_ACTIVE=prod
       - SPRING_DATASOURCE_URL=jdbc:postgresql://teamproject-postgresql-prd:5432/teamproject24
       - SPRING_LIQUIBASE_URL=jdbc:postgresql://teamproject-postgresql-prd:5432/teamproject24
       - JHIPSTER_SLEEP=15
-    ports:
-      - 9090:8080
     networks:
       - app-network
+    depends_on:
+      - teamproject-postgresql-prd
 
   teamproject-postgresql-prd:
     image: postgres:14.5
@@ -25,6 +39,10 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=trust
     networks:
       - app-network
+
+volumes:
+  caddy_data:
+  caddy_config:
 
 networks:
   app-network:
