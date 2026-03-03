@@ -1,48 +1,42 @@
 {
-	#email address for letsencrypt
-	email EMAIL
-	# to retrieve real certificates use https://acme-v02.api.letsencrypt.org/directory or https://acme.zerossl.com/v2/DV90 instead of ACME in the git repo file src/main/docker/Caddyfile
-	# requires the VM to be accessible directly from the public internet via port 80 and 443
-	acme_ca ACME
+	# Your real email for Let's Encrypt
+	email wxm334@student.bham.ac.uk
+
+	# Use real Let's Encrypt production CA
+	acme_ca https://acme-v02.api.letsencrypt.org/directory
 }
-DOMAIN {
+
+# ==============================
+# PRODUCTION
+# Only updated via tagged commits
+# ==============================
+planly.work.gd, www.planly.work.gd {
+
 	handle_errors {
-		respond "This production version of the app will only become available after a tagged commit has been made to the main branch.
+		respond "Production deployment not available yet.
 
-A development version of the app should be accessible here: http://DEVDOMAIN/
+If you have just pushed a tagged release, wait 30 seconds and refresh.
 
-Error connecting to production app backend on docker host http://teamproject-prd:8080.
-
-After a tagged commit has deployed, wait 30 seconds and refresh this page.
-
-If still not live, login to the VM via SSH and try to debug using 'docker compose -f ~/team-project/prd.yml up'"
+If still not live, SSH into the VM and run:
+docker compose -f ~/team-project/prd.yml up -d"
 	}
+
 	reverse_proxy http://teamproject-prd:8080
 }
-DEVDOMAIN {
+
+# ==============================
+# DEVELOPMENT (optional but recommended)
+# ==============================
+dev.planly.work.gd {
+
 	handle_errors {
-  respond "Error connecting to DEVDOMAIN development app backend on docker host http://teamproject-dev:8080.
+		respond "Development deployment error.
 
-After a commit to the main branch has deployed, wait 30 seconds and refresh this page.
+If you have just pushed to main, wait 30 seconds and refresh.
 
-If still not live, login to the VM via SSH and try to debug using 'docker compose -f ~/team-project/dev.yml up'"
+If still not live, SSH into the VM and run:
+docker compose -f ~/team-project/dev.yml up -d"
 	}
+
 	reverse_proxy http://teamproject-dev:8080
 }
-
-#the following three lines can be removed once the server is confirmed working
-DEPLOY_IP:80 {
-	reverse_proxy http://teamproject-dev:8080
-}
-
-#to serve on a CUSTOMURL e.g. sceletons.bham.team
-# 1) request a DNS entry for sceletons.bham.team pointing at the Virtual Machine IP address (DEPLOY_IP) https://forms.office.com/e/C0kaiRMuDD
-# 2) replace '#CUSTOMURL' with 'sceletons.bham.team', uncomment the last lines of the file (lines 49-54) in the git repo file src/main/docker/Caddyfile
-# 3) make a tagged commit
-#CUSTOMURL {
-#  handle_errors {
-#    respond "CUSTOMURL not working check DOMAIN is up"
-#  }
-#  reverse_proxy http://teamproject-prd:8080
-#}
-
