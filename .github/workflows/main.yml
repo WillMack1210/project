@@ -154,6 +154,7 @@ jobs:
       - name: Deploy and clean Docker
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }} "
+            docker compose -f ~/team-project/dev.yml down --remove-orphans
             docker compose -f ~/team-project/dev.yml pull
             docker compose -f ~/team-project/dev.yml up -d --force-recreate --remove-orphans
             docker system prune --force --filter 'until=24h'
@@ -187,7 +188,9 @@ jobs:
       - name: Deploy to production
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }} "
+            docker compose -f ~/team-project/prd.yml down --remove-orphans
             docker compose -f ~/team-project/prd.yml pull
             docker compose -f ~/team-project/prd.yml up -d --force-recreate --remove-orphans
             docker image prune -f
+            docker system prune --force --filter 'until=24h'
           "
