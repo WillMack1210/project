@@ -22,7 +22,7 @@ jobs:
     env:
       DOCKER_HOST: 'tcp://127.0.0.1:2375'
       DOCKER_DRIVER: overlay2
-    outputs:   # ✅ expose lowercase names for later jobs
+    outputs: # ✅ expose lowercase names for later jobs
       IMAGE_NAME_LOWER: ${{ steps.names.outputs.IMAGE_NAME_LOWER }}
       OWNER_NAME_LOWER: ${{ steps.names.outputs.OWNER_NAME_LOWER }}
     steps:
@@ -154,7 +154,8 @@ jobs:
       - name: Deploy and clean Docker
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }} "
-            docker compose -f ~/team-project/dev.yml up -d
+            docker compose -f ~/team-project/dev.yml pull
+            docker compose -f ~/team-project/dev.yml up -d --force-recreate --remove-orphans
             docker system prune --force --filter 'until=24h'
           "
 
@@ -186,6 +187,7 @@ jobs:
       - name: Deploy to production
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }} "
-            docker compose -f ~/team-project/prd.yml up -d
-            docker system prune --force --filter 'until=24h'
+            docker compose -f ~/team-project/prd.yml pull
+            docker compose -f ~/team-project/prd.yml up -d --force-recreate --remove-orphans
+            docker image prune -f
           "

@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * A UserProfile.
@@ -42,20 +44,30 @@ public class UserProfile implements Serializable {
     @Column(name = "settings")
     private String settings;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId
     @JoinColumn(name = "id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "participants", "owner" }, allowSetters = true)
     private Set<Event> events = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "user" }, allowSetters = true)
     private Set<AvailiabilityBlock> availiabilityBlocks = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<ScheduleRequest> scheduleRequests = new HashSet<>();
+
+    @OneToMany(mappedBy = "requester", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<Friendship> sentFriendships = new HashSet<>();
+
+    @OneToMany(mappedBy = "addressee", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<Friendship> receivedFriendships = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "participants")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
