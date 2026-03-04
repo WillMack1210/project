@@ -188,9 +188,18 @@ jobs:
       - name: Deploy to production
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }} "
-            docker compose -f ~/team-project/prd.yml down --remove-orphans
+            echo "Stopping anything on ports 80 or 443"
+            # Stop any container publishing port 80 or 443
+            docker ps --filter publish=80 -q | xargs -r docker stop
+            docker ps --filter publish=443 -q | xargs -r docker stop
+
+            docker ps -a --filter publish=80 -q | xargs -r docker rm
+            docker ps -a --filter publish=443 -q | xargs -r docker rm
+
+            echo 'Now deploying fresh stack...'
+
             docker compose -f ~/team-project/prd.yml pull
-            docker compose -f ~/team-project/prd.yml up -d --force-recreate --remove-orphans
-            docker image prune -f
-            docker system prune --force --filter 'until=24h'
+            docker compose -f ~/team-project/prd.yml up -d --remove-orphans
+
+            docker system prune -f --filter 'until=24h'
           "
