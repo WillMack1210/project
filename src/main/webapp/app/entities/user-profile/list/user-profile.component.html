@@ -1,3 +1,4 @@
+<title>User Profiles</title>
 <div>
   <h2 id="page-heading" data-cy="UserProfileHeading">
     <span>User Profiles</span>
@@ -22,6 +23,11 @@
       <label for="site-search">Search for Users:</label>
       <input type="search" [(ngModel)]="searchQuery" placeholder="Search Users" />
       <button class="btn btn-info me-2" (click)="search()">Search</button>
+
+      <a [routerLink]="['/user-profile', currentUserProfileId, 'view']" class="btn btn-info btn-sm">
+        <fa-icon icon="eye"></fa-icon>
+        <span class="d-none d-md-inline">My Profile</span>
+      </a>
     </div>
   </h2>
 

@@ -1,3 +1,4 @@
+<title>User Profile</title>
 <div class="d-flex justify-content-center">
   <div class="col-8">
     @if (userProfile(); as userProfileRef) {
@@ -11,18 +12,6 @@
         <jhi-alert></jhi-alert>
 
         <dl class="row-md jh-entity-details">
-          <dt><span>ID</span></dt>
-          <dd>
-            <span>{{ userProfileRef.id }}</span>
-          </dd>
-          <dt><span>Username</span></dt>
-          <dd>
-            <span>{{ userProfileRef.username }}</span>
-          </dd>
-          <dt><span>Full Name</span></dt>
-          <dd>
-            <span>{{ userProfileRef.fullName }}</span>
-          </dd>
           <dt><span>Profile Picture</span></dt>
           <dd>
             @if (userProfileRef.profilePicture) {
@@ -38,31 +27,13 @@
               </div>
             }
           </dd>
-          <dt><span>Settings</span></dt>
+          <dt><span>Username</span></dt>
           <dd>
-            <span>{{ userProfileRef.settings }}</span>
+            <span>{{ userProfileRef.username }}</span>
           </dd>
-          <dt><span>User</span></dt>
+          <dt><span>Full Name</span></dt>
           <dd>
-            <span>{{ userProfileRef.user?.login }}</span>
-          </dd>
-          <dt><span>Shared Event</span></dt>
-          <dd>
-            @for (sharedEvent of userProfileRef.sharedEvents; track $index; let last = $last) {
-              <span>
-                <a [routerLink]="['/event', sharedEvent.id, 'view']">{{ sharedEvent?.id }}</a
-                >{{ last ? '' : ', ' }}
-              </span>
-            }
-          </dd>
-          <dt><span>Find Time</span></dt>
-          <dd>
-            @for (findTime of userProfileRef.findTimes; track $index; let last = $last) {
-              <span>
-                <a [routerLink]="['/find-time', findTime.id, 'view']">{{ findTime?.id }}</a
-                >{{ last ? '' : ', ' }}
-              </span>
-            }
+            <span>{{ userProfileRef.fullName }}</span>
           </dd>
         </dl>
 
