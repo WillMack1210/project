@@ -5,6 +5,8 @@ import SharedModule from 'app/shared/shared.module';
 import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
 import { DataUtils } from 'app/core/util/data-util.service';
 import { IUserProfile } from '../user-profile.model';
+import { AccountService } from 'app/core/auth/account.service';
+import { UserProfileService } from '../service/user-profile.service';
 
 @Component({
   standalone: true,
@@ -14,8 +16,13 @@ import { IUserProfile } from '../user-profile.model';
 })
 export class UserProfileDetailComponent {
   userProfile = input<IUserProfile | null>(null);
-
+  isAdmin: boolean;
   protected dataUtils = inject(DataUtils);
+  protected readonly userProfileService = inject(UserProfileService);
+
+  constructor(private accountService: AccountService) {
+    this.isAdmin = this.accountService.hasAnyAuthority('ROLE_ADMIN');
+  }
 
   byteSize(base64String: string): string {
     return this.dataUtils.byteSize(base64String);
@@ -27,5 +34,23 @@ export class UserProfileDetailComponent {
 
   previousState(): void {
     window.history.back();
+  }
+
+  getCurrentUser(): number | null {
+    let currentUserProfileId: number | null = null;
+    this.accountService.identity().subscribe(account => {
+      if (account?.login) {
+        const queryObj: any = { eagerload: true };
+        this.userProfileService.query(queryObj).subscribe(resp => {
+          const profiles = resp.body ?? [];
+          const myProfile = profiles.find(p => p.user?.login === account.login);
+          currentUserProfileId = myProfile?.id ?? null;
+          return currentUserProfileId;
+        });
+      } else {
+        currentUserProfileId = null;
+      }
+    });
+    return currentUserProfileId;
   }
 }

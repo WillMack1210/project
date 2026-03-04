@@ -46,6 +46,12 @@
       <table class="table table-striped" aria-describedby="page-heading">
         <thead>
           <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col">
+              <div class="d-flex">
+                <span>Profile Picture</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
             <th scope="col" jhiSortBy="username">
               <div class="d-flex">
                 <span>Username</span>
@@ -60,14 +66,7 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="profilePicture">
-              <div class="d-flex">
-                <span>Profile Picture</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="friendStatus">
+            <th scope="col">
               <div class="d-flex">
                 <span>Friendship</span>
 
@@ -81,20 +80,20 @@
             @if (userProfile.id != currentUserProfileId) {
               @let fs = getFriendship(userProfile.id);
               <tr data-cy="entityTable">
-                <td>{{ userProfile.username }}</td>
-                <td>{{ userProfile.fullName }}</td>
                 <td>
                   @if (userProfile.profilePicture) {
                     <a (click)="openFile(userProfile.profilePicture, userProfile.profilePictureContentType)">
                       <img
                         [src]="'data:' + userProfile.profilePictureContentType + ';base64,' + userProfile.profilePicture"
-                        style="max-height: 30px"
+                        class="Avatar"
                         alt="userProfile"
                       />
                     </a>
-                    <span>{{ userProfile.profilePictureContentType }}, {{ byteSize(userProfile.profilePicture) }}</span>
                   }
                 </td>
+                <td>{{ userProfile.username }}</td>
+                <td>{{ userProfile.fullName }}</td>
+
                 <td>{{ fs?.status?.toString() }}</td>
                 <td class="text-end">
                   <div class="btn-group">
