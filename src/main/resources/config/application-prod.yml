@@ -43,11 +43,10 @@ spring:
   liquibase:
     contexts: prod
   mail:
-    host: smtp-mail.outlook.com
+    host: smtp.sendgrid.net
     port: 587
-    username: no.reply.planly26@outlook.com
-    password: iqfjrnslouybidcd
-    protocol: smtp
+    username: apikey
+    password: ${SENDGRID_API_KEY}
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
@@ -109,6 +108,7 @@ jhipster:
         token-validity-in-seconds-for-remember-me: 2592000
   mail: # specific JHipster mail property, for standard properties see MailProperties
     base-url: https://planly.work.gd # Modify according to your server's URL
+    from: no-reply@em9826.planly.work.gd
   logging:
     use-json-format: false # By default, logs are not in Json format
     logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration
