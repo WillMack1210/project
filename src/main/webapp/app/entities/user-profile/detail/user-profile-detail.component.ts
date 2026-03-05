@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
@@ -14,14 +14,20 @@ import { UserProfileService } from '../service/user-profile.service';
   templateUrl: './user-profile-detail.component.html',
   imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],
 })
-export class UserProfileDetailComponent {
+export class UserProfileDetailComponent implements OnInit {
   userProfile = input<IUserProfile | null>(null);
   isAdmin: boolean;
+  currentUserProfileId?: number | null = null;
+
   protected dataUtils = inject(DataUtils);
   protected readonly userProfileService = inject(UserProfileService);
 
   constructor(private accountService: AccountService) {
     this.isAdmin = this.accountService.hasAnyAuthority('ROLE_ADMIN');
+  }
+
+  ngOnInit(): void {
+    this.getCurrentUser();
   }
 
   byteSize(base64String: string): string {
@@ -36,21 +42,16 @@ export class UserProfileDetailComponent {
     window.history.back();
   }
 
-  getCurrentUser(): number | null {
-    let currentUserProfileId: number | null = null;
+  getCurrentUser(): void {
     this.accountService.identity().subscribe(account => {
       if (account?.login) {
         const queryObj: any = { eagerload: true };
         this.userProfileService.query(queryObj).subscribe(resp => {
           const profiles = resp.body ?? [];
           const myProfile = profiles.find(p => p.user?.login === account.login);
-          currentUserProfileId = myProfile?.id ?? null;
-          return currentUserProfileId;
+          this.currentUserProfileId = myProfile?.id ?? null;
         });
-      } else {
-        currentUserProfileId = null;
       }
     });
-    return currentUserProfileId;
   }
 }

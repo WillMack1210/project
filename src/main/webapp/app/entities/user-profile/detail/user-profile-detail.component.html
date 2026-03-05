@@ -39,7 +39,7 @@
         <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
           <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
         </button>
-        @if (userProfileRef.id === getCurrentUser() || isAdmin) {
+        @if (userProfileRef.id === currentUserProfileId || isAdmin) {
           <button type="button" [routerLink]="['/user-profile', userProfileRef.id, 'edit']" class="btn btn-primary">
             <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
           </button>

@@ -6,13 +6,6 @@
       <div>
         <jhi-alert-error></jhi-alert-error>
 
-        @if (editForm.controls.id.value !== null) {
-          <div class="mb-3">
-            <label class="form-label" for="field_id">ID</label>
-            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
-          </div>
-        }
-
         @let usernameRef = editForm.get('username')!;
         <div class="mb-3">
           <label class="form-label" for="field_username">Username</label>
@@ -90,50 +83,11 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_settings">Settings</label>
-          <input type="text" class="form-control" name="settings" id="field_settings" data-cy="settings" formControlName="settings" />
-        </div>
-
-        <div class="mb-3">
           <label class="form-label" for="field_user">User</label>
           <select class="form-control" id="field_user" data-cy="user" name="user" formControlName="user" [compareWith]="compareUser">
             <option [ngValue]="null"></option>
             @for (userOption of usersSharedCollection; track $index) {
               <option [ngValue]="userOption">{{ userOption.login }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="field_sharedEvents">Shared Event</label>
-          <select
-            class="form-control"
-            id="field_sharedEvents"
-            data-cy="sharedEvent"
-            multiple
-            name="sharedEvents"
-            formControlName="sharedEvents"
-            [compareWith]="compareEvent"
-          >
-            @for (eventOption of eventsSharedCollection; track $index) {
-              <option [ngValue]="eventOption">{{ eventOption.id }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="field_findTimes">Find Time</label>
-          <select
-            class="form-control"
-            id="field_findTimes"
-            data-cy="findTime"
-            multiple
-            name="findTimes"
-            formControlName="findTimes"
-            [compareWith]="compareFindTime"
-          >
-            @for (findTimeOption of findTimesSharedCollection; track $index) {
-              <option [ngValue]="findTimeOption">{{ findTimeOption.id }}</option>
             }
           </select>
         </div>
