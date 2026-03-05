@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -90,6 +91,12 @@ public class AccountResource {
             .getUserWithAuthorities()
             .map(AdminUserDTO::new)
             .orElseThrow(() -> new AccountResourceException("User could not be found"));
+    }
+
+    @PutMapping("/account/change-username")
+    public ResponseEntity<Void> changeUsername(@RequestBody String login) {
+        userService.updateLogin(login);
+        return ResponseEntity.ok().build();
     }
 
     /**

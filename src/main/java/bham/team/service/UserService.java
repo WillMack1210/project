@@ -304,6 +304,23 @@ public class UserService {
         return SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneWithAuthoritiesByLogin);
     }
 
+    @Transactional
+    public void updateLogin(String newLogin) {
+        SecurityUtils.getCurrentUserLogin()
+            .flatMap(userRepository::findOneByLogin)
+            .ifPresent(user -> {
+                this.clearUserCaches(user);
+
+                user.setLogin(newLogin.toLowerCase());
+
+                userRepository.save(user);
+
+                this.clearUserCaches(user);
+
+                LOG.debug("Changed username for User: {}", user);
+            });
+    }
+
     /**
      * Not activated users should be automatically deleted after 3 days.
      * <p>

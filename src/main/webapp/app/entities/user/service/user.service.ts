@@ -34,6 +34,10 @@ export class UserService {
     return o1 && o2 ? this.getUserIdentifier(o1) === this.getUserIdentifier(o2) : o1 === o2;
   }
 
+  updateLogin(login: string): Observable<any> {
+    return this.http.put('/api/account/change-username', login);
+  }
+
   addUserToCollectionIfMissing<Type extends Pick<IUser, 'id'>>(
     userCollection: Type[],
     ...usersToCheck: (Type | null | undefined)[]

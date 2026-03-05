@@ -19,6 +19,7 @@ import { FindTimeService } from 'app/entities/find-time/service/find-time.servic
 import { UserProfileService } from '../service/user-profile.service';
 import { IUserProfile } from '../user-profile.model';
 import { UserProfileFormGroup, UserProfileFormService } from './user-profile-form.service';
+import { AccountService } from 'app/core/auth/account.service';
 
 @Component({
   standalone: true,
@@ -29,6 +30,7 @@ import { UserProfileFormGroup, UserProfileFormService } from './user-profile-for
 export class UserProfileUpdateComponent implements OnInit {
   isSaving = false;
   userProfile: IUserProfile | null = null;
+  isAdmin: boolean;
 
   usersSharedCollection: IUser[] = [];
   eventsSharedCollection: IEvent[] = [];
@@ -43,6 +45,10 @@ export class UserProfileUpdateComponent implements OnInit {
   protected findTimeService = inject(FindTimeService);
   protected elementRef = inject(ElementRef);
   protected activatedRoute = inject(ActivatedRoute);
+
+  constructor(private accountService: AccountService) {
+    this.isAdmin = this.accountService.hasAnyAuthority('ROLE_ADMIN');
+  }
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: UserProfileFormGroup = this.userProfileFormService.createUserProfileFormGroup();
@@ -95,12 +101,23 @@ export class UserProfileUpdateComponent implements OnInit {
 
   save(): void {
     this.isSaving = true;
+
     const userProfile = this.userProfileFormService.getUserProfile(this.editForm);
-    if (userProfile.id !== null) {
-      this.subscribeToSaveResponse(this.userProfileService.update(userProfile));
-    } else {
-      this.subscribeToSaveResponse(this.userProfileService.create(userProfile));
+    const newUsername = this.editForm.get('username')?.value;
+    if (!newUsername) {
+      this.isSaving = false;
+      return;
     }
+
+    this.userService.updateLogin(newUsername).subscribe(() => {
+      userProfile.username = newUsername;
+
+      if (userProfile.id !== null) {
+        this.subscribeToSaveResponse(this.userProfileService.update(userProfile));
+      } else {
+        this.subscribeToSaveResponse(this.userProfileService.create(userProfile));
+      }
+    });
   }
 
   protected subscribeToSaveResponse(result: Observable<HttpResponse<IUserProfile>>): void {
