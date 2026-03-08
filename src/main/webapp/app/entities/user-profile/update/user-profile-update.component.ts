@@ -6,7 +6,7 @@ import { finalize, map } from 'rxjs/operators';
 
 import SharedModule from 'app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
+import { LoginService } from 'app/login/login.service';
 import { AlertError } from 'app/shared/alert/alert-error.model';
 import { EventManager, EventWithContent } from 'app/core/util/event-manager.service';
 import { DataUtils, FileLoadError } from 'app/core/util/data-util.service';
@@ -20,6 +20,7 @@ import { UserProfileService } from '../service/user-profile.service';
 import { IUserProfile } from '../user-profile.model';
 import { UserProfileFormGroup, UserProfileFormService } from './user-profile-form.service';
 import { AccountService } from 'app/core/auth/account.service';
+import { Router } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -44,6 +45,8 @@ export class UserProfileUpdateComponent implements OnInit {
   protected eventService = inject(EventService);
   protected findTimeService = inject(FindTimeService);
   protected elementRef = inject(ElementRef);
+  protected loginService = inject(LoginService);
+  protected router = inject(Router);
   protected activatedRoute = inject(ActivatedRoute);
 
   constructor(private accountService: AccountService) {
@@ -100,14 +103,21 @@ export class UserProfileUpdateComponent implements OnInit {
   }
 
   save(): void {
+    const newUsername = this.editForm.get('username')?.value;
+
+    if (!newUsername) {
+      return;
+    }
+
+    const confirmChange = window.confirm('Changing your username will log you out and require you to sign in again. Continue?');
+
+    if (!confirmChange) {
+      return;
+    }
+
     this.isSaving = true;
 
     const userProfile = this.userProfileFormService.getUserProfile(this.editForm);
-    const newUsername = this.editForm.get('username')?.value;
-    if (!newUsername) {
-      this.isSaving = false;
-      return;
-    }
 
     this.userService.updateLogin(newUsername).subscribe(() => {
       userProfile.username = newUsername;
@@ -128,7 +138,10 @@ export class UserProfileUpdateComponent implements OnInit {
   }
 
   protected onSaveSuccess(): void {
-    this.previousState();
+    this.isSaving = false;
+    alert('Your username has been changed. Please log in again with your new username.');
+    this.loginService.logout();
+    this.router.navigate(['/login']);
   }
 
   protected onSaveError(): void {

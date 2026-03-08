@@ -10,6 +10,8 @@ import bham.team.service.dto.PasswordChangeDTO;
 import bham.team.web.rest.errors.*;
 import bham.team.web.rest.vm.KeyAndPasswordVM;
 import bham.team.web.rest.vm.ManagedUserVM;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.*;
 import org.apache.commons.lang3.StringUtils;
@@ -94,8 +96,9 @@ public class AccountResource {
     }
 
     @PutMapping("/account/change-username")
-    public ResponseEntity<Void> changeUsername(@RequestBody String login) {
+    public ResponseEntity<Void> changeUsername(@RequestBody String login, HttpServletRequest request) throws ServletException {
         userService.updateLogin(login);
+        request.logout();
         return ResponseEntity.ok().build();
     }
 
