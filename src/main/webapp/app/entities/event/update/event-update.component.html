@@ -101,7 +101,7 @@
             <option [ngValue]="null"></option>
             @for (privacyStatus of privacyStatusValues; track $index) {
               <option [value]="privacyStatus">
-                {{ { null: '', PRIVATE: 'PRIVATE', SHARED: 'SHARED', PUBLIC: 'PUBLIC' }[privacyStatus] }}
+                {{ { null: '', PRIVATE: 'PRIVATE', PUBLIC: 'PUBLIC' }[privacyStatus] }}
               </option>
             }
           </select>
@@ -113,24 +113,6 @@
             </div>
           }
         </div>
-
-        <div class="mb-3">
-          <label for="field_participants">Participant</label>
-          <select
-            class="form-control"
-            id="field_participants"
-            data-cy="participant"
-            multiple
-            name="participants"
-            formControlName="participants"
-            [compareWith]="compareUserProfile"
-          >
-            @for (userProfileOption of userProfilesSharedCollection; track $index) {
-              <option [ngValue]="userProfileOption">{{ userProfileOption.id }}</option>
-            }
-          </select>
-        </div>
-
         <div class="mb-3">
           <!-- <label class="form-label" for="field_owner">Owner</label>
           <select

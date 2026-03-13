@@ -1,38 +1,36 @@
 <title>User Profiles</title>
-<div>
-  <h2 id="page-heading" data-cy="UserProfileHeading">
-    <span>User Profiles</span>
 
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+<div class="user-profiles-page">
+  <div class="page-header mb-4">
+    <h2 id="page-heading" data-cy="UserProfileHeading" class="mb-3">User Profiles</h2>
+
+    <div class="toolbar d-flex flex-wrap align-items-center gap-2">
+      <button class="btn btn-info" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span>Refresh list</span>
+        <span class="ms-1">Refresh List</span>
       </button>
 
-      <button
-        *ngIf="isAdmin"
-        id="jh-create-entity"
-        data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-user-profile"
-        [routerLink]="['/user-profile/new']"
-      >
-        <fa-icon icon="plus"></fa-icon>
-        <span>Create a new User Profile</span>
-      </button>
+      @if (isAdmin) {
+        <button id="jh-create-entity" data-cy="entityCreateButton" class="btn btn-primary" [routerLink]="['/user-profile/new']">
+          <fa-icon icon="plus"></fa-icon>
+          <span class="ms-1">Create User Profile</span>
+        </button>
+      }
 
-      <label for="site-search">Search for Users:</label>
-      <input type="search" [(ngModel)]="searchQuery" placeholder="Search Users" />
-      <button class="btn btn-info me-2" (click)="search()">Search</button>
+      <div class="search-bar d-flex align-items-center gap-2 ms-lg-auto">
+        <label for="site-search" class="mb-0 fw-semibold">Search for Users:</label>
+        <input id="site-search" type="search" class="form-control" [(ngModel)]="searchQuery" placeholder="Search Users" />
+        <button class="btn btn-info" (click)="search()">Search</button>
+      </div>
 
-      <a [routerLink]="['/user-profile', currentUserProfileId, 'view']" class="btn btn-info btn-sm">
+      <a [routerLink]="['/user-profile', currentUserProfileId, 'view']" class="btn btn-info">
         <fa-icon icon="eye"></fa-icon>
-        <span class="d-none d-md-inline">My Profile</span>
+        <span class="ms-1">My Profile</span>
       </a>
     </div>
-  </h2>
+  </div>
 
   <jhi-alert-error></jhi-alert-error>
-
   <jhi-alert></jhi-alert>
 
   @if (userProfiles?.length === 0) {
@@ -42,108 +40,91 @@
   }
 
   @if (userProfiles && userProfiles.length > 0) {
-    <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
-        <thead>
-          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col">
-              <div class="d-flex">
-                <span>Profile Picture</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="username">
-              <div class="d-flex">
-                <span>Username</span>
+    <div class="profile-card-list">
+      @for (userProfile of userProfiles; track trackId(userProfile)) {
+        @if (userProfile.id != currentUserProfileId) {
+          @let fs = getFriendship(userProfile.id);
+          @let currentUser = this.currentUserProfileId;
 
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="fullName">
-              <div class="d-flex">
-                <span>Full Name</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col">
-              <div class="d-flex">
-                <span>Friendship</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (userProfile of userProfiles; track trackId(userProfile)) {
-            @if (userProfile.id != currentUserProfileId) {
-              @let fs = getFriendship(userProfile.id);
-              <tr data-cy="entityTable">
-                <td>
+          <div class="card profile-card shadow-sm mb-4" data-cy="entityCard">
+            <div class="card-body">
+              <div class="row align-items-center g-3">
+                <!-- Profile picture -->
+                <div class="col-12 col-md-2 text-center">
                   @if (userProfile.profilePicture) {
                     <a (click)="openFile(userProfile.profilePicture, userProfile.profilePictureContentType)">
                       <img
                         [src]="'data:' + userProfile.profilePictureContentType + ';base64,' + userProfile.profilePicture"
-                        class="Avatar"
+                        class="profile-avatar"
                         alt="userProfile"
                       />
                     </a>
+                  } @else {
+                    <div class="profile-avatar placeholder-avatar d-flex align-items-center justify-content-center">
+                      <fa-icon icon="user" size="2x"></fa-icon>
+                    </div>
                   }
-                </td>
-                <td>{{ userProfile.username }}</td>
-                <td>{{ userProfile.fullName }}</td>
+                </div>
 
-                <td>{{ fs?.status?.toString() }}</td>
-                <td class="text-end">
-                  <div class="btn-group">
+                <!-- User info -->
+                <div class="col-12 col-md-6">
+                  <h4 class="mb-1">{{ userProfile.username }}</h4>
+                  <p class="mb-2 text-muted">{{ userProfile.fullName }}</p>
+                  <p class="mb-0">
+                    <strong>Friendship Status:</strong>
+                    {{ fs?.status?.toString() || 'NONE' }}
+                  </p>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="col-12 col-md-4">
+                  <div class="d-flex flex-wrap gap-2 justify-content-md-end">
                     <a [routerLink]="['/user-profile', userProfile.id, 'view']" class="btn btn-info btn-sm">
                       <fa-icon icon="eye"></fa-icon>
-                      <span class="d-none d-md-inline">View</span>
+                      <span class="ms-1">View</span>
                     </a>
-                    @let currentUser = this.currentUserProfileId;
+
                     @if (currentUser === userProfile.id || isAdmin) {
                       <a [routerLink]="['/user-profile', userProfile.id, 'edit']" class="btn btn-primary btn-sm">
                         <fa-icon icon="pencil-alt"></fa-icon>
-                        <span class="d-none d-md-inline">Edit</span>
+                        <span class="ms-1">Edit</span>
                       </a>
                     }
+
                     @if (isAdmin) {
-                      <button type="submit" (click)="delete(userProfile)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                      <button type="button" (click)="delete(userProfile)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
                         <fa-icon icon="times"></fa-icon>
-                        <span class="d-none d-md-inline">Delete</span>
+                        <span class="ms-1">Delete</span>
                       </button>
                     }
+
                     @if ((!fs || fs.status === 'NONE') && currentUser !== userProfile.id) {
-                      <button class="btn btn-success btn-sm" (click)="sendFriendRequest(userProfile.id)">
+                      <button type="button" class="btn btn-success btn-sm" (click)="sendFriendRequest(userProfile.id)">
                         <fa-icon icon="user-plus"></fa-icon>
-                        <span class="d-none d-md-inline">Add</span>
+                        <span class="ms-1">Add</span>
                       </button>
                     }
 
-                    <!-- Pending AND current user is recipient → Accept / Decline -->
                     @if (fs?.status === 'PENDING' && !fs?.isRequester) {
-                      <button class="btn btn-success btn-sm" (click)="acceptFriendRequest(fs.friendshipId)">Accept</button>
+                      <button type="button" class="btn btn-success btn-sm" (click)="acceptFriendRequest(fs.friendshipId)">Accept</button>
 
-                      <button class="btn btn-danger btn-sm" (click)="declineFriendRequest(fs.friendshipId)">Decline</button>
+                      <button type="button" class="btn btn-danger btn-sm" (click)="declineFriendRequest(fs.friendshipId)">Decline</button>
                     }
 
-                    <!-- Pending AND current user sent request → Pending label -->
                     @if (fs?.status === 'PENDING' && fs?.isRequester) {
-                      <button class="btn btn-secondary btn-sm" disabled>Pending</button>
+                      <button type="button" class="btn btn-secondary btn-sm" disabled>Pending</button>
                     }
 
-                    <!-- Already friends → Remove -->
                     @if (fs?.status === 'ACCEPTED') {
-                      <button class="btn btn-danger btn-sm" (click)="removeFriend(fs.friendshipId)">Remove</button>
+                      <button type="button" class="btn btn-danger btn-sm" (click)="removeFriend(fs.friendshipId)">Remove</button>
                     }
                   </div>
-                </td>
-              </tr>
-            }
-          }
-        </tbody>
-      </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      }
     </div>
   }
 </div>

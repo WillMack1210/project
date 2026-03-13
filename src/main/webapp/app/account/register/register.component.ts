@@ -23,6 +23,12 @@ export default class RegisterComponent implements AfterViewInit {
   errorUserExists = signal(false);
   success = signal(false);
 
+  selectedImageName = signal('');
+  imageError = signal('');
+
+  profilePictureBase64: string | null = null;
+  profilePictureContentType: string | null = null;
+
   registerForm = new FormGroup({
     login: new FormControl('', {
       nonNullable: true,
@@ -57,6 +63,46 @@ export default class RegisterComponent implements AfterViewInit {
     this.login().nativeElement.focus();
   }
 
+  setFileData(event: Event): void {
+    this.imageError.set('');
+
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      this.profilePictureBase64 = null;
+      this.profilePictureContentType = null;
+      this.selectedImageName.set('');
+      return;
+    }
+
+    const file = input.files[0];
+
+    if (!file.type.startsWith('image/')) {
+      this.imageError.set('Please select a valid image file.');
+      this.profilePictureBase64 = null;
+      this.profilePictureContentType = null;
+      this.selectedImageName.set('');
+      return;
+    }
+
+    this.selectedImageName.set(file.name);
+    this.profilePictureContentType = file.type;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      const base64 = result.split(',')[1];
+      this.profilePictureBase64 = base64;
+    };
+    reader.onerror = () => {
+      this.imageError.set('Could not read the selected image.');
+      this.profilePictureBase64 = null;
+      this.profilePictureContentType = null;
+      this.selectedImageName.set('');
+    };
+
+    reader.readAsDataURL(file);
+  }
+
   register(): void {
     this.doNotMatch.set(false);
     this.error.set(false);
@@ -69,7 +115,15 @@ export default class RegisterComponent implements AfterViewInit {
     } else {
       const { login, email, fullName } = this.registerForm.getRawValue();
       this.registerService
-        .save({ login, email, fullName, password, langKey: 'en' })
+        .save({
+          login,
+          email,
+          fullName,
+          password,
+          langKey: 'en',
+          profilePicture: this.profilePictureBase64,
+          profilePictureContentType: this.profilePictureContentType,
+        })
         .subscribe({ next: () => this.success.set(true), error: response => this.processError(response) });
     }
   }

@@ -109,7 +109,7 @@ export class UserProfileUpdateComponent implements OnInit {
       return;
     }
 
-    const confirmChange = window.confirm('Changing your username will log you out and require you to sign in again. Continue?');
+    const confirmChange = window.confirm('Editing your user profile will log you out and require you to sign in again. Continue?');
 
     if (!confirmChange) {
       return;
@@ -139,7 +139,7 @@ export class UserProfileUpdateComponent implements OnInit {
 
   protected onSaveSuccess(): void {
     this.isSaving = false;
-    alert('Your username has been changed. Please log in again with your new username.');
+    alert('Your profile has been updated. Please log in again.');
     this.loginService.logout();
     this.router.navigate(['/login']);
   }

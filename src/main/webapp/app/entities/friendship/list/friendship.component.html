@@ -3,25 +3,12 @@
   <h2 id="page-heading" data-cy="FriendshipHeading">
     <span>Friendships</span>
 
-    <!-- <label for="site-search">Search the site:</label>
-    <input type="search" id="site-search" name="q" />
-    <button>Search</button> -->
     @let currentUser = this.currentUserProfileId;
     <div class="d-flex justify-content-end">
       <button class="btn btn-info me-2" (click)="loadFriends(currentUser!)" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
         <span>Refresh list</span>
       </button>
-
-      <!-- <button
-        id="jh-create-entity"
-        data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-friendship"
-        [routerLink]="['/userprofile']"
-      >
-        <fa-icon icon="plus"></fa-icon>
-        <span>Add Friend</span>
-      </button> -->
     </div>
   </h2>
 
@@ -34,80 +21,71 @@
       <span>No Friendships found</span>
     </div>
   }
-
   @if (friends && friends.length > 0) {
-    <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
-        <thead>
-          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span>ID</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="username">
-              <div class="d-flex">
-                <span>UserName</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="fullName">
-              <div class="d-flex">
-                <span>Full Name</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="events">
-              <div class="d-flex">
-                <span>Events</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (friend of friends; track friend.id) {
-            <tr data-cy="entityTable">
-              <td>{{ friend.id }}</td>
-              <td>
-                <a [routerLink]="['/user-profile', friend.id, 'view']">
-                  {{ friend.username }}
-                </a>
-              </td>
-              <td>
-                {{ friend.fullName }}
-              </td>
-              <td>
-                @if (friendEventsMap[friend.id]?.length) {
-                  @for (event of friendEventsMap[friend.id]; track event.id) {
-                    <div>
-                      {{ event.title }} -
-                      {{ event.startTime }}
-                    </div>
-                  }
+    <div class="profile-card-list">
+      @for (friend of friends; track friend.id) {
+        <div class="card profile-card shadow-sm mb-4" data-cy="entityCard">
+          <div class="card-body">
+            <div class="row align-items-center g-3">
+              <!-- Profile Picture -->
+              <div class="col-12 col-md-2 text-center">
+                @if (friend.profilePicture) {
+                  <a (click)="openFile(friend.profilePicture, friend.profilePictureContentType)">
+                    <img
+                      [src]="'data:' + friend.profilePictureContentType + ';base64,' + friend.profilePicture"
+                      class="profile-avatar"
+                      alt="friend"
+                    />
+                  </a>
                 } @else {
-                  No public events
+                  <div class="profile-avatar placeholder-avatar d-flex align-items-center justify-content-center">
+                    <fa-icon icon="user" size="2x"></fa-icon>
+                  </div>
                 }
-              </td>
-              <td class="text-end">
-                <div class="btn-group">
+              </div>
+
+              <!-- User Info + Events -->
+              <div class="col-12 col-md-6">
+                <h4 class="mb-1">{{ friend.username }}</h4>
+                <p class="mb-2 text-muted">{{ friend.fullName }}</p>
+
+                <div class="friend-events">
+                  <p class="mb-1"><strong>Upcoming Events</strong></p>
+
+                  @if (friendEventsMap[friend.id!]?.length) {
+                    <ul class="list-unstyled mb-0">
+                      @for (event of friendEventsMap[friend.id!]; track event.id) {
+                        <li class="mb-1">
+                          <strong>{{ event.title }}</strong>
+                          <span class="text-muted ms-2">
+                            {{ event.startTime?.toDate() | date: 'd MMM yyyy, HH:mm' }}
+                          </span>
+                        </li>
+                      }
+                    </ul>
+                  } @else {
+                    <p class="text-muted mb-0">No public events available.</p>
+                  }
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="col-12 col-md-4">
+                <div class="d-flex flex-column gap-2 align-items-md-center justify-content-center h-100">
                   <a [routerLink]="['/user-profile', friend.id, 'view']" class="btn btn-info btn-sm">
                     <fa-icon icon="eye"></fa-icon>
-                    <span class="d-none d-md-inline">View</span>
+                    <span class="ms-1">View Profile</span>
                   </a>
                   <button type="submit" (click)="delete(friend)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
                     <fa-icon icon="times"></fa-icon>
-                    <span class="d-none d-md-inline">Remove Friend</span>
+                    <span class="d-none d-md-inline">Delete</span>
                   </button>
                 </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
     </div>
   }
 </div>

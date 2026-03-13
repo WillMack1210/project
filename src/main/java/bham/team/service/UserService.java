@@ -121,10 +121,10 @@ public class UserService {
         String encryptedPassword = passwordEncoder.encode(password);
         newUser.setLogin(userVM.getLogin().toLowerCase());
         // new user gets initially a generated password
-        String[] name = userVM.getFullName().split("\\s+");
+        String[] name = userVM.getFullName().split("\\s+", 2);
         newUser.setPassword(encryptedPassword);
         newUser.setFirstName(name[0]);
-        newUser.setLastName(name[1]);
+        newUser.setLastName(name.length > 1 ? name[1] : "");
         if (userVM.getEmail() != null) {
             newUser.setEmail(userVM.getEmail().toLowerCase());
         }
@@ -143,6 +143,8 @@ public class UserService {
         userProfile.setUser(newUser);
         userProfile.setUsername(newUser.getLogin());
         userProfile.setFullName(userVM.getFullName());
+        userProfile.setProfilePicture(userVM.getProfilePicture());
+        userProfile.setProfilePictureContentType(userVM.getProfilePictureContentType());
         userProfileRepository.save(userProfile);
         this.clearUserCaches(newUser);
         LOG.debug("Created Information for User: {}", newUser);

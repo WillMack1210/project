@@ -5,6 +5,5 @@ package bham.team.domain.enumeration;
  */
 public enum PrivacyStatus {
     PRIVATE,
-    SHARED,
     PUBLIC,
 }

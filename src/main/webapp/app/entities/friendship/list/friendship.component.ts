@@ -7,6 +7,7 @@ import SharedModule from 'app/shared/shared.module';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
 import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
 import { FormsModule } from '@angular/forms';
+import { DataUtils } from 'app/core/util/data-util.service';
 import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
 import { IFriendship } from '../friendship.model';
 import { EntityArrayResponseType, FriendshipService } from '../service/friendship.service';
@@ -52,6 +53,7 @@ export class FriendshipComponent implements OnInit {
   protected readonly sortService = inject(SortService);
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
+  protected dataUtils = inject(DataUtils);
   protected userProfileService = inject(UserProfileService);
   protected friendshipExtendedService = inject(FriendshipExtendedService);
 
@@ -83,6 +85,10 @@ export class FriendshipComponent implements OnInit {
       .subscribe();
   }
 
+  openFile(base64String: string, contentType: string | null | undefined): void {
+    return this.dataUtils.openFile(base64String, contentType);
+  }
+
   load(): void {
     this.queryBackend().subscribe({
       next: (res: EntityArrayResponseType) => {
@@ -102,7 +108,7 @@ export class FriendshipComponent implements OnInit {
 
   loadFriendEvents(profileId: number): void {
     this.eventService.getEvents(profileId).subscribe(events => {
-      this.friendEventsMap[profileId] = events.filter(e => e.privacy === PrivacyStatus.PUBLIC);
+      this.friendEventsMap[profileId] = events.filter(e => e.privacy === PrivacyStatus.PUBLIC).slice(0, 3);
     });
   }
 

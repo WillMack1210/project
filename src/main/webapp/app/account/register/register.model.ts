@@ -5,5 +5,7 @@ export class Registration {
     public fullName: string,
     public password: string,
     public langKey: string,
+    public profilePicture: string | null,
+    public profilePictureContentType?: string | null,
   ) {}
 }

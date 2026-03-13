@@ -20,6 +20,9 @@ public class ManagedUserVM extends AdminUserDTO {
     @Size(min = 1, max = 100)
     private String fullName;
 
+    private byte[] profilePicture;
+    private String profilePictureContentType;
+
     public ManagedUserVM() {
         // Empty constructor needed for Jackson.
     }
@@ -38,6 +41,22 @@ public class ManagedUserVM extends AdminUserDTO {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public byte[] getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(byte[] profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
+    public String getProfilePictureContentType() {
+        return profilePictureContentType;
+    }
+
+    public void setProfilePictureContentType(String profilePictureContentType) {
+        this.profilePictureContentType = profilePictureContentType;
     }
 
     // prettier-ignore

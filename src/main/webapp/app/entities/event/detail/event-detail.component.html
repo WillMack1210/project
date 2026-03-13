@@ -38,24 +38,7 @@
           </dd>
           <dt><span>Privacy</span></dt>
           <dd>
-            <span>{{ { null: '', PRIVATE: 'PRIVATE', SHARED: 'SHARED', PUBLIC: 'PUBLIC' }[eventRef.privacy ?? 'null'] }}</span>
-          </dd>
-          <dt><span>Participant</span></dt>
-          <dd>
-            @for (participant of eventRef.participants; track $index; let last = $last) {
-              <span>
-                <a [routerLink]="['/user-profile', participant.id, 'view']">{{ participant?.id }}</a
-                >{{ last ? '' : ', ' }}
-              </span>
-            }
-          </dd>
-          <dt><span>Owner</span></dt>
-          <dd>
-            @if (event()!.owner) {
-              <div>
-                <a [routerLink]="['/user-profile', event()!.owner?.id, 'view']">{{ eventRef.owner?.id }}</a>
-              </div>
-            }
+            <span>{{ { null: '', PRIVATE: 'PRIVATE', PUBLIC: 'PUBLIC' }[eventRef.privacy ?? 'null'] }}</span>
           </dd>
         </dl>
 

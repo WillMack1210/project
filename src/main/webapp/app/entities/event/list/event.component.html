@@ -36,13 +36,6 @@
       <table class="table table-striped" aria-describedby="page-heading">
         <thead>
           <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span>ID</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
             <th scope="col" jhiSortBy="title">
               <div class="d-flex">
                 <span>Title</span>
@@ -81,19 +74,6 @@
             <th scope="col" jhiSortBy="privacy">
               <div class="d-flex">
                 <span>Privacy</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="participant.id">
-              <div class="d-flex">
-                <span>Participant</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="owner.id">
-              <div class="d-flex">
-                <span>Owner</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
@@ -111,7 +91,7 @@
               <td>{{ event.startTime | formatMediumDatetime }}</td>
               <td>{{ event.endTime | formatMediumDatetime }}</td>
               <td>{{ event.location }}</td>
-              <td>{{ { null: '', PRIVATE: 'PRIVATE', SHARED: 'SHARED', PUBLIC: 'PUBLIC' }[event.privacy ?? 'null'] }}</td>
+              <td>{{ { null: '', PRIVATE: 'PRIVATE', PUBLIC: 'PUBLIC' }[event.privacy ?? 'null'] }}</td>
               <td>
                 @for (participant of event.participants; track $index; let last = $last) {
                   <span>
