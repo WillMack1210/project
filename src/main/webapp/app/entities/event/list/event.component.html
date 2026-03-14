@@ -1,134 +1,86 @@
 <title>Events</title>
-<div>
-  <h2 id="page-heading" data-cy="EventHeading">
-    <span>Events</span>
 
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <h2 id="page-heading" data-cy="EventHeading" class="mb-0">
+      <span>My Events</span>
+    </h2>
+
+    <div class="toolbar d-flex flex-wrap align-items-center gap-2">
+      <button class="btn btn-info" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span>Refresh list</span>
+        <span class="ms-1">Refresh List</span>
       </button>
 
-      <button
-        id="jh-create-entity"
-        data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-event"
-        [routerLink]="['/event/new']"
-      >
+      <button id="jh-create-entity" data-cy="entityCreateButton" class="btn btn-primary" [routerLink]="['/event/new']">
         <fa-icon icon="plus"></fa-icon>
-        <span>Create a new Event</span>
+        <span class="ms-2">Add New Event</span>
       </button>
     </div>
-  </h2>
+  </div>
 
   <jhi-alert-error></jhi-alert-error>
-
   <jhi-alert></jhi-alert>
 
   @if (events?.length === 0) {
-    <div class="alert alert-warning" id="no-result">
+    <div class="alert alert-warning text-center" id="no-result">
       <span>No Events found</span>
     </div>
   }
 
   @if (events && events.length > 0) {
-    <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
-        <thead>
-          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="title">
-              <div class="d-flex">
-                <span>Title</span>
+    <div class="d-flex flex-column gap-4" id="entities">
+      @for (event of events; track trackId(event)) {
+        <div class="card event-card shadow-sm p-3 p-md-4" data-cy="entityCard">
+          <div class="row align-items-center">
+            <div class="col-lg-8">
+              <h3 class="mb-3 fw-bold">
+                {{ event.title || 'Untitled Event' }}
+              </h3>
 
-                <fa-icon class="p-1" icon="sort"></fa-icon>
+              <div class="mb-2 fs-5">
+                <strong>{{ event.startTime | formatMediumDatetime }}</strong>
+                <span class="mx-2">-</span>
+                <strong>{{ event.endTime | formatMediumDatetime }}</strong>
               </div>
-            </th>
-            <th scope="col" jhiSortBy="description">
-              <div class="d-flex">
-                <span>Description</span>
 
-                <fa-icon class="p-1" icon="sort"></fa-icon>
+              <div class="mb-2">
+                <strong>Location:</strong>
+                <span>{{ event.location || 'No location set' }}</span>
               </div>
-            </th>
-            <th scope="col" jhiSortBy="startTime">
-              <div class="d-flex">
-                <span>Start Time</span>
 
-                <fa-icon class="p-1" icon="sort"></fa-icon>
+              <div class="mb-2">
+                <strong>Event Privacy:</strong>
+                <span>{{ { null: '', PRIVATE: 'PRIVATE', PUBLIC: 'PUBLIC' }[event.privacy ?? 'null'] }}</span>
               </div>
-            </th>
-            <th scope="col" jhiSortBy="endTime">
-              <div class="d-flex">
-                <span>End Time</span>
 
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="location">
-              <div class="d-flex">
-                <span>Location</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="privacy">
-              <div class="d-flex">
-                <span>Privacy</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (event of events; track trackId(event)) {
-            <tr data-cy="entityTable">
-              <td>
-                <a [routerLink]="['/event', event.id, 'view']">{{ event.id }}</a>
-              </td>
-              <td>{{ event.title }}</td>
-              <td>{{ event.description }}</td>
-              <td>{{ event.startTime | formatMediumDatetime }}</td>
-              <td>{{ event.endTime | formatMediumDatetime }}</td>
-              <td>{{ event.location }}</td>
-              <td>{{ { null: '', PRIVATE: 'PRIVATE', PUBLIC: 'PUBLIC' }[event.privacy ?? 'null'] }}</td>
-              <td>
-                @for (participant of event.participants; track $index; let last = $last) {
-                  <span>
-                    <a class="form-control-static" [routerLink]="['/user-profile', participant.id, 'view']">{{ participant.id }}</a
-                    >{{ last ? '' : ', ' }}
-                  </span>
-                }
-              </td>
-              <td>
-                @if (event.owner) {
-                  <div>
-                    <a [routerLink]="['/user-profile', event.owner.id, 'view']">{{ event.owner.id }}</a>
-                  </div>
-                }
-              </td>
-              <td class="text-end">
-                <div class="btn-group">
-                  <a [routerLink]="['/event', event.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
-                    <fa-icon icon="eye"></fa-icon>
-                    <span class="d-none d-md-inline">View</span>
-                  </a>
-
-                  <a [routerLink]="['/event', event.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                    <fa-icon icon="pencil-alt"></fa-icon>
-                    <span class="d-none d-md-inline">Edit</span>
-                  </a>
-
-                  <button type="submit" (click)="delete(event)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                    <fa-icon icon="times"></fa-icon>
-                    <span class="d-none d-md-inline">Delete</span>
-                  </button>
+              @if (event.description) {
+                <div class="mt-3 text-muted">
+                  {{ event.description }}
                 </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+              }
+            </div>
+            <div class="col-lg-4 mt-4 mt-lg-0">
+              <div class="d-flex justify-content-lg-end flex-wrap gap-2">
+                <a [routerLink]="['/event', event.id, 'view']" class="btn btn-outline-info" data-cy="entityDetailsButton">
+                  <fa-icon icon="eye"></fa-icon>
+                  <span class="ms-2">View</span>
+                </a>
+
+                <a [routerLink]="['/event', event.id, 'edit']" class="btn btn-outline-primary" data-cy="entityEditButton">
+                  <fa-icon icon="pencil-alt"></fa-icon>
+                  <span class="ms-2">Edit</span>
+                </a>
+
+                <button type="button" (click)="delete(event)" class="btn btn-outline-danger" data-cy="entityDeleteButton">
+                  <fa-icon icon="trash"></fa-icon>
+                  <span class="ms-2">Delete</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
     </div>
   }
 </div>

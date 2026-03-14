@@ -271,3 +271,16 @@ angular-cli removes postcss-rtl processed inline css, processed rules must be ad
 .friend-events li {
   font-size: 0.95rem;
 }
+
+.event-card {
+  border-radius: 16px;
+  border: 1px solid #ddd;
+}
+
+.event-card h3 {
+  font-weight: 600;
+}
+
+.event-card .btn {
+  min-width: 90px;
+}

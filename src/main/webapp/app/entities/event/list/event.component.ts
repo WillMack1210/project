@@ -14,6 +14,8 @@ import { EntityArrayResponseType, EventService } from '../service/event.service'
 import { EventDeleteDialogComponent } from '../delete/event-delete-dialog.component';
 import { AccountService } from 'app/core/auth/account.service';
 import { UserProfileService } from 'app/entities/user-profile/service/user-profile.service';
+import dayjs from 'dayjs/esm';
+import { Dayjs } from 'dayjs';
 
 @Component({
   standalone: true,
@@ -106,12 +108,17 @@ export class EventComponent implements OnInit {
   }
 
   protected refineData(data: IEvent[]): IEvent[] {
-    // filter events to only those owned by the current user's profile (if known)
-    const filtered = this.currentUserProfileId != null ? data.filter(e => e.owner?.id === this.currentUserProfileId) : data;
+    const now = dayjs();
+
+    const filtered = data.filter(e => {
+      const isOwnedByCurrentUser = this.currentUserProfileId != null ? e.owner?.id === this.currentUserProfileId : true;
+      const hasNotFinished = e.endTime != null ? !e.endTime.isBefore(now) : true;
+      return isOwnedByCurrentUser && hasNotFinished;
+    });
+
     const { predicate, order } = this.sortState();
     return predicate && order ? filtered.sort(this.sortService.startSort({ predicate, order })) : filtered;
   }
-
   protected fillComponentAttributesFromResponseBody(data: IEvent[] | null): IEvent[] {
     return data ?? [];
   }
