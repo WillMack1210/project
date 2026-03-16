@@ -50,31 +50,31 @@ public class UserProfile implements Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "participants", "owner" }, allowSetters = true)
     private Set<Event> events = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "user" }, allowSetters = true)
     private Set<AvailiabilityBlock> availiabilityBlocks = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ScheduleRequest> scheduleRequests = new HashSet<>();
 
-    @OneToMany(mappedBy = "requester", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Friendship> sentFriendships = new HashSet<>();
 
-    @OneToMany(mappedBy = "addressee", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "addressee", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Friendship> receivedFriendships = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "participants")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "participants", cascade = CascadeType.ALL)
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "participants", "owner" }, allowSetters = true)
     private Set<Event> sharedEvents = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "participants")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "participants", cascade = CascadeType.ALL)
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "requester", "participants", "suggestions" }, allowSetters = true)
     private Set<FindTime> findTimes = new HashSet<>();

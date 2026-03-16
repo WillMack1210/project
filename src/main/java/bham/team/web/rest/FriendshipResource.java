@@ -218,6 +218,12 @@ public class FriendshipResource {
         return ResponseEntity.ok(requests);
     }
 
+    @GetMapping("/friends/friends/{userId1}/{userId2}")
+    public ResponseEntity<Long> getFriendshipID(@PathVariable Long userId1, @PathVariable Long userId2) {
+        Optional<Friendship> friendship = friendshipRepository.findBetweenUsers(userId1, userId2);
+        return friendship.map(f -> ResponseEntity.ok(f.getId())).orElse(ResponseEntity.notFound().build());
+    }
+
     /**
      * {@code DELETE  /friendships/:id} : delete the "id" friendship.
      *

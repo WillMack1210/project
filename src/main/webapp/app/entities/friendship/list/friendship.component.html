@@ -76,7 +76,7 @@
                     <fa-icon icon="eye"></fa-icon>
                     <span class="ms-1">View Profile</span>
                   </a>
-                  <button type="submit" (click)="delete(friend)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                  <button type="button" (click)="removeFriend(friend.id)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
                     <fa-icon icon="times"></fa-icon>
                     <span class="d-none d-md-inline">Delete</span>
                   </button>

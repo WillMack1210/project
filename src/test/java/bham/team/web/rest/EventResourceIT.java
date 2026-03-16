@@ -61,7 +61,7 @@ class EventResourceIT {
     private static final String UPDATED_LOCATION = "BBBBBBBBBB";
 
     private static final PrivacyStatus DEFAULT_PRIVACY = PrivacyStatus.PRIVATE;
-    private static final PrivacyStatus UPDATED_PRIVACY = PrivacyStatus.SHARED;
+    private static final PrivacyStatus UPDATED_PRIVACY = PrivacyStatus.PUBLIC;
 
     private static final String ENTITY_API_URL = "/api/events";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";

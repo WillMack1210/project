@@ -233,13 +233,13 @@ angular-cli removes postcss-rtl processed inline css, processed rules must be ad
   gap: 0.75rem;
 }
 
-.search-bar input {
+.search-bar-input {
   min-width: 240px;
 }
 
 .profile-card {
   border-radius: 16px;
-  border: 1px solid #ddd;
+  border: 1px solid #bbb;
 }
 
 .profile-avatar {
@@ -274,7 +274,7 @@ angular-cli removes postcss-rtl processed inline css, processed rules must be ad
 
 .event-card {
   border-radius: 16px;
-  border: 1px solid #ddd;
+  border: 1px solid #bbb;
 }
 
 .event-card h3 {

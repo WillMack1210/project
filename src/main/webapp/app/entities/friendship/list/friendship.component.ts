@@ -73,16 +73,15 @@ export class FriendshipComponent implements OnInit {
       .subscribe();
   }
 
-  delete(friendship: IFriendship): void {
-    const modalRef = this.modalService.open(FriendshipDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
-    modalRef.componentInstance.friendship = friendship;
-    // unsubscribe not needed because closed completes on modal close
-    modalRef.closed
-      .pipe(
-        filter(reason => reason === ITEM_DELETED_EVENT),
-        tap(() => this.load()),
-      )
-      .subscribe();
+  loadFriendshipStatuses(): void {
+    this.friendshipExtendedService.getFriendshipStatusesForCurrentUser().subscribe({
+      next: statuses => {
+        this.friendshipStatusMap = {};
+        statuses.forEach(s => {
+          this.friendshipStatusMap[s.userProfileId] = s;
+        });
+      },
+    });
   }
 
   openFile(base64String: string, contentType: string | null | undefined): void {
@@ -102,6 +101,18 @@ export class FriendshipComponent implements OnInit {
       this.friends = friends;
       friends.forEach(friend => {
         this.loadFriendEvents(friend.id);
+      });
+    });
+  }
+
+  removeFriend(friendId: number): void {
+    if (this.currentUserProfileId == null) {
+      return;
+    }
+
+    this.friendshipExtendedService.getFriendship(this.currentUserProfileId, friendId).subscribe(friendshipId => {
+      this.friendshipExtendedService.removeFriend(friendshipId).subscribe(() => {
+        this.loadFriendshipStatuses();
       });
     });
   }

@@ -39,4 +39,8 @@ export class FriendshipExtendedService {
   getRequests(userProfileId: number): Observable<IFriendship[]> {
     return this.http.get<IFriendship[]>(`${this.resourceUrl}/friends/requests/${userProfileId}`);
   }
+
+  getFriendship(userId1: number, userId2: number): Observable<number> {
+    return this.http.get<number>(`${this.resourceUrl}/friends/friends/${userId1}/${userId2}`);
+  }
 }
