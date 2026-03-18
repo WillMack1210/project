@@ -27,19 +27,9 @@ const routes: Routes = [
     loadChildren: () => import('./schedule-request/schedule-request.routes'),
   },
   {
-    path: 'availiability-block',
-    data: { pageTitle: 'AvailiabilityBlocks' },
-    loadChildren: () => import('./availiability-block/availiability-block.routes'),
-  },
-  {
     path: 'find-time',
     data: { pageTitle: 'FindTimes' },
     loadChildren: () => import('./find-time/find-time.routes'),
-  },
-  {
-    path: 'suggestion',
-    data: { pageTitle: 'Suggestions' },
-    loadChildren: () => import('./suggestion/suggestion.routes'),
   },
   /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
 ];

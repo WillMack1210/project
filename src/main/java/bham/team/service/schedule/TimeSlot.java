@@ -24,8 +24,4 @@ public class TimeSlot {
     public Duration length() {
         return Duration.between(start, end);
     }
-
-    public void consume(Duration d) {
-        this.start = start.plus(d);
-    }
 }

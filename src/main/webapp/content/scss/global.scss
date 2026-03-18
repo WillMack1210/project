@@ -284,3 +284,231 @@ angular-cli removes postcss-rtl processed inline css, processed rules must be ad
 .event-card .btn {
   min-width: 90px;
 }
+
+.home-page {
+  min-height: calc(100vh - 56px);
+  background: #ffffff;
+}
+
+.logged-out-landing {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.landing-card {
+  width: 100%;
+  max-width: 900px;
+  background: #ffffff;
+  border: 1px solid #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  padding: 3rem 2rem;
+}
+
+.landing-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.brand-text {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #212529;
+}
+
+.landing-content {
+  max-width: 600px;
+}
+
+.landing-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #212529;
+  margin-bottom: 1rem;
+}
+
+.landing-subtitle {
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.landing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.action-btn {
+  min-width: 180px;
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 0.8rem 1.5rem;
+}
+
+.landing-links {
+  font-size: 0.95rem;
+  color: #6c757d;
+}
+
+.landing-links a {
+  margin-left: 0.35rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.landing-links a:hover {
+  text-decoration: underline;
+}
+
+.welcome-banner {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem 1.75rem;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+}
+
+.welcome-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.welcome-subtitle {
+  color: #6c757d;
+}
+
+.calendar-wrapper {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.25rem;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+}
+.auth-page {
+  min-height: calc(100vh - 56px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: #ffffff;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 620px;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  padding: 2.5rem;
+}
+
+.auth-card-wide {
+  max-width: 860px;
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+}
+
+.brand-text {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #212529;
+}
+
+.auth-header {
+  margin-bottom: 1.75rem;
+}
+
+.auth-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #212529;
+  margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+  color: #6c757d;
+  margin-bottom: 0;
+  line-height: 1.6;
+}
+
+.auth-form .form-label {
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 0.5rem;
+}
+
+.auth-input {
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  border: 1px solid #ced4da;
+  box-shadow: none;
+}
+
+.auth-input:focus {
+  border-color: #4da3ff;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.12);
+}
+
+.auth-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.auth-submit-btn {
+  min-width: 160px;
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 0.8rem 1.4rem;
+}
+
+.auth-footer {
+  margin-top: 1.5rem;
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+.auth-link {
+  margin-left: 0.35rem;
+  text-decoration: none;
+  font-weight: 600;
+  color: #0d6efd;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+}
+
+.auth-alert {
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .auth-card,
+  .auth-card-wide {
+    padding: 1.5rem;
+  }
+
+  .auth-title {
+    font-size: 1.8rem;
+  }
+}

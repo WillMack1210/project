@@ -1,43 +1,54 @@
 <title>Register</title>
-<div>
-  <div class="d-flex justify-content-center">
-    <div class="col-md-8">
-      <h1 data-cy="registerTitle">Registration</h1>
 
-      @if (success()) {
-        <div class="alert alert-success">
-          <strong>Registration saved!</strong> Please check for an email from no-reply&#64;em9826.planly.work.gd for your activation link.
-          Make sure to check your spam if you dont see it
-        </div>
-      }
-
-      @if (error()) {
-        <div class="alert alert-danger"><strong>Registration failed!</strong> Please try again later.</div>
-      }
-
-      @if (errorUserExists()) {
-        <div class="alert alert-danger"><strong>Login name already registered!</strong> Please choose another one.</div>
-      }
-
-      @if (errorEmailExists()) {
-        <div class="alert alert-danger"><strong>Email is already in use!</strong> Please choose another one.</div>
-      }
-
-      @if (doNotMatch()) {
-        <div class="alert alert-danger">The password and its confirmation do not match!</div>
-      }
+<div class="auth-page">
+  <div class="auth-card auth-card-wide">
+    <div class="auth-brand">
+      <div class="brand-icon"></div>
+      <span class="brand-text">Planly</span>
     </div>
-  </div>
 
-  <div class="d-flex justify-content-center">
-    <div class="col-md-8">
-      @if (!success()) {
-        <form name="form" (ngSubmit)="register()" [formGroup]="registerForm">
-          <div class="mb-3">
+    @if (!success()) {
+      <div class="auth-header">
+        <h1 data-cy="registerTitle" class="auth-title">Create your account</h1>
+        <p class="auth-subtitle">Set up your profile to start managing your calendar and events.</p>
+      </div>
+    } @else {
+      <div class="auth-header">
+        <h1 data-cy="registerTitle" class="auth-title">Thank you!</h1>
+        <p class="auth-subtitle">Your account has been created successfully.</p>
+      </div>
+
+      <div class="alert alert-success auth-alert">
+        <strong>Registration saved!</strong>
+        Please check for an email from no-reply&#64;em9826.planly.work.gd for your activation link. Make sure to check your spam if you
+        don’t see it.
+      </div>
+    }
+
+    @if (error()) {
+      <div class="alert alert-danger auth-alert"><strong>Registration failed!</strong> Please try again later.</div>
+    }
+
+    @if (errorUserExists()) {
+      <div class="alert alert-danger auth-alert"><strong>Login name already registered!</strong> Please choose another one.</div>
+    }
+
+    @if (errorEmailExists()) {
+      <div class="alert alert-danger auth-alert"><strong>Email is already in use!</strong> Please choose another one.</div>
+    }
+
+    @if (doNotMatch()) {
+      <div class="alert alert-danger auth-alert">The password and its confirmation do not match!</div>
+    }
+
+    @if (!success()) {
+      <form name="form" class="auth-form" (ngSubmit)="register()" [formGroup]="registerForm">
+        <div class="row g-3">
+          <div class="col-md-6">
             <label class="form-label" for="login">Username</label>
             <input
               type="text"
-              class="form-control"
+              class="form-control auth-input"
               id="login"
               name="login"
               placeholder="Your username, not case sensitive"
@@ -48,19 +59,16 @@
 
             @let loginRef = registerForm.get('login')!;
             @if (loginRef.invalid && (loginRef.dirty || loginRef.touched)) {
-              <div>
+              <div class="mt-1">
                 @if (loginRef?.errors?.required) {
                   <small class="form-text text-danger">Your username is required.</small>
                 }
-
                 @if (loginRef?.errors?.minlength) {
                   <small class="form-text text-danger">Your username is required to be at least 1 character.</small>
                 }
-
                 @if (loginRef?.errors?.maxlength) {
                   <small class="form-text text-danger">Your username cannot be longer than 50 characters.</small>
                 }
-
                 @if (loginRef?.errors?.pattern) {
                   <small class="form-text text-danger">Your username is invalid.</small>
                 }
@@ -68,57 +76,56 @@
             }
           </div>
 
-          <div class="mb-3">
-            <label class="form-label" for="fullName">Full Name</label>
+          <div class="col-md-6">
+            <label class="form-label" for="fullName">Full name</label>
             <input
               type="text"
-              class="form-control"
+              class="form-control auth-input"
               id="fullName"
               name="fullName"
-              placeholder="Your full name (This can't be changed later)"
+              placeholder="Your full name"
               formControlName="fullName"
               data-cy="fullName"
             />
+            <small class="form-text text-muted">This can&apos;t be changed later.</small>
+          </div>
 
-            <div class="mb-3">
-              <label class="form-label" for="email">Email</label>
-              <input
-                type="email"
-                class="form-control"
-                id="email"
-                name="email"
-                placeholder="Your email"
-                formControlName="email"
-                data-cy="email"
-              />
-            </div>
+          <div class="col-12">
+            <label class="form-label" for="email">Email</label>
+            <input
+              type="email"
+              class="form-control auth-input"
+              id="email"
+              name="email"
+              placeholder="Your email"
+              formControlName="email"
+              data-cy="email"
+            />
 
             @let emailRef = registerForm.get('email')!;
             @if (emailRef.invalid && (emailRef.dirty || emailRef.touched)) {
-              <div>
+              <div class="mt-1">
                 @if (emailRef?.errors?.required) {
                   <small class="form-text text-danger">Your email is required.</small>
                 }
-
                 @if (emailRef?.errors?.invalid) {
                   <small class="form-text text-danger">Your email is invalid.</small>
                 }
-
                 @if (emailRef?.errors?.minlength) {
                   <small class="form-text text-danger">Your email is required to be at least 5 characters.</small>
                 }
-
                 @if (emailRef?.errors?.maxlength) {
                   <small class="form-text text-danger">Your email cannot be longer than 50 characters.</small>
                 }
               </div>
             }
           </div>
-          <div class="mb-3">
-            <label class="form-label" for="profilePicture">Profile Picture</label>
+
+          <div class="col-12">
+            <label class="form-label" for="profilePicture">Profile picture</label>
             <input
               type="file"
-              class="form-control"
+              class="form-control auth-input"
               id="profilePicture"
               name="profilePicture"
               accept="image/*"
@@ -135,71 +142,76 @@
             }
           </div>
 
-          <div class="mb-3">
-            <label class="form-label" for="password">New password</label>
+          <div class="col-md-6">
+            <label class="form-label" for="password">Password</label>
             <input
               type="password"
-              class="form-control"
+              class="form-control auth-input"
               id="password"
               name="password"
-              placeholder="New password"
+              placeholder="Create a password"
               formControlName="password"
               data-cy="firstPassword"
             />
 
             @let passwordRef = registerForm.get('password')!;
             @if (passwordRef.invalid && (passwordRef.dirty || passwordRef.touched)) {
-              <div>
+              <div class="mt-1">
                 @if (passwordRef?.errors?.required) {
                   <small class="form-text text-danger">Your password is required.</small>
                 }
-
                 @if (passwordRef?.errors?.minlength) {
                   <small class="form-text text-danger">Your password is required to be at least 4 characters.</small>
                 }
-
                 @if (passwordRef?.errors?.maxlength) {
                   <small class="form-text text-danger">Your password cannot be longer than 50 characters.</small>
                 }
               </div>
             }
 
-            <jhi-password-strength-bar [passwordToCheck]="passwordRef.value"></jhi-password-strength-bar>
+            <div class="mt-2">
+              <jhi-password-strength-bar [passwordToCheck]="passwordRef.value"></jhi-password-strength-bar>
+            </div>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label" for="confirmPassword">New password confirmation</label>
+          <div class="col-md-6">
+            <label class="form-label" for="confirmPassword">Confirm password</label>
             <input
               type="password"
-              class="form-control"
+              class="form-control auth-input"
               id="confirmPassword"
               name="confirmPassword"
-              placeholder="Confirm the new password"
+              placeholder="Confirm your password"
               formControlName="confirmPassword"
               data-cy="secondPassword"
             />
 
             @let confirmPasswordRef = registerForm.get('confirmPassword')!;
             @if (confirmPasswordRef.invalid && (confirmPasswordRef.dirty || confirmPasswordRef.touched)) {
-              <div>
+              <div class="mt-1">
                 @if (confirmPasswordRef?.errors?.required) {
                   <small class="form-text text-danger">Your confirmation password is required.</small>
                 }
-
                 @if (confirmPasswordRef?.errors?.minlength) {
                   <small class="form-text text-danger">Your confirmation password is required to be at least 4 characters.</small>
                 }
-
                 @if (confirmPasswordRef?.errors?.maxlength) {
                   <small class="form-text text-danger">Your confirmation password cannot be longer than 50 characters.</small>
                 }
               </div>
             }
           </div>
+        </div>
 
-          <button type="submit" [disabled]="registerForm.invalid" class="btn btn-primary" data-cy="submit">Register</button>
-        </form>
-      }
-    </div>
+        <div class="mt-4 d-flex flex-wrap gap-3 align-items-center">
+          <button type="submit" [disabled]="registerForm.invalid" class="btn btn-primary auth-submit-btn" data-cy="submit">Register</button>
+
+          <div class="auth-footer m-0">
+            <span>Already have an account?</span>
+            <a class="auth-link" routerLink="/login">Sign in</a>
+          </div>
+        </div>
+      </form>
+    }
   </div>
 </div>
