@@ -195,7 +195,13 @@ public class EventResource {
     @GetMapping("")
     public List<EventDTO> getAllEvents(@RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload) {
         LOG.debug("REST request to get all Events");
-        List<Event> events = eventRepository.findAll();
+
+        String login = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        User user = userRepository.findOneByLogin(login).orElseThrow();
+        UserProfile userProfile = userProfileRepository.findOneByUserId(user.getId()).orElseThrow();
+
+        List<Event> events = eventRepository.findByOwnerIdOrderByStartTimeAsc(userProfile.getId());
+
         return eventMapper.toDto(events);
     }
 
@@ -215,11 +221,12 @@ public class EventResource {
     @GetMapping("/profile/{profileId}")
     public ResponseEntity<List<EventDTO>> getEventsForProfile(@PathVariable Long profileId) {
         List<EventDTO> events = eventRepository
-            .findByUserProfileId(profileId)
+            .findByOwnerIdOrderByStartTimeAsc(profileId)
             .stream()
             .filter(e -> e.getPrivacy() == PrivacyStatus.PUBLIC)
             .map(eventMapper::toDto)
             .toList();
+
         return ResponseEntity.ok(events);
     }
 

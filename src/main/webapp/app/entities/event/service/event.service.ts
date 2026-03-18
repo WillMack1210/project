@@ -98,7 +98,9 @@ export class EventService {
   }
 
   getEvents(profileId: number): Observable<IEvent[]> {
-    return this.http.get<IEvent[]>(`${this.resourceUrl}/profile/${profileId}`);
+    return this.http
+      .get<RestEvent[]>(`${this.resourceUrl}/profile/${profileId}`)
+      .pipe(map(events => events.map(event => this.convertDateFromServer(event))));
   }
 
   protected convertDateFromClient<T extends IEvent | NewEvent | PartialUpdateEvent>(event: T): RestOf<T> {

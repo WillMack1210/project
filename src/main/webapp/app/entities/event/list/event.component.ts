@@ -15,7 +15,6 @@ import { EventDeleteDialogComponent } from '../delete/event-delete-dialog.compon
 import { AccountService } from 'app/core/auth/account.service';
 import { UserProfileService } from 'app/entities/user-profile/service/user-profile.service';
 import dayjs from 'dayjs/esm';
-import { Dayjs } from 'dayjs';
 
 @Component({
   standalone: true,
@@ -44,28 +43,8 @@ export class EventComponent implements OnInit {
   trackId = (item: IEvent): number => this.eventService.getEventIdentifier(item);
 
   ngOnInit(): void {
-    // first resolve route params/sort, then load current account -> user profile -> events
-    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
-      .pipe(tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)))
-      .subscribe(() => {
-        this.accountService.identity().subscribe(account => {
-          // find user profile for current account
-          if (account?.login) {
-            const queryObj: any = { eagerload: true };
-            this.userProfileService.query(queryObj).subscribe(resp => {
-              const profiles = resp.body ?? [];
-              const myProfile = profiles.find(p => p.user?.login === account.login);
-              this.currentUserProfileId = myProfile?.id ?? null;
-              this.load();
-            });
-          } else {
-            this.currentUserProfileId = null;
-            this.load();
-          }
-        });
-      });
+    this.load();
   }
-
   byteSize(base64String: string): string {
     return this.dataUtils.byteSize(base64String);
   }
@@ -110,15 +89,26 @@ export class EventComponent implements OnInit {
   protected refineData(data: IEvent[]): IEvent[] {
     const now = dayjs();
 
-    const filtered = data.filter(e => {
-      const isOwnedByCurrentUser = this.currentUserProfileId != null ? e.owner?.id === this.currentUserProfileId : true;
-      const hasNotFinished = e.endTime != null ? !e.endTime.isBefore(now) : true;
-      return isOwnedByCurrentUser && hasNotFinished;
-    });
+    return data
+      .filter(e => e.endTime != null && !e.endTime.isBefore(now))
+      .sort((a, b) => {
+        const aStart = a.startTime;
+        const bStart = b.startTime;
 
-    const { predicate, order } = this.sortState();
-    return predicate && order ? filtered.sort(this.sortService.startSort({ predicate, order })) : filtered;
+        if (!aStart && !bStart) {
+          return 0;
+        }
+        if (!aStart) {
+          return 1;
+        }
+        if (!bStart) {
+          return -1;
+        }
+
+        return aStart.diff(bStart);
+      });
   }
+
   protected fillComponentAttributesFromResponseBody(data: IEvent[] | null): IEvent[] {
     return data ?? [];
   }
@@ -127,7 +117,7 @@ export class EventComponent implements OnInit {
     this.isLoading = true;
     const queryObject: any = {
       eagerload: true,
-      sort: this.sortService.buildSortParam(this.sortState()),
+      sort: ['startTime,asc'],
     };
     return this.eventService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
   }

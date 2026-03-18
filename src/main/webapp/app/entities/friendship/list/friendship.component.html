@@ -58,7 +58,13 @@
                         <li class="mb-1">
                           <strong>{{ event.title }}</strong>
                           <span class="text-muted ms-2">
-                            {{ event.startTime?.toDate() | date: 'd MMM yyyy, HH:mm' }}
+                            {{
+                              event.startTime
+                                ? event.startTime.toDate()
+                                  ? event.startTime.toDate()
+                                  : event.startTime
+                                : ('' | date: 'd MMM yyyy, HH:mm')
+                            }}
                           </span>
                         </li>
                       }
@@ -76,7 +82,7 @@
                     <fa-icon icon="eye"></fa-icon>
                     <span class="ms-1">View Profile</span>
                   </a>
-                  <button type="button" (click)="removeFriend(friend.id)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                  <button type="button" (click)="removeFriend(friend)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
                     <fa-icon icon="times"></fa-icon>
                     <span class="d-none d-md-inline">Delete</span>
                   </button>

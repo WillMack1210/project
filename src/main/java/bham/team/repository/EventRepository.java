@@ -46,4 +46,6 @@ public interface EventRepository extends EventRepositoryWithBagRelationships, Jp
         @Param("start") Instant start,
         @Param("end") Instant end
     );
+
+    List<Event> findByOwnerIdOrderByStartTimeAsc(Long profileId);
 }

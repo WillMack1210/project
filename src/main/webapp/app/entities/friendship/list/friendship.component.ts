@@ -9,6 +9,7 @@ import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'ap
 import { FormsModule } from '@angular/forms';
 import { DataUtils } from 'app/core/util/data-util.service';
 import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
+import dayjs from 'dayjs/esm';
 import { IFriendship } from '../friendship.model';
 import { EntityArrayResponseType, FriendshipService } from '../service/friendship.service';
 import { FriendshipDeleteDialogComponent } from '../delete/friendship-delete-dialog.component';
@@ -19,7 +20,9 @@ import { IUserProfile } from 'app/entities/user-profile/user-profile.model';
 import { UserProfileService } from 'app/entities/user-profile/service/user-profile.service';
 import { EventService } from 'app/entities/event/service/event.service';
 import { IEvent } from 'app/entities/event/event.model';
-import { PrivacyStatus } from 'app/entities/enumerations/privacy-status.model';
+import { forkJoin, of } from 'rxjs';
+import { AlertService } from 'app/core/util/alert.service';
+
 @Component({
   standalone: true,
   selector: 'jhi-friendship',
@@ -56,6 +59,7 @@ export class FriendshipComponent implements OnInit {
   protected dataUtils = inject(DataUtils);
   protected userProfileService = inject(UserProfileService);
   protected friendshipExtendedService = inject(FriendshipExtendedService);
+  protected alertService = inject(AlertService);
 
   constructor(
     private accountService: AccountService,
@@ -97,29 +101,98 @@ export class FriendshipComponent implements OnInit {
   }
 
   loadFriends(profileId: number): void {
-    this.friendshipExtendedService.getFriends(profileId).subscribe(friends => {
-      this.friends = friends;
-      friends.forEach(friend => {
-        this.loadFriendEvents(friend.id);
-      });
+    this.isLoading = true;
+    this.friendEventsMap = {};
+
+    this.friendshipExtendedService.getFriends(profileId).subscribe({
+      next: friends => {
+        this.friends = friends;
+
+        const eventRequests = friends.map(friend => this.eventService.getEvents(friend.id));
+
+        if (eventRequests.length === 0) {
+          this.isLoading = false;
+          return;
+        }
+
+        forkJoin(eventRequests).subscribe({
+          next: results => {
+            const now = dayjs();
+            const newMap: Record<number, IEvent[]> = {};
+
+            friends.forEach((friend, index) => {
+              newMap[friend.id] = results[index]
+                .filter(event => {
+                  if (!event.startTime) {
+                    return false;
+                  }
+                  const start = dayjs(event.startTime);
+                  return start.isValid() && (start.isSame(now) || start.isAfter(now));
+                })
+                .sort((a, b) => {
+                  const aStart = a.startTime ? dayjs(a.startTime) : null;
+                  const bStart = b.startTime ? dayjs(b.startTime) : null;
+
+                  if (!aStart?.isValid() && !bStart?.isValid()) {
+                    return 0;
+                  }
+                  if (!aStart?.isValid()) {
+                    return 1;
+                  }
+                  if (!bStart?.isValid()) {
+                    return -1;
+                  }
+
+                  return aStart.diff(bStart);
+                })
+                .slice(0, 3);
+            });
+
+            this.friendEventsMap = newMap;
+            this.isLoading = false;
+          },
+          error: () => {
+            this.isLoading = false;
+          },
+        });
+      },
+      error: () => {
+        this.isLoading = false;
+      },
     });
   }
 
-  removeFriend(friendId: number): void {
+  removeFriend(friend: IUserProfile): void {
+    const friendId = friend.id;
     if (this.currentUserProfileId == null) {
       return;
     }
 
-    this.friendshipExtendedService.getFriendship(this.currentUserProfileId, friendId).subscribe(friendshipId => {
-      this.friendshipExtendedService.removeFriend(friendshipId).subscribe(() => {
-        this.loadFriendshipStatuses();
-      });
-    });
-  }
+    this.friendshipExtendedService.getFriendship(this.currentUserProfileId, friendId).subscribe({
+      next: friendshipId => {
+        this.friendshipExtendedService.removeFriend(friendshipId).subscribe({
+          next: () => {
+            this.alertService.addAlert({
+              type: 'success',
+              message: `${friend.username} removed from friends`,
+            });
 
-  loadFriendEvents(profileId: number): void {
-    this.eventService.getEvents(profileId).subscribe(events => {
-      this.friendEventsMap[profileId] = events.filter(e => e.privacy === PrivacyStatus.PUBLIC).slice(0, 3);
+            this.loadFriends(this.currentUserProfileId!);
+          },
+          error: () => {
+            this.alertService.addAlert({
+              type: 'danger',
+              message: 'Error removing friend',
+            });
+          },
+        });
+      },
+      error: () => {
+        this.alertService.addAlert({
+          type: 'danger',
+          message: 'Error finding friendship',
+        });
+      },
     });
   }
 
