@@ -48,6 +48,19 @@
                 }
               </div>
             }
+
+            <div class="form-check form-switch mt-4">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="themeToggle"
+                [checked]="settingsForm.get('settings')?.value === 'dark'"
+                (change)="onThemeToggle($any($event.target).checked)"
+              />
+              <label class="form-check-label ms-2" for="themeToggle">
+                {{ settingsForm.get('settings')?.value === 'dark' ? 'Dark Mode' : 'Light Mode' }}
+              </label>
+            </div>
           </div>
 
           <button type="submit" [disabled]="settingsForm.invalid" class="btn btn-primary" data-cy="submit">Save</button>

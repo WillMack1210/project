@@ -72,8 +72,14 @@
                   <span class="ms-2">Edit</span>
                 </a>
 
-                <button type="button" (click)="delete(event)" class="btn btn-outline-danger" data-cy="entityDeleteButton">
-                  <fa-icon icon="trash"></fa-icon>
+                <button
+                  type="button"
+                  (click)="delete(event)"
+                  class="btn btn-outline-danger"
+                  data-cy="entityDeleteButton"
+                  [disabled]="isLoading"
+                >
+                  <fa-icon icon="multiply"></fa-icon>
                   <span class="ms-2">Delete</span>
                 </button>
               </div>

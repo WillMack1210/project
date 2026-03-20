@@ -33,7 +33,7 @@ public class ScheduleGenerationService {
     private final EventRepository eventRepository;
     private final ScheduleRequestRepository scheduleRequestRepository;
 
-    private static final LocalTime LATEST_END_TIME = LocalTime.of(20, 30);
+    private static final LocalTime LATEST_END_TIME = LocalTime.of(22, 00);
     private static final LocalTime EARLIEST_START_TIME = LocalTime.of(8, 30);
 
     public ScheduleGenerationService(EventRepository eventRepository, ScheduleRequestRepository scheduleRequestRepository) {

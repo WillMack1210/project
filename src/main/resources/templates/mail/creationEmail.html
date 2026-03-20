@@ -1,20 +1,23 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
   <head>
-    <title th:text="#{email.activation.title}">Planly Account Creation</title>
+    <title>Planly Account Creation</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="icon" th:href="@{|${baseUrl}/favicon.ico|}" />
   </head>
   <body>
-    <p th:text="#{email.activation.greeting(${user.login})}">Hi from us here at Planly,</p>
-    <p th:text="#{email.creation.text1}">Your Planly account has been created, please follow the link below to access it:</p>
+    <p>Hi from us here at Planly, <span th:text="${user.login}">user</span></p>
+
+    <p>Your Planly account has been created. Please follow the link below to access it:</p>
+
     <p>
-      <a th:with="url=(@{|${baseUrl}/account/reset/finish?key=${user.resetKey}|})" th:href="${url}" th:text="${url}">Login link</a>
+      <a th:with="url=(@{|${baseUrl}/account/reset/finish?key=${user.resetKey}|})" th:href="${url}" th:text="${url}"> Login link </a>
     </p>
+
     <p>
-      <span th:text="#{email.activation.text2}">Thanks for checking out our project, </span>
+      Thanks for checking out our project,
       <br />
-      <em th:text="#{email.signature}">Planly</em>
+      <em>Planly</em>
     </p>
   </body>
 </html>

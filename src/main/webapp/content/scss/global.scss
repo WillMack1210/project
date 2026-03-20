@@ -512,3 +512,156 @@ angular-cli removes postcss-rtl processed inline css, processed rules must be ad
     font-size: 1.8rem;
   }
 }
+
+.form-check-input {
+  cursor: pointer;
+}
+
+.form-check-input:checked {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+body.dark-mode .form-check-input {
+  background-color: #495057;
+  border-color: #6c757d;
+}
+
+body.dark-mode .form-check-input:checked {
+  background-color: #6ea8fe;
+  border-color: #6ea8fe;
+}
+
+body.dark-mode {
+  background: #232424;
+  color: #e9ecef;
+}
+
+body.dark-mode .home-page,
+body.dark-mode .auth-page {
+  background: #232424;
+  color: #e9ecef;
+}
+
+body.dark-mode .landing-card,
+body.dark-mode .auth-card,
+body.dark-mode .calendar-wrapper,
+body.dark-mode .welcome-banner,
+body.dark-mode .profile-card,
+body.dark-mode .event-card,
+body.dark-mode .jh-card {
+  background: #353738;
+  color: #e9ecef;
+  border: 1px solid #495057;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+body.dark-mode .brand-text,
+body.dark-mode .landing-title,
+body.dark-mode .auth-title,
+body.dark-mode .welcome-title,
+body.dark-mode .profile-card h4,
+body.dark-mode .event-card h3 {
+  color: #f8f9fa;
+}
+
+body.dark-mode .landing-subtitle,
+body.dark-mode .auth-subtitle,
+body.dark-mode .welcome-subtitle,
+body.dark-mode .auth-footer,
+body.dark-mode .landing-links {
+  color: #adb5bd;
+}
+
+body.dark-mode .auth-form .form-label {
+  color: #dee2e6;
+}
+
+body.dark-mode .auth-input,
+body.dark-mode .form-control,
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+  background: #2b2d2f;
+  color: #f8f9fa;
+  border: 1px solid #495057;
+}
+
+body.dark-mode .auth-input:focus,
+body.dark-mode .form-control:focus,
+body.dark-mode input:focus,
+body.dark-mode textarea:focus,
+body.dark-mode select:focus {
+  background: #2b2d2f;
+  color: #f8f9fa;
+  border-color: #6ea8fe;
+  box-shadow: 0 0 0 0.2rem rgba(110, 168, 254, 0.2);
+}
+
+body.dark-mode .readonly {
+  background-color: #3a3d40;
+  color: #ced4da;
+}
+
+body.dark-mode .navbar,
+body.dark-mode .dropdown-menu,
+body.dark-mode .modal-content {
+  background: #2b2d2f;
+  color: #e9ecef;
+  border-color: #495057;
+}
+
+body.dark-mode .dropdown-item,
+body.dark-mode .nav-link {
+  color: #e9ecef;
+}
+
+body.dark-mode .dropdown-item:hover,
+body.dark-mode .nav-link:hover {
+  background: #3a3d40;
+  color: #ffffff;
+}
+
+body.dark-mode .footer {
+  border-top: 1px solid #495057;
+}
+
+body.dark-mode .placeholder-avatar {
+  background: #495057;
+  color: #f8f9fa;
+}
+
+body.dark-mode .Avatar,
+body.dark-mode .mainAvatar,
+body.dark-mode .profile-avatar {
+  border-color: #6c757d;
+}
+
+body.dark-mode a {
+  color: #8ab4ff;
+}
+
+body.dark-mode a:hover {
+  color: #b6d0ff;
+}
+
+body.dark-mode .table {
+  color: #e9ecef;
+}
+
+body.dark-mode .table th,
+body.dark-mode .table td {
+  border-color: #495057;
+}
+
+body.dark-mode .alert-success {
+  background-color: #163a24;
+  color: #d1f7dd;
+  border-color: #245c39;
+}
+
+body.dark-mode .alert-danger {
+  background-color: #4a1e24;
+  color: #ffd7dc;
+  border-color: #7a2e38;
+}
