@@ -66,21 +66,25 @@ export default class SettingsComponent implements OnInit {
     const login = this.currentLogin ?? this.settingsForm.get('login')?.value ?? null;
 
     this.accountService.save(account).subscribe(() => {
-      if (this.currentUserProfile) {
-        const updatedProfile: IUserProfile = {
-          ...this.currentUserProfile,
-          settings: selectedTheme,
-        };
+      if (this.currentUserProfile?.id != null) {
+        this.userProfileService
+          .partialUpdate({
+            id: this.currentUserProfile.id,
+            settings: selectedTheme,
+          })
+          .subscribe(() => {
+            this.success.set(true);
+            this.accountService.authenticate(account);
+            this.themeService.applyTheme(selectedTheme);
 
-        this.userProfileService.update(updatedProfile).subscribe(() => {
-          this.success.set(true);
-          this.accountService.authenticate(account);
-          this.themeService.applyTheme(selectedTheme);
+            if (login) {
+              this.themeService.saveThemeForUser(login, selectedTheme);
+            }
 
-          if (login) {
-            this.themeService.saveThemeForUser(login, selectedTheme);
-          }
-        });
+            if (this.currentUserProfile) {
+              this.currentUserProfile.settings = selectedTheme;
+            }
+          });
       } else {
         this.success.set(true);
         this.accountService.authenticate(account);
