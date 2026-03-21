@@ -1,104 +1,96 @@
 <title>Schedule Generator</title>
-<div>
-  <h2 id="page-heading" data-cy="ScheduleRequestHeading">
-    <span>Schedule Requests</span>
 
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+<div class="schedule-requests-page">
+  <div id="page-heading" data-cy="ScheduleRequestHeading" class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+      <h2 class="mb-1">Schedule Requests</h2>
+      <p class="text-muted mb-0">View and manage your generated schedule requests.</p>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+      <button class="btn btn-info" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span>Refresh list</span>
+        <span class="ms-1">Refresh List</span>
       </button>
 
       <button
         id="jh-create-entity"
         data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-schedule-request"
+        class="btn btn-primary create-schedule-request"
         [routerLink]="['/schedule-request/new']"
       >
         <fa-icon icon="plus"></fa-icon>
-        <span>Create a new Schedule Request</span>
+        <span class="ms-1">New Schedule Request</span>
       </button>
     </div>
-  </h2>
+  </div>
 
   <jhi-alert-error></jhi-alert-error>
-
   <jhi-alert></jhi-alert>
 
   @if (scheduleRequests?.length === 0) {
     <div class="alert alert-warning" id="no-result">
-      <span>No Schedule Requests found</span>
+      <span>No schedule requests found.</span>
     </div>
   }
 
   @if (scheduleRequests && scheduleRequests.length > 0) {
     <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
+      <table class="table table-striped align-middle" aria-describedby="page-heading">
         <thead>
           <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span>ID</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
             <th scope="col" jhiSortBy="startDate">
-              <div class="d-flex">
+              <div class="d-flex align-items-center">
                 <span>Start Date</span>
-
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
+
             <th scope="col" jhiSortBy="endDate">
-              <div class="d-flex">
+              <div class="d-flex align-items-center">
                 <span>End Date</span>
-
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
+
             <th scope="col" jhiSortBy="scheduleDescription">
-              <div class="d-flex">
-                <span>Schedule Description</span>
-
+              <div class="d-flex align-items-center">
+                <span>Description</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
+
             <th scope="col" jhiSortBy="intensity">
-              <div class="d-flex">
+              <div class="d-flex align-items-center">
                 <span>Intensity</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
 
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="user.id">
-              <div class="d-flex">
-                <span>User</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col"></th>
+            <th scope="col" class="text-end">Actions</th>
           </tr>
         </thead>
+
         <tbody>
           @for (scheduleRequest of scheduleRequests; track trackId(scheduleRequest)) {
             <tr data-cy="entityTable">
-              <td>
-                <a [routerLink]="['/schedule-request', scheduleRequest.id, 'view']">{{ scheduleRequest.id }}</a>
-              </td>
               <td>{{ scheduleRequest.startDate | formatMediumDatetime }}</td>
+
               <td>{{ scheduleRequest.endDate | formatMediumDatetime }}</td>
-              <td>{{ scheduleRequest.scheduleDescription }}</td>
+
+              <td class="break">{{ scheduleRequest.scheduleDescription }}</td>
+
               <td>
-                {{ { null: '', EASY: 'EASY', INTERMEDIATE: 'INTERMEDIATE', INTENSE: 'INTENSE' }[scheduleRequest.intensity ?? 'null'] }}
+                {{
+                  {
+                    null: '',
+                    EASY: 'Easy',
+                    INTERMEDIATE: 'Intermediate',
+                    INTENSE: 'Intense',
+                  }[scheduleRequest.intensity ?? 'null']
+                }}
               </td>
-              <td>
-                @if (scheduleRequest.user) {
-                  <div>
-                    <a [routerLink]="['/user-profile', scheduleRequest.user.id, 'view']">{{ scheduleRequest.user.id }}</a>
-                  </div>
-                }
-              </td>
+
               <td class="text-end">
                 <div class="btn-group">
                   <a
@@ -119,7 +111,7 @@
                     <span class="d-none d-md-inline">Edit</span>
                   </a>
 
-                  <button type="submit" (click)="delete(scheduleRequest)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                  <button type="button" (click)="delete(scheduleRequest)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
                     <fa-icon icon="times"></fa-icon>
                     <span class="d-none d-md-inline">Delete</span>
                   </button>

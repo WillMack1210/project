@@ -57,15 +57,7 @@
                       @for (event of friendEventsMap[friend.id!]; track event.id) {
                         <li class="mb-1">
                           <strong>{{ event.title }}</strong>
-                          <span class="text-muted ms-2">
-                            {{
-                              event.startTime
-                                ? event.startTime.toDate()
-                                  ? event.startTime.toDate()
-                                  : event.startTime
-                                : ('' | date: 'd MMM yyyy, HH:mm')
-                            }}
-                          </span>
+                          <strong>{{ event.startTime | formatMediumDatetime }}</strong>
                         </li>
                       }
                     </ul>
@@ -84,7 +76,7 @@
                   </a>
                   <button type="button" (click)="removeFriend(friend)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
                     <fa-icon icon="times"></fa-icon>
-                    <span class="d-none d-md-inline">Delete</span>
+                    <span class="d-none d-md-inline">Remove Friend</span>
                   </button>
                 </div>
               </div>

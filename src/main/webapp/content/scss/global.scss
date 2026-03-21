@@ -665,3 +665,125 @@ body.dark-mode .alert-danger {
   color: #ffd7dc;
   border-color: #7a2e38;
 }
+
+body.dark-mode .text-muted {
+  color: #b8c0c8 !important;
+}
+
+body.dark-mode .container {
+  color: #e9ecef;
+}
+
+body.dark-mode .card {
+  background: #353738;
+  color: #e9ecef;
+  border: 1px solid #495057;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+body.dark-mode .card-header {
+  border-bottom: 1px solid #495057;
+}
+
+body.dark-mode .list-group-item {
+  background: #353738;
+  color: #e9ecef;
+  border-color: #495057;
+}
+
+body.dark-mode .form-select {
+  background-color: #2b2d2f;
+  color: #f8f9fa;
+  border: 1px solid #495057;
+}
+
+body.dark-mode .form-select:focus {
+  background-color: #2b2d2f;
+  color: #f8f9fa;
+  border-color: #6ea8fe;
+  box-shadow: 0 0 0 0.2rem rgba(110, 168, 254, 0.2);
+}
+
+body.dark-mode .form-select option {
+  background: #2b2d2f;
+  color: #f8f9fa;
+}
+
+body.dark-mode .alert-warning {
+  background-color: #4b3a12;
+  color: #ffe69c;
+  border-color: #6b5620;
+}
+
+body.dark-mode .table-responsive {
+  background: #353738;
+  border: 1px solid #495057;
+  border-radius: 16px;
+  padding: 0.25rem;
+}
+
+body.dark-mode .table {
+  color: #e9ecef;
+  margin-bottom: 0;
+}
+
+body.dark-mode .table thead th {
+  background: #2b2d2f;
+  color: #f8f9fa;
+  border-bottom: 1px solid #495057;
+  border-top: none;
+  font-weight: 600;
+}
+
+body.dark-mode .table tbody tr {
+  background: #353738;
+}
+
+body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * {
+  background-color: #3b3e40;
+  color: #e9ecef;
+}
+
+body.dark-mode .table-striped > tbody > tr:nth-of-type(even) > * {
+  background-color: #353738;
+  color: #e9ecef;
+}
+
+body.dark-mode .table td,
+body.dark-mode .table th {
+  border-color: #495057;
+  vertical-align: middle;
+}
+
+body.dark-mode .table a {
+  color: #8ab4ff;
+  text-decoration: none;
+}
+
+body.dark-mode .table a:hover {
+  color: #b6d0ff;
+  text-decoration: underline;
+}
+
+body.dark-mode .table-entities {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+body.dark-mode #page-heading {
+  color: #f8f9fa;
+}
+
+body.dark-mode #page-heading .btn-info {
+  color: #fff;
+}
+
+body.dark-mode .btn-group .btn {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .alert-warning {
+  background-color: #4b3a12;
+  color: #ffe69c;
+  border-color: #6b5620;
+}
