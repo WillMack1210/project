@@ -49,6 +49,10 @@
         <button type="button" [routerLink]="['/event', eventRef.id, 'edit']" class="btn btn-primary">
           <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
         </button>
+        <button class="btn btn-danger" (click)="deleteEvent()">
+          <fa-icon icon="multiply"></fa-icon>
+          Delete Event
+        </button>
       </div>
     }
   </div>
