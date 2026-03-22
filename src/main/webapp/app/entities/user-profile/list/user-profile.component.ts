@@ -111,6 +111,9 @@ export class UserProfileComponent implements OnInit {
         statuses.forEach(s => {
           this.friendshipStatusMap[s.userProfileId] = s;
         });
+        if (this.userProfiles) {
+          this.userProfiles = this.prioritizeIncomingPendingRequests(this.userProfiles);
+        }
       },
     });
   }
@@ -128,6 +131,7 @@ export class UserProfileComponent implements OnInit {
     this.userProfileService.search(this.searchQuery.trim()).subscribe({
       next: res => {
         this.userProfiles = res.body ?? [];
+        this.userProfiles = this.prioritizeIncomingPendingRequests(this.userProfiles);
         this.isLoading = false;
       },
       error: () => {
@@ -192,6 +196,31 @@ export class UserProfileComponent implements OnInit {
     });
   }
 
+  protected prioritizeIncomingPendingRequests(data: IUserProfile[]): IUserProfile[] {
+    return [...data].sort((a, b) => {
+      const aIncomingPending = this.isIncomingPendingRequest(a.id);
+      const bIncomingPending = this.isIncomingPendingRequest(b.id);
+
+      if (aIncomingPending && !bIncomingPending) {
+        return -1;
+      }
+      if (!aIncomingPending && bIncomingPending) {
+        return 1;
+      }
+
+      return 0;
+    });
+  }
+
+  protected isIncomingPendingRequest(profileId: number | undefined): boolean {
+    if (profileId == null) {
+      return false;
+    }
+
+    const friendship = this.getFriendship(profileId);
+    return friendship.status === FriendStatus.PENDING && !friendship.isRequester;
+  }
+
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
     this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
   }
@@ -203,7 +232,8 @@ export class UserProfileComponent implements OnInit {
 
   protected refineData(data: IUserProfile[]): IUserProfile[] {
     const { predicate, order } = this.sortState();
-    return predicate && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
+    const sortedData = predicate && order ? [...data].sort(this.sortService.startSort({ predicate, order })) : [...data];
+    return this.prioritizeIncomingPendingRequests(sortedData);
   }
 
   protected fillComponentAttributesFromResponseBody(data: IUserProfile[] | null): IUserProfile[] {
