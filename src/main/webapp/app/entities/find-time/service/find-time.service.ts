@@ -103,8 +103,15 @@ export class FindTimeService {
     return findTimeCollection;
   }
 
-  findCommonFreeSlots(userId: number, friendId: number, start: string, end: string): Observable<ITimeSlot[]> {
-    return this.http.get<ITimeSlot[]>(`${this.resourceUrl}/common-free-slots`, { params: { userId, friendId, start, end } });
+  findCommonFreeSlots(userId: number, friendIds: number[], start: string, end: string): Observable<ITimeSlot[]> {
+    const params: any = {
+      userId,
+      start,
+      end,
+      friendIds,
+    };
+
+    return this.http.get<ITimeSlot[]>(`${this.resourceUrl}/common-free-slots`, { params });
   }
 
   protected convertDateFromClient<T extends IFindTime | NewFindTime | PartialUpdateFindTime>(findTime: T): RestOf<T> {

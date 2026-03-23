@@ -22,16 +22,18 @@ public class FindTimeService {
         this.eventRepository = eventRepository;
     }
 
-    private List<Event> getAllEvents(Long userId, Long friendId, Instant start, Instant end) {
+    private List<Event> getAllEvents(Long userId, Long[] friendId, Instant start, Instant end) {
         List<Event> allEvents = new ArrayList<>();
         allEvents.addAll(eventRepository.findByUserProfileIdAndTimeRange(userId, start, end));
-        allEvents.addAll(eventRepository.findByUserProfileIdAndTimeRange(friendId, start, end));
+        for (Long fid : friendId) {
+            allEvents.addAll(eventRepository.findByUserProfileIdAndTimeRange(fid, start, end));
+        }
         return allEvents;
     }
 
-    public List<TimeSlot> computeFreeSlots(Long userId, Long friendId, Instant start, Instant end) {
+    public List<TimeSlot> computeFreeSlots(Long userId, List<Long> friendId, Instant start, Instant end) {
         List<TimeSlot> freeSlots = new ArrayList<>();
-        List<Event> busyEvents = getAllEvents(userId, friendId, start, end);
+        List<Event> busyEvents = getAllEvents(userId, friendId.toArray(new Long[0]), start, end);
         if (busyEvents.isEmpty()) {
             freeSlots.add(new TimeSlot(start, end));
             return freeSlots;

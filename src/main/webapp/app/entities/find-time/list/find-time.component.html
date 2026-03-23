@@ -8,15 +8,15 @@
     <div class="row g-3">
       <!-- Friend Dropdown -->
       <div class="col-md-4">
-        <label class="form-label">Select Friend</label>
-        <select class="form-select" [(ngModel)]="selectedFriendId">
-          <option [ngValue]="undefined">-- Select a Friend --</option>
+        <label class="form-label">Select Friends</label>
+        <select class="form-select" multiple [(ngModel)]="selectedFriendIds">
           @for (friend of friends; track friend.id) {
             <option [ngValue]="friend.id">
               {{ friend.user?.login }}
             </option>
           }
         </select>
+        <small class="text-muted">Hold Ctrl (or Cmd on Mac) to select multiple friends.</small>
       </div>
 
       <!-- Start Date -->

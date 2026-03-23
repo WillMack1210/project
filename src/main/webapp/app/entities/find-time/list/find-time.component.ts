@@ -37,7 +37,7 @@ export class FindTimeComponent implements OnInit {
   isLoading = false;
   freeSlots: ITimeSlot[] = [];
   currentUserProfileId?: number;
-  selectedFriendId?: number;
+  selectedFriendIds: number[] = [];
   requestStart?: string;
   requestEnd?: string;
   friends: IUserProfile[] = [];
@@ -93,14 +93,17 @@ export class FindTimeComponent implements OnInit {
   }
 
   findCommonSlots(): void {
-    if (!this.selectedFriendId || !this.requestStart || !this.requestEnd) {
-      throw new Error('Something hasnt veen filled in');
+    if (!this.currentUserProfileId || this.selectedFriendIds.length === 0 || !this.requestStart || !this.requestEnd) {
+      throw new Error('Something hasnt been filled in');
     }
+
     this.freeSlots = [];
     this.hasSearched = false;
+
     const startISO = new Date(this.requestStart).toISOString();
     const endISO = new Date(this.requestEnd).toISOString();
-    this.findTimeService.findCommonFreeSlots(this.currentUserProfileId!, this.selectedFriendId, startISO, endISO).subscribe({
+
+    this.findTimeService.findCommonFreeSlots(this.currentUserProfileId, this.selectedFriendIds, startISO, endISO).subscribe({
       next: slots => {
         this.freeSlots = slots;
         this.hasSearched = true;

@@ -180,12 +180,12 @@ public class FindTimeResource {
     @GetMapping("/common-free-slots")
     public ResponseEntity<List<TimeSlot>> findCommonFreeSlots(
         @RequestParam Long userId,
-        @RequestParam Long friendId,
+        @RequestParam List<Long> friendIds,
         @RequestParam Instant start,
         @RequestParam Instant end
     ) {
-        LOG.debug("REST request to find common free slots between {} and {}", userId, friendId);
-        List<TimeSlot> result = findTimeService.computeFreeSlots(userId, friendId, start, end);
+        LOG.debug("REST request to find common free slots between {} and {}", userId, friendIds);
+        List<TimeSlot> result = findTimeService.computeFreeSlots(userId, friendIds, start, end);
         return ResponseEntity.ok(result);
     }
 
