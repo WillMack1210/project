@@ -33,5 +33,6 @@
     <include file="config/liquibase/changelog/20251110162605_added_entity_constraints_FindTime.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20251110162606_added_entity_constraints_Suggestion.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
+    <include file="config/liquibase/changelog/20260324205000_make_event_end_time_nullable.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
 </databaseChangeLog>
