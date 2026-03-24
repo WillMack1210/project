@@ -24,7 +24,7 @@
                 <constraints nullable="false" />
             </column>
             <column name="end_time" type="${datetimeType}">
-                <constraints nullable="false" />
+                <constraints nullable="true" />
             </column>
             <column name="location" type="varchar(255)">
                 <constraints nullable="true" />

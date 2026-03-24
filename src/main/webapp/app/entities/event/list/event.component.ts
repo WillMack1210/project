@@ -89,7 +89,7 @@ export class EventComponent implements OnInit {
     const now = dayjs();
 
     return data
-      .filter(e => e.endTime != null && !e.endTime.isBefore(now))
+      .filter(e => e.startTime != null && !e.startTime.isBefore(now))
       .sort((a, b) => {
         const aStart = a.startTime;
         const bStart = b.startTime;

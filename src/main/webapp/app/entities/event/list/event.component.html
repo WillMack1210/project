@@ -40,8 +40,10 @@
 
               <div class="mb-2 fs-5">
                 <strong>{{ event.startTime | formatMediumDatetime }}</strong>
-                <span class="mx-2">-</span>
-                <strong>{{ event.endTime | formatMediumDatetime }}</strong>
+                @if (event.endTime) {
+                  <span class="mx-2">-</span>
+                  <strong>{{ event.endTime | formatMediumDatetime }}</strong>
+                }
               </div>
 
               <div class="mb-2">

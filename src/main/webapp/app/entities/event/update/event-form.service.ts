@@ -65,9 +65,7 @@ export class EventFormService {
       startTime: new FormControl(eventRawValue.startTime, {
         validators: [Validators.required],
       }),
-      endTime: new FormControl(eventRawValue.endTime, {
-        validators: [Validators.required],
-      }),
+      endTime: new FormControl(eventRawValue.endTime),
       location: new FormControl(eventRawValue.location),
       privacy: new FormControl(eventRawValue.privacy, {
         validators: [Validators.required],
@@ -96,7 +94,7 @@ export class EventFormService {
     return {
       id: null,
       startTime: currentTime,
-      endTime: currentTime,
+      endTime: null,
       participants: [],
     };
   }
@@ -105,7 +103,7 @@ export class EventFormService {
     return {
       ...rawEvent,
       startTime: dayjs(rawEvent.startTime, DATE_TIME_FORMAT),
-      endTime: dayjs(rawEvent.endTime, DATE_TIME_FORMAT),
+      endTime: rawEvent.endTime ? dayjs(rawEvent.endTime, DATE_TIME_FORMAT) : null,
     };
   }
 

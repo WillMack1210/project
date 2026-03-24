@@ -40,7 +40,6 @@ public class Event implements Serializable {
     @Column(name = "start_time", nullable = false)
     private Instant startTime;
 
-    @NotNull
     @Column(name = "end_time", nullable = false)
     private Instant endTime;
 

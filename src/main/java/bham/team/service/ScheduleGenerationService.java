@@ -65,11 +65,7 @@ public class ScheduleGenerationService {
         List<ActivityTemplate> templates = parseDescription(request.getScheduleDescription());
         List<PlannedEvent> plannedEvents = flattenAndPrioritise(templates);
 
-        List<Event> busyEvents = eventRepository.findAllByOwnerAndStartTimeLessThanAndEndTimeGreaterThan(
-            user,
-            request.getEndDate(),
-            request.getStartDate()
-        );
+        List<Event> busyEvents = eventRepository.findBusyEventsForOwnerInWindow(user, request.getEndDate(), request.getStartDate());
 
         ZoneId zone = ZoneId.systemDefault();
         List<TimeSlot> rawSlots = computeFreeSlots(request.getStartDate(), request.getEndDate(), busyEvents);
@@ -149,7 +145,6 @@ public class ScheduleGenerationService {
         List<Event> created = new ArrayList<>();
 
         Map<LocalDate, Integer> loadPerDay = new HashMap<>();
-        Map<LocalDate, Instant> lastEndPerDay = new HashMap<>();
         Map<String, List<LocalDate>> daysUsedByTitle = new HashMap<>();
 
         Duration gap =
@@ -296,10 +291,15 @@ public class ScheduleGenerationService {
 
     private List<TimeSlot> computeFreeSlots(Instant rangeStart, Instant rangeEnd, List<Event> busyEvents) {
         List<TimeSlot> freeSlots = new ArrayList<>();
-        busyEvents.sort(Comparator.comparing(Event::getStartTime));
+
+        List<Event> blockingEvents = busyEvents
+            .stream()
+            .filter(e -> e.getEndTime() != null)
+            .sorted(Comparator.comparing(Event::getStartTime))
+            .toList();
 
         Instant cursor = rangeStart;
-        for (Event e : busyEvents) {
+        for (Event e : blockingEvents) {
             if (e.getStartTime().isAfter(cursor)) {
                 freeSlots.add(new TimeSlot(cursor, e.getStartTime()));
             }

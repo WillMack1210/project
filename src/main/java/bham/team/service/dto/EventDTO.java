@@ -26,7 +26,6 @@ public class EventDTO implements Serializable {
     @NotNull
     private Instant startTime;
 
-    @NotNull
     private Instant endTime;
 
     private String location;

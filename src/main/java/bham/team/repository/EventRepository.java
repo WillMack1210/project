@@ -35,12 +35,19 @@ public interface EventRepository extends EventRepositoryWithBagRelationships, Jp
         return this.fetchBagRelationships(this.findByOwnerID(ownerId));
     }
 
-    List<Event> findAllByOwnerAndStartTimeLessThanAndEndTimeGreaterThan(UserProfile owner, Instant windowEnd, Instant windowStart);
+    @Query(
+        "select e from Event e where e.owner = :owner and e.endTime is not null and e.startTime < :windowEnd and e.endTime > :windowStart"
+    )
+    List<Event> findBusyEventsForOwnerInWindow(
+        @Param("owner") UserProfile owner,
+        @Param("windowEnd") Instant windowEnd,
+        @Param("windowStart") Instant windowStart
+    );
 
     @Query("select e from Event e where e.owner.id = :profileId")
     List<Event> findByUserProfileId(@Param("profileId") Long profileId);
 
-    @Query("select e from Event e where e.owner.id = :profileId and e.startTime >= :start and e.endTime <= :end")
+    @Query("select e from Event e where e.owner.id = :profileId and e.endTime is not null and e.startTime < :end and e.endTime > :start")
     List<Event> findByUserProfileIdAndTimeRange(
         @Param("profileId") Long profileId,
         @Param("start") Instant start,

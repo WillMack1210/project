@@ -28,10 +28,12 @@
           <dd>
             <span>{{ eventRef.startTime | formatMediumDatetime }}</span>
           </dd>
-          <dt><span>End Time</span></dt>
-          <dd>
-            <span>{{ eventRef.endTime | formatMediumDatetime }}</span>
-          </dd>
+          @if (eventRef.endTime) {
+            <dt><span>End Time</span></dt>
+            <dd>
+              <span>{{ eventRef.endTime | formatMediumDatetime }}</span>
+            </dd>
+          }
           <dt><span>Location</span></dt>
           <dd>
             <span>{{ eventRef.location }}</span>

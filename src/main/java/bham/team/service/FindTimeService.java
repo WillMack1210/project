@@ -28,45 +28,66 @@ public class FindTimeService {
         for (Long fid : friendId) {
             allEvents.addAll(eventRepository.findByUserProfileIdAndTimeRange(fid, start, end));
         }
-        return allEvents;
+
+        return allEvents.stream().filter(event -> event.getEndTime() != null).toList();
     }
 
     public List<TimeSlot> computeFreeSlots(Long userId, List<Long> friendId, Instant start, Instant end) {
         List<TimeSlot> freeSlots = new ArrayList<>();
         List<Event> busyEvents = getAllEvents(userId, friendId.toArray(new Long[0]), start, end);
+
         if (busyEvents.isEmpty()) {
             freeSlots.add(new TimeSlot(start, end));
             return freeSlots;
-        } else {
-            busyEvents = mergeEvents(busyEvents);
-            Instant cursor = start;
-            for (Event event : busyEvents) {
-                Instant eventStart = event.getStartTime();
-                Instant eventEnd = event.getEndTime();
-                if (eventStart.isAfter(cursor)) {
-                    Duration gap = Duration.between(cursor, eventStart);
-                    if (!gap.minus(minSlot).isNegative()) {
-                        freeSlots.add(new TimeSlot(cursor, eventStart));
-                    }
-                }
-                if (eventEnd.isAfter(cursor)) {
-                    cursor = eventEnd;
-                }
-            }
-            if (cursor.isBefore(end)) {
-                freeSlots.add(new TimeSlot(cursor, end));
-            }
-            return freeSlots;
         }
+
+        busyEvents = mergeEvents(busyEvents);
+        Instant cursor = start;
+
+        for (Event event : busyEvents) {
+            Instant eventStart = event.getStartTime();
+            Instant eventEnd = event.getEndTime();
+
+            if (eventStart.isAfter(cursor)) {
+                Duration gap = Duration.between(cursor, eventStart);
+                if (!gap.minus(minSlot).isNegative()) {
+                    freeSlots.add(new TimeSlot(cursor, eventStart));
+                }
+            }
+
+            if (eventEnd != null && eventEnd.isAfter(cursor)) {
+                cursor = eventEnd;
+            }
+        }
+
+        if (cursor.isBefore(end)) {
+            freeSlots.add(new TimeSlot(cursor, end));
+        }
+
+        return freeSlots;
     }
 
     private List<Event> mergeEvents(List<Event> events) {
-        if (events.isEmpty()) return events;
-        events.sort(Comparator.comparing(Event::getStartTime));
+        if (events.isEmpty()) {
+            return events;
+        }
+
+        List<Event> blockingEvents = events
+            .stream()
+            .filter(event -> event.getEndTime() != null)
+            .sorted(Comparator.comparing(Event::getStartTime))
+            .toList();
+
+        if (blockingEvents.isEmpty()) {
+            return new ArrayList<>();
+        }
+
         List<Event> merged = new ArrayList<>();
-        Event current = events.get(0);
-        for (int i = 1; i < events.size(); i++) {
-            Event next = events.get(i);
+        Event current = blockingEvents.get(0);
+
+        for (int i = 1; i < blockingEvents.size(); i++) {
+            Event next = blockingEvents.get(i);
+
             if (!next.getStartTime().isAfter(current.getEndTime())) {
                 if (next.getEndTime().isAfter(current.getEndTime())) {
                     current.setEndTime(next.getEndTime());
@@ -76,6 +97,7 @@ public class FindTimeService {
                 current = next;
             }
         }
+
         merged.add(current);
         return merged;
     }
