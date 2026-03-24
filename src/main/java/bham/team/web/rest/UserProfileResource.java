@@ -106,12 +106,28 @@ public class UserProfileResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        UserProfile userProfile = userProfileMapper.toEntity(userProfileDTO);
-        userProfile = userProfileRepository.save(userProfile);
-        userProfileDTO = userProfileMapper.toDto(userProfile);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, userProfileDTO.getId().toString()))
-            .body(userProfileDTO);
+        Optional<UserProfileDTO> result = userProfileRepository
+            .findById(id)
+            .map(existingUserProfile -> {
+                existingUserProfile.setUsername(userProfileDTO.getUsername());
+                existingUserProfile.setFullName(userProfileDTO.getFullName());
+                existingUserProfile.setProfilePicture(userProfileDTO.getProfilePicture());
+                existingUserProfile.setProfilePictureContentType(userProfileDTO.getProfilePictureContentType());
+                existingUserProfile.setSettings(userProfileDTO.getSettings());
+
+                if (userProfileDTO.getUser() != null && userProfileDTO.getUser().getId() != null) {
+                    userRepository.findById(userProfileDTO.getUser().getId()).ifPresent(existingUserProfile::user);
+                }
+
+                return existingUserProfile;
+            })
+            .map(userProfileRepository::save)
+            .map(userProfileMapper::toDto);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, userProfileDTO.getId().toString())
+        );
     }
 
     /**
