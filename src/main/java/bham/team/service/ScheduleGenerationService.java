@@ -84,7 +84,13 @@ public class ScheduleGenerationService {
         List<ActivityTemplate> results = new ArrayList<>();
         String[] lines = description.split("\\R|_");
 
-        Pattern p = Pattern.compile("(.+?)\\s+(?:(\\d+)\\s*h\\s*)?(?:(\\d+)\\s*m\\s*)?x\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
+        Pattern p = Pattern.compile(
+            "^(.+?)\\s+" +
+            "(?:(\\d+)\\s*(?:h|hr|hrs|hour|hours)\\s*)?" +
+            "(?:(\\d+)\\s*(?:m|min|mins|minute|minutes)\\s*)?" +
+            "x\\s*(\\d+)$",
+            Pattern.CASE_INSENSITIVE
+        );
 
         for (String rawLine : lines) {
             String line = rawLine.trim();
@@ -123,14 +129,33 @@ public class ScheduleGenerationService {
         }
 
         planned.sort((a, b) -> {
+            int aUrgency = timeSpecificityScore(a.title());
+            int bUrgency = timeSpecificityScore(b.title());
+
+            int urgencyCompare = Integer.compare(bUrgency, aUrgency);
+            if (urgencyCompare != 0) {
+                return urgencyCompare;
+            }
+
             int durationCompare = b.duration().compareTo(a.duration());
             if (durationCompare != 0) {
                 return durationCompare;
             }
+
             return a.title().compareToIgnoreCase(b.title());
         });
 
         return planned;
+    }
+
+    private int timeSpecificityScore(String title) {
+        String t = title.toLowerCase();
+
+        if (t.contains("morning") || t.contains("early") || t.contains("evening") || t.contains("night")) {
+            return 2;
+        }
+
+        return 0;
     }
 
     private List<Event> placeEventsSmart(
@@ -350,20 +375,97 @@ public class ScheduleGenerationService {
 
     private double preferredTimeScore(String title, LocalTime time) {
         String t = title.toLowerCase();
+        if (t.contains("morning") || t.contains("early")) {
+            return closenessToWindow(time, LocalTime.of(8, 30), LocalTime.of(11, 0));
+        }
 
-        if (t.contains("study") || t.contains("revision") || t.contains("coding") || t.contains("work")) {
+        if (
+            t.contains("study") ||
+            t.contains("revision") ||
+            t.contains("coding") ||
+            t.contains("work") ||
+            t.contains("essay") ||
+            t.contains("coursework") ||
+            t.contains("assignment") ||
+            t.contains("project") ||
+            t.contains("lab") ||
+            t.contains("lecture") ||
+            t.contains("homework") ||
+            t.contains("research")
+        ) {
             return closenessToWindow(time, LocalTime.of(9, 0), LocalTime.of(13, 0));
         }
 
-        if (t.contains("gym") || t.contains("run") || t.contains("workout") || t.contains("exercise")) {
+        if (
+            t.contains("gym") ||
+            t.contains("run") ||
+            t.contains("workout") ||
+            t.contains("exercise") ||
+            t.contains("walk") ||
+            t.contains("swim") ||
+            t.contains("football") ||
+            t.contains("sport") ||
+            t.contains("training") ||
+            t.contains("cycle") ||
+            t.contains("cycling") ||
+            t.contains("jog") ||
+            t.contains("yoga")
+        ) {
             return closenessToWindow(time, LocalTime.of(16, 0), LocalTime.of(19, 30));
         }
 
-        if (t.contains("read") || t.contains("reading") || t.contains("journal") || t.contains("meditation")) {
-            return closenessToWindow(time, LocalTime.of(18, 0), LocalTime.of(20, 0));
+        if (
+            t.contains("read") ||
+            t.contains("reading") ||
+            t.contains("journal") ||
+            t.contains("meditation") ||
+            t.contains("relax") ||
+            t.contains("reflect")
+        ) {
+            return closenessToWindow(time, LocalTime.of(17, 30), LocalTime.of(19, 0));
         }
 
-        return closenessToWindow(time, LocalTime.of(10, 0), LocalTime.of(17, 0));
+        if (t.contains("cook") || t.contains("dinner") || t.contains("meal") || t.contains("prep") || t.contains("eat")) {
+            return closenessToWindow(time, LocalTime.of(18, 30), LocalTime.of(21, 0));
+        }
+        if (
+            t.contains("clean") ||
+            t.contains("laundry") ||
+            t.contains("shopping") ||
+            t.contains("groceries") ||
+            t.contains("tidy") ||
+            t.contains("errands") ||
+            t.contains("admin") ||
+            t.contains("email") ||
+            t.contains("emails") ||
+            t.contains("organise") ||
+            t.contains("organize")
+        ) {
+            return closenessToWindow(time, LocalTime.of(10, 0), LocalTime.of(14, 0));
+        }
+        if (
+            t.contains("pub") ||
+            t.contains("social") ||
+            t.contains("hangout") ||
+            t.contains("meet") ||
+            t.contains("coffee") ||
+            t.contains("drink") ||
+            t.contains("movie") ||
+            t.contains("film") ||
+            t.contains("game") ||
+            t.contains("gaming")
+        ) {
+            return closenessToWindow(time, LocalTime.of(18, 0), LocalTime.of(22, 0));
+        }
+        if (t.contains("nap") || t.contains("rest") || t.contains("sleep") || t.contains("recovery")) {
+            return closenessToWindow(time, LocalTime.of(13, 0), LocalTime.of(16, 0));
+        }
+
+        if (t.contains("lunch") || t.contains("break")) {
+            return closenessToWindow(time, LocalTime.of(11, 30), LocalTime.of(13, 30));
+        }
+
+        return closenessToWindow(time, LocalTime.of(9, 0), LocalTime.of(20, 0));
     }
 
     private double closenessToWindow(LocalTime time, LocalTime preferredStart, LocalTime preferredEnd) {
