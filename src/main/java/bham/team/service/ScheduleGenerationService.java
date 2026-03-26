@@ -378,7 +378,17 @@ public class ScheduleGenerationService {
         if (t.contains("morning") || t.contains("early")) {
             return closenessToWindow(time, LocalTime.of(8, 30), LocalTime.of(11, 0));
         }
+        if (t.contains("afternoon") || t.contains("midday")) {
+            return closenessToWindow(time, LocalTime.of(12, 0), LocalTime.of(15, 0));
+        }
 
+        if (t.contains("evening")) {
+            return closenessToWindow(time, LocalTime.of(17, 30), LocalTime.of(19, 30));
+        }
+
+        if (t.contains("night") || t.contains("late")) {
+            return closenessToWindow(time, LocalTime.of(20, 0), LocalTime.of(22, 0));
+        }
         if (
             t.contains("study") ||
             t.contains("revision") ||
