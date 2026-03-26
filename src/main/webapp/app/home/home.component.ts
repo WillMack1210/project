@@ -25,6 +25,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
   account = signal<Account | null>(null);
   requests = false;
   currentRequests?: IFriendship[];
+  showFriendRequest = true;
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin],
     initialView: 'dayGridMonth',
@@ -57,6 +58,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
           }
         },
       });
+    this.showFriendRequest = localStorage.getItem('dismissedFriendAlert') !== 'true';
   }
 
   login(): void {
@@ -96,6 +98,11 @@ export default class HomeComponent implements OnInit, OnDestroy {
         });
       },
     });
+  }
+
+  dissmissRequests(): void {
+    this.showFriendRequest = false;
+    localStorage.setItem('dismissedFriendAlert', 'true');
   }
 
   loadEvents(): void {

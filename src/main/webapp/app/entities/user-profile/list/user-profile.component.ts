@@ -160,6 +160,13 @@ export class UserProfileComponent implements OnInit {
     this.friendshipService.removeFriend(friendshipId).subscribe(() => this.loadFriendshipStatuses());
   }
 
+  withdrawRequest(friendshipId: number): void {
+    if (!friendshipId) {
+      return;
+    }
+    this.friendshipService.removeFriend(friendshipId).subscribe(() => this.loadFriendshipStatuses());
+  }
+
   getFriendship(profileId: number): IFriendshipStatus {
     return (
       this.friendshipStatusMap[profileId] ?? {

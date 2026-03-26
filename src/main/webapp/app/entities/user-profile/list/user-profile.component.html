@@ -99,7 +99,12 @@
                     }
 
                     @if ((!fs || fs.status === 'NONE') && currentUser !== userProfile.id) {
-                      <button type="button" class="btn btn-success btn-sm" (click)="sendFriendRequest(userProfile.id)">
+                      <button
+                        type="button"
+                        class="btn btn-success btn-sm"
+                        [disabled]="isLoading"
+                        (click)="sendFriendRequest(userProfile.id)"
+                      >
                         <fa-icon icon="user-plus"></fa-icon>
                         <span class="ms-1">Add</span>
                       </button>
@@ -112,7 +117,9 @@
                     }
 
                     @if (fs?.status === 'PENDING' && fs?.isRequester) {
-                      <button type="button" class="btn btn-secondary btn-sm" disabled>Pending</button>
+                      <button type="button" class="btn btn-outline-warning btn-sm" (click)="withdrawRequest(fs.friendshipId)">
+                        Request Sent - Cancel
+                      </button>
                     }
 
                     @if (fs?.status === 'ACCEPTED') {

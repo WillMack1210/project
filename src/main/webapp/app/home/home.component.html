@@ -12,10 +12,17 @@
             </div>
           }
 
-          @if (requests) {
-            <div class="alert alert-warning mt-3 mb-4">You have a new friend request, go to the User Profile page to take a look!</div>
-          }
+          @if (requests && showFriendRequest) {
+            <div
+              class="alert alert-warning mt-3 mb-4 d-flex justify-content-between align-items-center"
+              style="cursor: pointer"
+              [routerLink]="['/user-profile']"
+            >
+              <span> You have a new friend request, go to the User Profile page to take a look! </span>
 
+              <button type="button" class="btn-close" aria-label="Close" (click)="dissmissRequests(); $event.stopPropagation()"></button>
+            </div>
+          }
           <div class="calendar-wrapper">
             <full-calendar [options]="calendarOptions"></full-calendar>
           </div>
